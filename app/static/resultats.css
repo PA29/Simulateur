@@ -6,6 +6,7 @@ html, body {
 body {
     display: flex;
     flex-wrap: wrap;
+    margin: 0;
 }
 
 body > div {
@@ -46,4 +47,32 @@ body > div > * {
 #rightPanel {
     max-width: 30%;
     background-color: lightgreen;
+}
+
+.graph {
+    left: 10%;
+    width: 80%;
+    height: 29%;
+    background-color: lightsalmon;
+}
+
+.time {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 98%;
+}
+
+#graph_0 {
+    top: 10%;
+}
+
+#graph_1 {
+    top: 40%;
+}
+
+#graph_2 {
+    top: 70%;
 }

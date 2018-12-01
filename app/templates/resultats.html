@@ -2,7 +2,7 @@
 
 {% block head %}
   <title>Résultats</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'resultats.css') }}">
+  <script src="{{ url_for('static', filename = 'resultats.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -13,5 +13,8 @@
   </div>
   <div id="rightPanel">
     <div class="areaTitle">Courbes</div>
+      {% for i in range(3) %}
+        {% include '_graph.html' %}
+      {% endfor %}
   </div>
 {% endblock %}
