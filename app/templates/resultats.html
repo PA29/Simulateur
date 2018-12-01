@@ -1,13 +1,11 @@
-<!doctype html>
-<html lang="fr">
+{% extends "base.html" %}
 
-<head>
-  <meta charset="utf-8">
+{% block head %}
   <title>Résultats</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'resultats.css') }}">
-</head>
+{% endblock %}
 
-<body>
+{% block body %}
   <div id="centerArea">
     <div class="areaTitle">Résultats</div>
     <input id="edit" type="button"></button>
@@ -16,6 +14,4 @@
   <div id="rightPanel">
     <div class="areaTitle">Courbes</div>
   </div>
-</body>
-
-</html>
+{% endblock %}
