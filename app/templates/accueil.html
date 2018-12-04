@@ -1,38 +1,35 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8"/>
-        <link rel="stylesheet" href="accueil.css" />
-        <title>Page d'accueil</title>
-    </head>
+{% extends "base.html" %}
+    
+{% block head %}
+    <title>Page d'accueil</title>
+{% endblock %}
 
-    <body>
-        <h1>Bienvenue sur l'application _________ !</h1>
-        <div class="charger">
-            <input class="bouton_accueil" type="button" value="Charger">
-            <ul class="menu_deroulant">
-                <li><a href=#>Choisir un scénario</a></li>
-                    <ul>
-                        <li><a href=#>Scénario 1</a></li>
-                        <li><a href=#>Scénario 2</a></li>
-                        <li><a href=#>Scénario 3</a></li>
-                        <li><a href=#>Scénario 4</a></li>
-                        <li><a href=#>Scénario 5</a></li>
-                        <li><a href=#>Scénario 6</a></li>
-                        <li><a href=#>Scénario 7</a></li>
-                        <li><a href=#>Scénario 8</a></li>
-                        <li><a href=#>Scénario 9</a></li>
-                        <li><a href=#>Scénario 10</a></li>
-                    </ul>
-            </ul>
+{% block body %}
+    {{ background }}
+    <h1>Bienvenue sur l'application _________ !</h1>
+    <div class="charger">
+        <input class="bouton_accueil" type="button" value="Charger">
+        <ul class="menu_deroulant">
+            <li><a href=#>Choisir un scénario</a>
+                <li><a href=#>Scénario 1</a></li>
+                <li><a href=#>Scénario 2</a></li>
+                <li><a href=#>Scénario 3</a></li>
+                <li><a href=#>Scénario 4</a></li>
+                <li><a href=#>Scénario 5</a></li>
+                <li><a href=#>Scénario 6</a></li>
+                <li><a href=#>Scénario 7</a></li>
+                <li><a href=#>Scénario 8</a></li>
+                <li><a href=#>Scénario 9</a></li>
+                <li><a href=#>Scénario 10</a></li>
+            </li>
+        </ul>
+    </div> 
+    <div class="bas">
+        <div class="créer">
+            <input class="bouton_accueil" type="button" value="Créer">
+        </div>
+        <div class="ouvrir">
+            <input class="bouton_accueil" type="button" value="Ouvrir">
         </div> 
-        <div class="bas">
-            <div class="créer">
-                <input class="bouton_accueil" type="button" value="Créer">
-            </div>
-            <div class="ouvrir">
-                <input class="bouton_accueil" type="button" value="Ouvrir">
-            </div> 
-        </div>  
-    </body>
-</html>
+    </div>
+{% endblock %}

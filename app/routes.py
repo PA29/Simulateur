@@ -12,7 +12,7 @@ from app import app
 @app.route('/index')
 @app.route('/accueil')
 def accueil():
-    return render_template('accueil')
+    return render_template('accueil', background = "accueil.jpg")
 
 @app.route('/reseau')
 def reseau():
