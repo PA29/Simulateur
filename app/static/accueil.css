@@ -38,8 +38,14 @@ body
 {
     margin-right:100px;
 }
+
 h1
 {
     text-align: center;
     color: aquamarine;
+}
+
+.choix_menu
+{
+    overflow: hidden;
 }
