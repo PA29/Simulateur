@@ -3,11 +3,18 @@
 
 <head>
   <meta charset="utf-8">
+  <link href="{{ url_for('static', filename = css) }}" type="text/css" rel="stylesheet">
   {% block head %}
   {% endblock %}
 </head>
 
+{{ background }}
+
+{% if background %}
+<body style="background-image: url('{{ url_for('static', filename = background) }}'">
+{% else %}
 <body>
+{% endif %}
   {% block body %}
   {% endblock %}
 </body>
