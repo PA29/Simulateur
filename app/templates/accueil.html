@@ -6,25 +6,25 @@
         <title>Page d'accueil</title>
     </head>
 
-    <body>
+    <body style="background-image: url({{url_for(network-3357642_1920.jpg)}})">
         <h1>Bienvenue sur l'application _________ !</h1>
         <div class="charger">
             <input class="bouton_accueil" type="button" value="Charger">
-            <ul class="menu_deroulant">
-                <li><a href=#>Choisir un scénario</a></li>
-                    <ul>
-                        <li><a href=#>Scénario 1</a></li>
-                        <li><a href=#>Scénario 2</a></li>
-                        <li><a href=#>Scénario 3</a></li>
-                        <li><a href=#>Scénario 4</a></li>
-                        <li><a href=#>Scénario 5</a></li>
-                        <li><a href=#>Scénario 6</a></li>
-                        <li><a href=#>Scénario 7</a></li>
-                        <li><a href=#>Scénario 8</a></li>
-                        <li><a href=#>Scénario 9</a></li>
-                        <li><a href=#>Scénario 10</a></li>
-                    </ul>
-            </ul>
+            <div class=menu_deroulant>
+                <button type="button" class="bouton_deroulant" data-toggle="dropdown" title="Choisir un scénario" aria-expanded="true">None selected <b class="caret"></b></button>
+                <ul class="choix_menu">
+                    <li><a href="javascript:void(0);"><label class="checkbox">Cheese</label></a></li>
+                    <li><a href="javascript:void(0);"><label class="checkbox">Tomatoes</label></a></li>
+                    <li><a href="javascript:void(0);"><label class="checkbox">Mozzarella</label></a></li>
+                    <li><a href="javascript:void(0);"><label class="checkbox">Mushrooms</label></a></li>
+                    <li><a href="javascript:void(0);"><label class="checkbox">Pepperoni</label></a></li>
+                    <li><a href="javascript:void(0);"><label class="checkbox">Onions</label></a></li>
+                    <li><a href="javascript:void(0);"><label class="checkbox">Cucumber</label></a></li>
+                    <li><a href="javascript:void(0);"><label class="checkbox">Jam</label></a></li>
+                    <li><a href="javascript:void(0);"><label class="checkbox">Potatoe</label></a></li>
+                    <li><a href="javascript:void(0);"><label class="checkbox">Salad</label></a></li>
+                </ul>
+            </div>
         </div> 
         <div class="bas">
             <div class="créer">
