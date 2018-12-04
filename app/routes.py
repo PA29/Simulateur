@@ -10,5 +10,19 @@ from app import app
 
 @app.route('/')
 @app.route('/index')
+<<<<<<< HEAD
 def index():
     return render_template('resultats')
+=======
+@app.route('/accueil')
+def accueil():
+    return render_template('accueil')
+
+@app.route('/reseau')
+def reseau():
+    return render_template('reseau')
+
+@app.route('/resultats')
+def resultats():
+    return render_template('resultats')
+>>>>>>> master
