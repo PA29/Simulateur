@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+    
+{% block head %}
+    <title>Page d'accueil</title>
+    <script src="{{ url_for('static', filename = 'accueil.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <h1>Bienvenue sur l'application _________ !</h1>
+    <div class="charger">
+        <input class="bouton_accueil" type="button" value="Charger">
+        <div class="dropdown">
+            <button onclick="myFunction()" class="dropbtn">Choisir un scénario</button>
+            <div id="myDropdown" class="dropdown-content">
+                    <a href="#">Cheese</a>
+                    <a href="#">Tomatoes</a>
+                    <a href="#">Mozzarella</a>
+                    <a href="#">Mushrooms</a>
+                    <a href="#">Pepperoni</a>
+                    <a href="#">Onions</a>
+                    <a href="#">Cucumber</a>
+                    <a href="#">Jam</a>
+                    <a href="#">Potatoe</a>
+                    <a href="#">Salad</a>
+            </div>
+        </div>
+    </div>
+    <div class="bas">
+        <div class="créer">
+            <input class="bouton_accueil" type="button" value="Créer">
+        </div>
+        <div class="ouvrir">
+            <input class="bouton_accueil" type="button" value="Ouvrir">
+        </div> 
+    </div>
+{% endblock %}
