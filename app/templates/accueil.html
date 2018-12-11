@@ -2,28 +2,29 @@
     
 {% block head %}
     <title>Page d'accueil</title>
+    <script src="{{ url_for('static', filename = 'accueil.js') }}"></script>
 {% endblock %}
 
 {% block body %}
     <h1>Bienvenue sur l'application _________ !</h1>
     <div class="charger">
         <input class="bouton_accueil" type="button" value="Charger">
-        <div class=menu_deroulant>
-            <button type="button" class="bouton_deroulant" data-toggle="dropdown" title="Choisir un scénario" aria-expanded="true">None selected <b class="caret"></b></button>
-            <ul class="choix_menu">
-                <li><a href="javascript:void(0);"><label class="checkbox">Cheese</label></a></li>
-                <li><a href="javascript:void(0);"><label class="checkbox">Tomatoes</label></a></li>
-                <li><a href="javascript:void(0);"><label class="checkbox">Mozzarella</label></a></li>
-                <li><a href="javascript:void(0);"><label class="checkbox">Mushrooms</label></a></li>
-                <li><a href="javascript:void(0);"><label class="checkbox">Pepperoni</label></a></li>
-                <li><a href="javascript:void(0);"><label class="checkbox">Onions</label></a></li>
-                <li><a href="javascript:void(0);"><label class="checkbox">Cucumber</label></a></li>
-                <li><a href="javascript:void(0);"><label class="checkbox">Jam</label></a></li>
-                <li><a href="javascript:void(0);"><label class="checkbox">Potatoe</label></a></li>
-                <li><a href="javascript:void(0);"><label class="checkbox">Salad</label></a></li>
-            </ul>
+        <div class="dropdown">
+            <button onclick="myFunction()" class="dropbtn">Choisir un scénario</button>
+            <div id="myDropdown" class="dropdown-content">
+                    <a href="#">Cheese</a>
+                    <a href="#">Tomatoes</a>
+                    <a href="#">Mozzarella</a>
+                    <a href="#">Mushrooms</a>
+                    <a href="#">Pepperoni</a>
+                    <a href="#">Onions</a>
+                    <a href="#">Cucumber</a>
+                    <a href="#">Jam</a>
+                    <a href="#">Potatoe</a>
+                    <a href="#">Salad</a>
+            </div>
         </div>
-    </div> 
+    </div>
     <div class="bas">
         <div class="créer">
             <input class="bouton_accueil" type="button" value="Créer">
