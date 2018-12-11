@@ -1,4 +1,12 @@
-<div class="graph" id="graph_{{ i }}">
+<div class="graph_container" id="graph_{{ i }}">
     <p>Une courbe</p>
-    <input class="time" id="time_{{ i }}" type="range" min=0 max=100>
+    <div class="button addGraph">
+    	<span>+</span>
+    </div>
+    <div class="button exportGraph">
+    	<span>exp</span>
+    </div>
+    <div class="graph">
+    	<input class="time" id="time_{{ i }}" type="range" min=0 max=100>
+    </div>
 </div>

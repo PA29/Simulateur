@@ -26,6 +26,11 @@ body > div > * {
     text-align: center;
 }
 
+.button {
+    background-color: lightcoral;
+    border-radius: 2%;
+}
+
 /* Style de la zone centrale */
 #centerArea {
     max-width: 70%;
@@ -90,20 +95,11 @@ body > div > * {
     background-color: lightgreen;
 }
 
-.graph {
+.graph_container {
     left: 10%;
     width: 80%;
     height: 29%;
     background-color: lightsalmon;
-}
-
-.time {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-    width: 98%;
 }
 
 #graph_0 {
@@ -116,4 +112,46 @@ body > div > * {
 
 #graph_2 {
     top: 70%;
+}
+
+.graph_container > * {
+    position: absolute;
+}
+
+.graph {
+    margin: 2%;
+    top: 20%;
+    bottom: 0;
+    left: 0;
+    right: 20%;
+    background-color: lightcoral;
+}
+
+.time {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 98%;
+}
+
+.graph_container > .button {
+    width: 10%;
+    height: 10%;
+    top: 2%;
+    text-align: center;
+    display: flex;
+}
+
+.graph_container > .button > span {
+    margin: auto;
+}
+
+.exportGraph {
+    right: 2%;
+}
+
+.addGraph {
+    right: 14%
 }
