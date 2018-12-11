@@ -1,0 +1,47 @@
+html, body, tableau
+{
+	height: 98%;
+	width: 100;
+	padding: 0 px;
+}
+
+head
+{
+	background-attachment: red;
+}
+.panneau_gauche
+{
+	border: solid;
+	float: left;
+	width : 20%;
+	height: 100%;
+}
+
+.panneau_central
+{
+	height: 100%;
+	width : 58%;
+	margin : auto;
+	float :left;
+	text-align: center;
+	text-decoration : underline;
+	border: solid;
+	background-color: rgb(124, 196, 252);
+}
+
+
+.panneau_droite
+{
+	border: solid;
+	float : left;
+	width : 20%;
+	height : 100%;
+}
+
+.saison, .ilotage 
+{
+	width : 100%;
+	text-align : center;
+	border : solid;
+	height : 50%;
+}
