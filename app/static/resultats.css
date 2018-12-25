@@ -27,8 +27,14 @@ body > div > * {
 }
 
 .button {
-    background-color: lightcoral;
-    border-radius: 2%;
+    background-color: #198099;
+    color: #fff;
+    border: 1px solid transparent;
+    border-radius: 5%;
+}
+
+.button:hover {
+    background-color:#e6e6e6;
 }
 
 /* Style de la zone centrale */
@@ -52,42 +58,55 @@ body > div > * {
 .subTitle {
     display: flex;
     position: relative;
-    width: 100%;
-    height: 20%;
+    padding: 1% 5%;
 }
 
 .subTitle > span {
     margin: auto;
 }
 
-.addGauge {
-    width: 100%;
-    height: 100%;
-    max-width: 15%;
-    max-height: 20%;
+.addJauge {
     background-color: lightseagreen;
 }
 
-.addGauge .buttons {
+.addJauge .buttons {
     position: relative;
     display: flex;
     flex-wrap: wrap;
-    width: 100%;
-    height: 80%;
+    padding: 2%;
 }
 
-.addGauge .button {
+.addJauge .buttons .container {
     background-color: aquamarine;
+    width: 46%;
+}
+
+.addJauge .buttons .container {
+    padding: 2%;
+}
+
+div.jauge {
+    width: 10%;
+}
+
+div.jauge img.jauge {
+    width: 100%;
+}
+
+div.jauge img.arrow {
+    position: absolute;
+    width: 13.3%;
+    left: 43%;
+    top: 10%;
+    transform-origin: 50% 85%;
+}
+
+#reseau {
     width: 100%;
     height: 100%;
-    max-width: 46%;
-    max-height: 46%;
-    margin: 2%;
 }
 
-.addGauge .button:hover {
-    background-color: aliceblue;
-}
+
 
 /* Style du panneau de droite */
 #rightPanel {

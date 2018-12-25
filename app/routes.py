@@ -21,4 +21,4 @@ def reseau():
 
 @app.route('/resultats')
 def resultats():
-    return render_template('resultats')
+    return render_template('resultats', jauges = [{"x": 20, "y": 30}])
