@@ -1,5 +1,6 @@
 body 
 {
+    background-image: url('/static/accueil.jpg');
     background-attachment: scroll;
     background-repeat: repeat;
     background-size: 150%;

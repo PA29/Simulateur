@@ -1,0 +1,72 @@
+/* Style de la page */
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+}
+
+body > div {
+    position: relative;
+    height: 100%;
+    transition-property: width;
+    transition-duration: 400ms;
+}
+
+body > div > * {
+	display: none;
+    position: absolute;
+}
+
+.areaTitle {
+    position: absolute;
+    top: 5%;
+    width: 100%;
+    text-align: center;
+}
+
+.button {
+    background-color: #198099;
+    color: #fff;
+    border: 1px solid transparent;
+    border-radius: 5%;
+}
+
+.button:hover {
+    background-color:#e6e6e6;
+}
+
+#centerPanel {
+	background-color: lightblue;
+}
+
+#rightPanel {
+	background-color: lightgreen;
+}
+
+#edition #leftPanel {
+	width: 20%;
+}
+
+#edition #centerPanel {
+	width: 60%;
+}
+
+#edition #rightPanel {
+	width: 20%;
+}
+
+#resultats #leftPanel {
+	width: 0%;
+}
+
+#resultats #centerPanel {
+	width: 70%;
+}
+
+#resultats #rightPanel {
+	width: 30%;
+}
