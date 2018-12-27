@@ -2,15 +2,16 @@
 
 {% block head %}
 	<title>Résultats</title>
-	<script src="{{ url_for('static', filename = 'main.js') }}"></script>
 	<script src="{{ url_for('static', filename = 'reseau.js') }}"></script>
+	<script src="{{ url_for('static', filename = 'main.js') }}"></script>
 {% endblock %}
 
 {% block body %}
-	<div id="leftPanel">
+	<div class="area" id="leftArea">
 	</div>
-	<div id="centerPanel">
+	<div class="area" id="centerArea">
+		<canvas id="reseau"></canvas>
 	</div>
-	<div id="rightPanel">
+	<div class="area" id="rightArea">
 	</div>
 {% endblock %}

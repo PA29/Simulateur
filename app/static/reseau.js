@@ -13,20 +13,18 @@ var pointSize = 3;
 
 /* Affichage et interactions avec le réseau */
 
-$(document).ready(function() {
-
-	ctx = initContext();
-	drawReseau(reseau);
-});
-
 function initContext() {
+	let canvas = document.getElementById('reseau');
+	ctx = canvas.getContext('2d');
+}
+
+function resizeCanvas() {
 	let centerArea = document.getElementById('centerArea');
 	let canvas = document.getElementById('reseau');
-
+	
 	canvas.width = centerArea.offsetWidth;
 	canvas.height = centerArea.offsetHeight;
 
-	return canvas.getContext('2d');
 	drawReseau(reseau);
 }
 

@@ -22,8 +22,8 @@ def main():
 
 @app.route('/edition')
 def edition():
-	return jsonify({'leftPanel': '', 'centerPanel': '<input id="switch" type="button">', 'rightPanel': ''});
+	return jsonify({'leftPanel': '', 'centerPanel': render_template('edition/centerPanel'), 'rightPanel': ''});
 
 @app.route('/resultats')
 def resultats():
-	return jsonify({'leftPanel': '', 'centerPanel': render_template('buttonsResultats'), 'rightPanel': render_template('graphs')})
+	return jsonify({'leftPanel': '', 'centerPanel': render_template('resultats/centerPanel'), 'rightPanel': render_template('resultats/rightPanel')})

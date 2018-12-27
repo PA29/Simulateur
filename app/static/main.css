@@ -9,15 +9,20 @@ body {
     margin: 0;
 }
 
-body > div {
+.area {
     position: relative;
     height: 100%;
     transition-property: width;
     transition-duration: 400ms;
 }
 
-body > div > * {
+.panel {
 	display: none;
+	width: 100%;
+	height: 100%;
+}
+
+.panel > * {
     position: absolute;
 }
 
@@ -39,34 +44,44 @@ body > div > * {
     background-color:#e6e6e6;
 }
 
-#centerPanel {
+#centerArea {
 	background-color: lightblue;
 }
 
-#rightPanel {
+#rightArea {
 	background-color: lightgreen;
 }
 
-#edition #leftPanel {
+#edition #leftArea {
 	width: 20%;
 }
 
-#edition #centerPanel {
+#edition #centerArea {
 	width: 60%;
 }
 
-#edition #rightPanel {
+#edition #rightArea {
 	width: 20%;
 }
 
-#resultats #leftPanel {
+#resultats #leftArea {
 	width: 0%;
 }
 
-#resultats #centerPanel {
-	width: 70%;
+#resultats #centerArea {
+	width: 60%;
 }
 
-#resultats #rightPanel {
-	width: 30%;
+#resultats #rightArea {
+	width: 40%;
+}
+
+#centerArea .panel {
+	position: absolute;
+	top: 0;
+}
+
+#reseau {
+	width: 100%;
+	height: 100%;
 }

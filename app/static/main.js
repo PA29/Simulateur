@@ -2,25 +2,30 @@
 var fadingTime = 200;
 
 $(document).ready(function() {
+	initContext();
 	direct('edition');
 });
+
+window.onresize = function() {
+	resizeCanvas();
+}
 
 function direct(page) {
 	//console.log('direct :' + page);
 
 	$.get(page, function(data) {
-		console.log($('body > div > *'));
-		if ($('body > div > *').length) $('body > div > *').addClass('fading');
+		if ($('.panel').length) $('.panel').addClass('fading');
 		if ($('head .adaptable').length) $('head .adaptable').addClass('removable');
 
 		$('body').attr('id', page);
-		$('#leftPanel').append(data.leftPanel);
-		$('#centerPanel').append(data.centerPanel);
-		$('#rightPanel').append(data.rightPanel);
+		$('#leftArea').append(data.leftPanel);
+		$('#centerArea').append(data.centerPanel);
+		$('#rightArea').append(data.rightPanel);
+		resizeCanvas();
 		loadFiles(page);
 
 		$('.fading').fadeOut(fadingTime);
-		$('body > div > :not(.fading)').delay(fadingTime).fadeIn(fadingTime);
+		$('.panel:not(.fading)').delay(fadingTime).fadeIn(fadingTime);
 		setTimeout(function() {
 			$('.removable, .fading').remove();
 		}, fadingTime);

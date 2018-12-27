@@ -62,13 +62,6 @@ div.jauge img.arrow {
     transform-origin: 50% 85%;
 }
 
-#reseau {
-    width: 100%;
-    height: 100%;
-}
-
-
-
 /* Style du panneau de droite */
 
 .graph_container {
