@@ -1,5 +1,6 @@
 $(document).ready(function() {
-	$('#switch').on('click', function() {
+	$('#simulate').on('click', function() {
+		console.log('test');
 		direct('resultats');
 	});
 });

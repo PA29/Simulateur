@@ -22,10 +22,6 @@ body {
 	height: 100%;
 }
 
-.panel > * {
-    position: absolute;
-}
-
 .areaTitle {
     position: absolute;
     top: 5%;

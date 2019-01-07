@@ -22,7 +22,7 @@ def main():
 
 @app.route('/edition')
 def edition():
-	return jsonify({'leftPanel': '', 'centerPanel': render_template('edition/centerPanel'), 'rightPanel': ''});
+	return jsonify({'leftPanel': render_template('edition/leftPanel'), 'centerPanel': render_template('edition/centerPanel'), 'rightPanel': render_template('edition/rightPanel')});
 
 @app.route('/resultats')
 def resultats():
