@@ -1,10 +1,3 @@
-/* TEMP */
-
-.panel > * {
-    position: absolute;
-}
-
-
 /* Style de la zone centrale */
 
 #edit {
@@ -72,22 +65,11 @@ div.jauge img.arrow {
 /* Style du panneau de droite */
 
 .graph_container {
-    left: 10%;
+    position: relative;
     width: 80%;
     height: 29%;
+    margin: 2% 10%;
     background-color: lightsalmon;
-}
-
-#graph_0 {
-    top: 10%;
-}
-
-#graph_1 {
-    top: 40%;
-}
-
-#graph_2 {
-    top: 70%;
 }
 
 .graph_container > * {
