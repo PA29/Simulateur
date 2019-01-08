@@ -7,7 +7,7 @@ Created on Tue Nov 20 17:31:24 2018
 
 from .functions import render_template
 from app import app
-from database import cursor
+from .database import cursor
 from flask import jsonify
 
 @app.route('/')
