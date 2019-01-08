@@ -13,53 +13,53 @@ body
 	margin: 0;
 }
 
-
-.panneau_gauche
-{
-	
-	width : 20%;
-	height: 100%;
-	text-align: center;
-	background-color: rgb(40, 104, 168);
-	border-radius : 20px;
+@font-face{
+	font-family: 'Ubuntu';
+	src: url('\static\Ubuntu-M.ttf')
 }
 
-.panneau_central
-{
-	height: 100%;
-	width : 60%;
-	margin : auto;
-	
-	text-align: center;
-	background-color: rgb(124, 196, 252);
+@font-face{
+	font-family: 'Ubuntu Light';
+	src: url('\static\Ubuntu-L.ttf')
 }
 
-
-.panneau_droite
+.titrespanneauxlateraux
 {
-	
-	width : 20%;
-	height : 100%;
+	color: rgb(1, 163, 1);
+	font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
+	text-align: center;
+	font-size: 24px;
+}
+
+#choixsaison
+{
+	display: flex;
+	justify-content: space-around;
+}
+
+.saison
+{
+	display: flex;
+	justify-content: flex-start;
+}
+.container
+{
+	width : 80%;
 	display: flex;
 	flex-direction: column;
-	align-items:center;
-	background-color: rgb(40, 104, 168);
-	border-radius : 20px;
+	margin: 10px auto;
+	padding: 10px;
+	background-color: rgba(31, 114, 192, 0.4);
+	border: 1px rgba(0,94,184,0.7) solid;
+	border-radius: 10px;
+	color: white;
+	font-family: 'Ubuntu Light', 'Trebuchet MS', Helvetica, sans-serif;
 }
 
-.saison, .ilotage 
+#controlbox
 {
-	width : 100%;
-	display: flex;
-	flex-direction: column;
-
+	margin : 5px 0px;
 }
-
-.titrespanneaudroite
-{
-	text-align: center;
-}
-
 
 #enregistrement 
 {

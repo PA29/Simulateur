@@ -41,11 +41,12 @@ body {
 }
 
 #centerArea {
-	background-color: lightblue;
+	background-color: white;
 }
 
-#rightArea {
-	background-color: lightgreen;
+#rightArea, #leftArea {
+    background-color: lightgrey;
+    color: white;
 }
 
 #edition #leftArea {
