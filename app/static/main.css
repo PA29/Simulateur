@@ -29,6 +29,8 @@ body {
     border-radius: 5%;
 }
 
+
+
 .button:hover {
     background-color:#e6e6e6;
 }
@@ -69,10 +71,6 @@ body {
 #centerArea .panel {
 	position: absolute;
 	top: 0;
-}
-
-#centerArea .panel > * {
-    position: absolute;
 }
 
 .panelTitle {
