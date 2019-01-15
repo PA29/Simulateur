@@ -26,4 +26,4 @@ def edition():
 
 @app.route('/resultats')
 def resultats():
-	return jsonify({'leftPanel': '', 'centerPanel': render_template('resultats/centerPanel', jauges = [{'x':50, 'y':90}]), 'rightPanel': render_template('resultats/rightPanel')})
+	return jsonify({'leftPanel': '', 'centerPanel': render_template('resultats/centerPanel', jauges = [{'x':60, 'y':80}]), 'rightPanel': render_template('resultats/rightPanel')})
