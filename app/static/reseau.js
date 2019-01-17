@@ -1,6 +1,6 @@
 var ctx;
 var images = {};
-var reseau;
+var reseau = 0;
 
 var getReseau = new Promise(function(resolve, reject) {
 	$.get('unScenario', function(data) {
@@ -8,6 +8,22 @@ var getReseau = new Promise(function(resolve, reject) {
 		resolve();
 	});
 });
+
+function convertReseau(data) {
+	let reseau = {bus: [], lines: [], images: []};
+
+	for (let bus of data.bus) {
+		reseau.bus.push(new Bus(bus));
+	}
+	for (let line of data.lines) {
+		reseau.lines.push(new Line(line));
+	}
+	for (let image of data.images) {
+		reseau.images.push(new Picture(image));
+	}
+
+	return reseau
+}
 
 /*var reseau = {
 	bus: [new Bus({x: 50, y: 20}), new Bus({x: 50, y: 50}), new Bus({x: 25, y: 75}), new Bus({x: 75, y: 75})],
@@ -18,7 +34,6 @@ var getReseau = new Promise(function(resolve, reject) {
 var pointSize = 3;
 var selectionSize = 3;
 
-
 /* Affichage et interactions avec le réseau */
 
 function createReseau() {
@@ -26,24 +41,12 @@ function createReseau() {
 	ctx = canvas.getContext('2d');
 
 	getReseau.then(function() {
-		drawReseau();
-	}).catch() {
+		resizeCanvas();
+	}).catch(function() {
 		console.log("Impossible d'afficher le réseau");
-	}
-
-	initInteractions();
-}
-
-function initInteractions() {
-	$('#centerArea').on('mousemove', function(e) {
-		if (reseau.bus[0].inside(e.offsetX, e.offsetY)) {
-			reseau.bus[0].hover();
-		}
 	});
-}
 
-function convertReseau() {
-	
+	//initInteractions();
 }
 
 function resizeCanvas() {
@@ -56,16 +59,22 @@ function resizeCanvas() {
 	drawReseau(reseau);
 }
 
-function drawReseau(reseau) {
+function initInteractions() {
+	$('#centerArea').on('mousemove', function(e) {
+		if (reseau.bus[0].inside(e.offsetX, e.offsetY)) {
+			reseau.bus[0].hover();
+		}
+	});
+}
+
+function drawReseau() {
 	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
 	for (let bus of reseau.bus) {
-		console.log(bus);
 		bus.draw();
 	}
 
 	for (let line of reseau.lines) {
-		//drawStroke(reseau.bus[line.bus1], reseau.bus[line.bus2]);
 		line.draw();
 	}
 

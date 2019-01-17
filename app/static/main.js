@@ -2,7 +2,7 @@
 var fadingTime = 200;
 
 $(document).ready(function() {
-	initCanvas();
+	createReseau();
 	direct('edition');
 });
 
