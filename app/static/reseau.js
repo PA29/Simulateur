@@ -1,27 +1,49 @@
 var ctx;
 var images = {};
+var reseau;
+
+var getReseau = new Promise(function(resolve, reject) {
+	$.get('unScenario', function(data) {
+		reseau = convertReseau(data.reseau);
+		resolve();
+	});
+});
 
 /*var reseau = {
-	transfo: {x: 50, y: 10},
-	connections: [{x: 50, y: 50}, {x: 25, y: 75}, {x: 75, y: 75}],
-	lines: [[null, 0], [0, 1], [0, 2]],
-	bus: [{type: "transfo", x: 50, y: 90, line: 1, position: 0.9}]
-};*/
-
-var reseau = {
-	bus: [{x: 50, y: 20}, {x: 50, y: 50}, {x: 25, y: 75}, {x: 75, y: 75}],
-	lines: [{bus1: 0, bus2: 1, length: 10}, {bus1: 1, bus2: 2, length: 10}, {bus1: 1, bus2: 3, length: 10}],
-	images: [{type: 'transfo', x: 50, y: 10, bus: 0}, {type: 'transfo', x: 50, y: 90, bus: 2}]
-}
+	bus: [new Bus({x: 50, y: 20}), new Bus({x: 50, y: 50}), new Bus({x: 25, y: 75}), new Bus({x: 75, y: 75})],
+	lines: [new Line({bus1: 0, bus2: 1, length: 10}), new Line({bus1: 1, bus2: 2, length: 10}), new Line({bus1: 1, bus2: 3, length: 10})],
+	images: [new Picture({type: 'transfo', x: 50, y: 10, bus: 0}), new Picture({type: 'transfo', x: 50, y: 90, bus: 2})]
+}*/
 
 var pointSize = 3;
+var selectionSize = 3;
 
 
 /* Affichage et interactions avec le réseau */
 
-function initContext() {
+function createReseau() {
 	let canvas = document.getElementById('reseau');
 	ctx = canvas.getContext('2d');
+
+	getReseau.then(function() {
+		drawReseau();
+	}).catch() {
+		console.log("Impossible d'afficher le réseau");
+	}
+
+	initInteractions();
+}
+
+function initInteractions() {
+	$('#centerArea').on('mousemove', function(e) {
+		if (reseau.bus[0].inside(e.offsetX, e.offsetY)) {
+			reseau.bus[0].hover();
+		}
+	});
+}
+
+function convertReseau() {
+	
 }
 
 function resizeCanvas() {
@@ -35,25 +57,26 @@ function resizeCanvas() {
 }
 
 function drawReseau(reseau) {
-	drawImage('transfo', reseau.transfo);
+	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
 	for (let bus of reseau.bus) {
-		drawBus(bus);
+		console.log(bus);
+		bus.draw();
 	}
 
 	for (let line of reseau.lines) {
-		drawStroke(reseau.bus[line.bus1], reseau.bus[line.bus2]);
+		//drawStroke(reseau.bus[line.bus1], reseau.bus[line.bus2]);
+		line.draw();
 	}
 
 	for (let image of reseau.images) {
-		drawImage(image);
-		drawStroke(image, reseau.bus[image.bus]);
+		image.draw();
 	}
 }
 
-function drawBus(position) {
+function drawPoint(position, size) {
 	ctx.beginPath();
-	ctx.arc(absoluteX(position.x), absoluteY(position.y), pointSize, 0, 2 * Math.PI);
+	ctx.arc(absoluteX(position.x), absoluteY(position.y), size, 0, 2 * Math.PI);
 	ctx.fill();
 }
 
@@ -64,13 +87,13 @@ function drawStroke(position1, position2) {
 	ctx.stroke();
 }
 
-function drawImage(image) {
+function drawImage(imageName, position) {
 	let im = new Image();
 	im.onload = function() {
-		ctx.drawImage(im, absoluteX(image.x) - im.width / 2, absoluteY(image.y) - im.height / 2);
+		ctx.drawImage(im, absoluteX(position.x) - im.width / 2, absoluteY(position.y) - im.height / 2);
 	}
-	im.src = '/static/' + image.type + '.png';
-	images[image.type] = im;
+	im.src = '/static/' + imageName + '.png';
+	images[imageName] = im;
 }
 
 function absoluteX(x) {
@@ -79,4 +102,42 @@ function absoluteX(x) {
 
 function absoluteY(y) {
 	return y / 100 * ctx.canvas.height;
+}
+
+function Bus(data) {
+	let bus = new Element(data);
+	bus.draw = function() {
+		drawPoint(data, pointSize);
+	}
+	bus.inside = function(x, y) {
+		return Math.pow(x - absoluteX(data.x), 2) + Math.pow(y - absoluteY(data.y), 2) < Math.pow(pointSize + selectionSize, 2);
+	}
+	bus.hover = function() {
+		drawPoint(data, pointSize + selectionSize);
+	}
+
+	return bus;
+}
+
+function Line(data) {
+	let line = new Element(data);
+	line.draw = function() {
+		drawStroke(reseau.bus[data.bus1].data, reseau.bus[data.bus2].data);
+	}
+
+	return line;
+}
+
+function Picture(data) {
+	let picture = new Element(data);
+	picture.draw = function() {
+		drawImage(data.type, data);
+		drawStroke(data, reseau.bus[data.bus].data);
+	}
+
+	return picture;
+}
+
+function Element(data) {
+	this.data = data;
 }

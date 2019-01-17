@@ -1,0 +1,131 @@
+html
+{
+	height: 100%;
+	width: 100%;
+	margin: 0;
+}
+
+body
+{
+	display: flex;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+}
+
+
+.panneau_gauche
+{
+	
+	width : 20%;
+	height: 100%;
+	text-align: center;
+	background-color: rgb(40, 104, 168);
+	border-radius : 20px;
+}
+
+.panneau_central
+{
+	height: 100%;
+	width : 60%;
+	margin : auto;
+	
+	text-align: center;
+	background-color: rgb(124, 196, 252);
+}
+
+
+.panneau_droite
+{
+	
+	width : 20%;
+	height : 100%;
+	display: flex;
+	flex-direction: column;
+	align-items:center;
+	background-color: rgb(40, 104, 168);
+	border-radius : 20px;
+}
+
+.saison, .ilotage 
+{
+	width : 100%;
+	display: flex;
+	flex-direction: column;
+
+}
+
+.titrespanneaudroite
+{
+	text-align: center;
+}
+
+
+#enregistrement 
+{
+	display: flex;
+	flex-direction: row;
+	text-align: left;
+}
+
+
+#simul
+{
+    border: 0;
+    line-height: 2.5;
+    padding: 0 20px;
+    font-size: 1rem;
+    text-align: center;
+    color: #fff;
+    text-shadow: 1px 1px 1px #000;
+    border-radius: 10px;
+    background-color: rgba(146, 200, 14, 1);
+    background-image: linear-gradient(to top left,
+                                      rgba(0, 0, 0, .2),
+                                      rgba(0, 0, 0, .2) 30%,
+                                      rgba(0, 0, 0, 0));
+    box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+                inset -2px -2px 3px rgba(0, 0, 0, .6);
+	position : absolute ; bottom : 3%; right: 3%;
+	
+}
+
+.bouton_enregistrement
+{
+	border: 0;
+    padding: 0 10px;
+    font-size: 1rem;
+    text-align: center;
+    color: #fff;
+    text-shadow: 1px 1px 1px #000;
+    border-radius: 10px;
+    background-color: rgba(146, 200, 14, 1);
+    background-image: linear-gradient(to top left,
+                                      rgba(0, 0, 0, .2),
+                                      rgba(0, 0, 0, .2) 30%,
+                                      rgba(0, 0, 0, 0));
+    box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+                inset -2px -2px 3px rgba(0, 0, 0, .6);
+}
+
+#element_reseau
+{
+	display:flex;
+	flex-direction:column;
+	justify-content:space-around;
+	align-items: center;
+	margin:5%
+}
+
+.elementreseau
+{
+	height:15%;
+	width: 35%;
+	
+}
+
+#simul:active ,.bouton_enregistrement:active,.elementreseau:active 
+{
+    box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
+                inset 2px 2px 3px rgba(0, 0, 0, .6);
+}

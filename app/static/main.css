@@ -19,6 +19,7 @@ body {
 .panel {
 	display: none;
 	width: 100%;
+	height: 100%;
 }
 
 .button {
@@ -36,6 +37,10 @@ body {
 
 #centerArea {
 	background-color: white;
+}
+
+#centerArea > .panel > * {
+	position: absolute;
 }
 
 #rightArea, #leftArea {
