@@ -36,6 +36,7 @@ body
     height: 25%;
     margin-left: auto;
     margin-right: auto;
+
 }
 
 .bouton_accueil
@@ -45,6 +46,19 @@ body
     font-size: 35px;
     font-family: 'Ubuntu Light', 'Trebuchet MS', Helvetica, sans-serif;
     font-weight: bold;
+    color: white;
+    border-radius: 10px;
+    background-color: rgba(0,94,184,0.9);
+    border-color:rgba(0,94,184,0.7);
+}
+
+.bouton_accueil:hover
+{
+    background-color: rgba(0,94,184, 0.6);
+	background-image: linear-gradient(to top left,
+                                      rgba(0, 0, 0, .2),
+                                      rgba(0, 0, 0, .2) 30%,
+                                      rgba(0, 0, 0, 0));
 }
 .créer
 {
@@ -58,16 +72,20 @@ h1
     font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
 }
 
-.dropbtn{
-    background-color: #3498DB;
+.dropButton{
+    width: 200px;
+    height: 100px;
+    font-size: 35px;
+    font-family: 'Ubuntu Light', 'Trebuchet MS', Helvetica, sans-serif;
+    font-weight: bold;
     color: white;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
+    border-radius: 10px;
+    background-color: rgba(0,94,184,0.9);
+    border-color:rgba(0,94,184,0.7);
     cursor: pointer;
 }
 
-.dropbtn:hover, .dropbtn:focus{
+.dropButton:hover, .dropButton:focus{
     background-color: #2980B9;
 }
 
@@ -75,11 +93,26 @@ h1
     position: relative;
     display: inline-block;
 }
-
-.dropdown-content a {
+.dropChoices {
+    display:none;
+    position: absolute;
+    background-color:#f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, .2);
+    z-index: 1;
+}
+.dropChoices a {
     color: black;
     padding: 12px 16px;
     text-decoration : none;
+    display: block;
+}
+
+.dropChoices a:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropChoices {
     display: block;
 }
 

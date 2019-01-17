@@ -8,10 +8,16 @@
 {% block body %}
     <h1>BIENVENUE</h1>
     <div class="container">
-        <div class="charger">
+        <!--<div class="charger">
             <input class="bouton_accueil" type="button" value="Charger">
+            
+        </div>-->
+        <div class="bas">
+            <div class="créer">
+                <input class="bouton_accueil" type="button" value="Créer">
+            </div>
             <div class="dropdown">
-                <button class="dropButton">Choisir un scénario</button>
+                <button class="dropButton">Charger</button>
                 <div class="dropChoices">
                     <div>Cheese</div>
                     <div>Tomatoes</div>
@@ -25,14 +31,9 @@
                     <div>Salad</div>
                 </div>
             </div>
-        </div>
-        <div class="bas">
-            <div class="créer">
-                <input class="bouton_accueil" type="button" value="Créer">
-            </div>
-            <div class="ouvrir">
+            <!--<div class="ouvrir">
                 <input class="bouton_accueil" type="button" value="Ouvrir">
-            </div> 
+            </div>-->
         </div>
     </div>
 {% endblock %}

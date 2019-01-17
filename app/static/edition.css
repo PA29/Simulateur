@@ -64,8 +64,9 @@ body
 {
     color: rgb(0, 94, 184);
 	font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
-    text-align: center;
-    margin-top:10px;
+	width: 100%;
+	text-align: center;
+    top:10px;
 	font-size: 24px;
 }
 #enregistrement 
@@ -73,7 +74,9 @@ body
 	display: flex;
 	flex-direction: column;
 	text-align: left;
-	margin-top : 10%;
+	top : 5px;
+	left: 5px;
+	width : 25%;
 }
 
 
@@ -81,8 +84,8 @@ body
 {
 	border: 0;
 	padding: 3px 10px;
-	margin-top: 45%;
-	margin-left: 70%;
+	bottom: 30px;
+	right: 10px;
 	width: 25%; 
     font-size: 1rem;
     text-align: center;
@@ -97,7 +100,7 @@ body
 	border: 0;
 	padding: 3px 10px;
 	margin: 5px 10px;
-	width: 25%; 
+	width: 100%; 
     font-size: 1rem;
     text-align: center;
     color: #fff;
@@ -113,15 +116,6 @@ body
 
 #simulate:hover
 {
-	border: 0;
-	padding: 3px 10px;
-	margin-top: 45%;
-	margin-left: 70%;
-	width: 25%; 
-    font-size: 1rem;
-    text-align: center;
-    color: #fff;
-    border-radius: 5px;
 	background-color: rgba(0,94,184, 0.6);
 	background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
@@ -131,20 +125,12 @@ body
 
 .bouton_enregistrement:hover 
 {
-	border: 0;
-	padding: 3px 10px;
-	margin: 5px 10px;
-	width: 25%; 
-    font-size: 1rem;
-    text-align: center;
-    color: #fff;
-    border-radius: 7px;
 	background-color: rgba(0,94,184, 0.6);
 	background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 30%,
 									  rgba(0, 0, 0, 0));
-									  
+}									  
 
 #element_reseau
 {
@@ -162,7 +148,7 @@ body
 	
 }
 
-#simul:active ,.bouton_enregistrement:active,.elementreseau:active 
+#simulate:active ,.bouton_enregistrement:active,.elementreseau:active 
 {
     box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
                 inset 2px 2px 3px rgba(0, 0, 0, .6);
