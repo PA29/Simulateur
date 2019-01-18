@@ -36,6 +36,7 @@ body {
 }
 
 #centerArea {
+    width: 60%;
 	background-color: white;
 }
 
@@ -52,20 +53,12 @@ body {
 	width: 20%;
 }
 
-#edition #centerArea {
-	width: 60%;
-}
-
 #edition #rightArea {
 	width: 20%;
 }
 
 #resultats #leftArea {
 	width: 0%;
-}
-
-#resultats #centerArea {
-	width: 60%;
 }
 
 #resultats #rightArea {
