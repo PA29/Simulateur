@@ -3,4 +3,8 @@ $(document).ready(function() {
 		console.log('test');
 		direct('resultats');
 	});
+
+	$('#accueil').on('click', function() {
+		document.location.href = "accueil";
+	})
 });
