@@ -1,7 +1,7 @@
 /* Style de la zone centrale */
 
 #reseauTitle {
-    color: rgb(0, 94, 184);
+    color: rgb(0, 113, 187);
 	font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
 	width: 100%;
     text-align: center;
@@ -26,7 +26,7 @@
 }
 
 .panelTitle {
-    color: rgb(0, 94, 184);
+    color: rgb(0, 113, 187);
 	font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
 	width: 100%;
     text-align: center;
@@ -87,7 +87,7 @@ div.jauge img.arrow {
     width: 80%;
     height: 29%;
     margin: 2% 10%;
-    background-color: rgba(0,94,184, 0.6);
+    background-color: rgba(0,113,187, 0.6);
 }
 
 .graph_container > * {
@@ -142,12 +142,12 @@ div.jauge img.arrow {
     text-align: center;
     color: #fff;
     border-radius: 7px;
-	background-color: rgba(0,94,184, 0.9);
+	background-color: rgba(0,113,187, 0.9);
 }
 
 #edit:hover 
 {
-	background-color: rgba(0,94,184, 0.6);
+	background-color: rgba(0,113,187, 0.6);
 	background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 30%,

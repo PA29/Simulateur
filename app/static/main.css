@@ -23,7 +23,7 @@ body {
 }
 
 .button {
-    background-color: #198099;
+    background-color: rgba(0,113,187,0.9);
     color: #fff;
     border: 1px solid transparent;
     border-radius: 5%;
@@ -45,7 +45,7 @@ body {
 }
 
 #rightArea, #leftArea {
-    background-color: lightgrey;
+    background-color: rgba(141,160,171,0.25);
     color: white;
 }
 
