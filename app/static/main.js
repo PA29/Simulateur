@@ -2,7 +2,7 @@
 var fadingTime = 200;
 
 $(document).ready(function() {
-	initContext();
+	createReseau();
 	direct('edition');
 });
 
@@ -21,7 +21,7 @@ function direct(page) {
 		$('#leftArea').append(data.leftPanel);
 		$('#centerArea').append(data.centerPanel);
 		$('#rightArea').append(data.rightPanel);
-		resizeCanvas();
+		//resizeCanvas();
 		loadFiles(page);
 
 		$('.fading').fadeOut(fadingTime);

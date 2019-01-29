@@ -1,0 +1,8 @@
+<canvas id="reseau"></canvas>
+<div class="areaTitle">Résultats</div>
+<input id="edit" type="button"></input>
+<input id="scale" type="range">
+{% include '_addJauge.html' %}
+{% for jauge in jauges %}
+	{% include '_jauge.html' %}
+{% endfor %}
