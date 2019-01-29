@@ -9,11 +9,7 @@
   {% endblock %}
 </head>
 
-{% if background %}
-<body style="background-image: url('{{ url_for('static', filename = background) }}')">
-{% else %}
 <body>
-{% endif %}
   {% block body %}
   {% endblock %}
 </body>

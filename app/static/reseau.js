@@ -5,6 +5,9 @@ var reseau;
 var pointSize = 3;
 var selectionSize = 3;
 
+var IMAGE_WIDTH = 70;
+var IMAGE_HEIGHT = 70;
+
 var getReseau = new Promise(function(resolve, reject) {
 	$.get('unScenario', function(data) {
 		reseau = convertReseau(data.reseau);
@@ -152,13 +155,13 @@ function drawImage(imageName, position) {
 
 			images[imageName] = pre;
 
-			ctx.drawImage(pre, absoluteX(position.x) - pre.width / 2, absoluteY(position.y) - pre.height / 2);
+			ctx.drawImage(pre, absoluteX(position.x) - IMAGE_WIDTH / 2, absoluteY(position.y) - IMAGE_HEIGHT / 2, IMAGE_WIDTH, IMAGE_HEIGHT);
 		}
 		im.src = '/static/' + imageName + '.png';
 	}
 	else {
 		let pre = images[imageName]
-		ctx.drawImage(pre, absoluteX(position.x) - pre.width / 2, absoluteY(position.y) - pre.height / 2);
+		ctx.drawImage(pre, absoluteX(position.x) - IMAGE_WIDTH / 2, absoluteY(position.y) - IMAGE_HEIGHT / 2, IMAGE_WIDTH, IMAGE_HEIGHT);
 	}
 }
 
