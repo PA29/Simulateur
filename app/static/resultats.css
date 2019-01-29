@@ -53,12 +53,9 @@ p{
     padding: 2%;
 }
 
-.addJauge .buttons .container {
+.addJauge .buttons .temp {
     background-color: aquamarine;
     width: 46%;
-}
-
-.addJauge .buttons .container {
     padding: 2%;
 }
 

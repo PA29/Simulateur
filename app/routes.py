@@ -11,9 +11,9 @@ from .database import cursor
 from flask import jsonify
 
 reseau = {
-	'bus': [{'x': 50, 'y': 20}, {'x': 50, 'y': 50}, {'x': 25, 'y': 75}, {'x': 75, 'y': 75}],
+	'bus': [{'x': 50, 'y': 30}, {'x': 50, 'y': 50}, {'x': 25, 'y': 75}, {'x': 75, 'y': 75}],
 	'lines': [{'bus1': 0, 'bus2': 1, 'length': 10}, {'bus1': 1, 'bus2': 2, 'length': 10}, {'bus1': 1, 'bus2': 3, 'length': 10}],
-	'images': [{'type': 'transfo', 'x': 50, 'y': 10, 'bus': 0}, {'type': 'transfo', 'x': 50, 'y': 90, 'bus': 2}]
+	'images': [{'type': 'transfo', 'x': 50, 'y': 20, 'bus': 0}, {'type': 'consommateur', 'x': 50, 'y': 90, 'bus': 2}]
 }
 
 @app.route('/')

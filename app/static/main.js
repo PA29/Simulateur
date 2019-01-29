@@ -11,7 +11,6 @@ window.onresize = function() {
 }
 
 function direct(page) {
-	//console.log('direct :' + page);
 
 	$.get(page, function(data) {
 		if ($('.panel').length) $('.panel').addClass('fading');
@@ -21,7 +20,7 @@ function direct(page) {
 		$('#leftArea').append(data.leftPanel);
 		$('#centerArea').append(data.centerPanel);
 		$('#rightArea').append(data.rightPanel);
-		//resizeCanvas();
+
 		loadFiles(page);
 
 		$('.fading').fadeOut(fadingTime);
