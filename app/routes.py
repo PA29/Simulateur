@@ -14,7 +14,7 @@ from flask import jsonify
 @app.route('/index')
 @app.route('/accueil')
 def accueil():
-    return render_template('accueil', background = "accueil.jpg")
+    return render_template('accueil')
 
 @app.route('/main')
 def main():
