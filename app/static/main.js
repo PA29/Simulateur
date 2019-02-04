@@ -3,35 +3,41 @@ var fadingTime = 200;
 
 $(document).ready(function() {
 	createReseau();
-	direct('edition');
+	appendContent();
 });
 
 window.onresize = function() {
 	resizeCanvas();
 }
 
-function direct(page) {
+function appendContent() {
+	var resultatsLoaded = new Promise(function(resolve, reject) {
+		$.get('resultats', function(data) {
+			$('#leftArea').append(data.leftPanel);
+			$('#centerArea').append(data.centerPanel);
+			$('#rightArea').append(data.rightPanel);
 
-	$.get(page, function(data) {
-		if ($('.panel').length) $('.panel').addClass('fading');
-		if ($('head .adaptable').length) $('head .adaptable').addClass('removable');
+			resolve();
+			resultatsJS();
+		});
+	});
 
-		$('body').attr('id', page);
+	$.get('edition', function(data) {
 		$('#leftArea').append(data.leftPanel);
 		$('#centerArea').append(data.centerPanel);
 		$('#rightArea').append(data.rightPanel);
 
-		loadFiles(page);
+		resultatsLoaded.then(function() {
+			editionJS();
+		});
 
-		$('.fading').fadeOut(fadingTime);
-		$('.panel:not(.fading)').delay(fadingTime).fadeIn(fadingTime);
-		setTimeout(function() {
-			$('.removable, .fading').remove();
-		}, fadingTime);
-	})
+		$('body').attr('id', 'edition');
+		$('.edition').fadeIn(fadingTime);
+	});
 }
 
-function loadFiles(page) {
-	$('head').append('<link class="adaptable" href="/static/' + page + '.css" type="text/css" rel="stylesheet">');
-	$('head').append('<script class="adaptable" src="/static/' + page + '.js"></script>');
+function direct(page) {
+	$('body').attr('id', page);
+	$('.panel:not(.' + page + ')').fadeOut(fadingTime);
+	$('.' + page).delay(fadingTime).fadeIn(fadingTime);
 }
