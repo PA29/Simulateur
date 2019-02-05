@@ -23,12 +23,20 @@ body {
 	height: 100%;
 }
 
-.button {
+.window {
+    background-color: #bbcdea;
+    border-radius: 7px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #0071bb;
+}
+
+/*.button {
     background-color: rgba(0,113,187,0.9);
     color: #fff;
     border: 1px solid transparent;
     border-radius: 5%;
-}
+}*/
 
 
 

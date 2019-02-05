@@ -1,4 +1,4 @@
-/* Style de la zone centrale */
+/* Style de la zone centrale .*/
 
 #reseauTitle {
     color: rgb(0, 113, 187);
@@ -16,9 +16,10 @@
 }
 
 .subTitle {
-    display: flex;
-    position: relative;
-    padding: 1% 5%;
+    padding: 2% 1%;
+    text-align: center;
+    font-size: 0.9vw;
+    font-weight: bold;
 }
 
 .subTitle > span {
@@ -43,7 +44,12 @@ p{
 /* AddJauge */
 
 .addJauge {
-    background-color: lightseagreen;
+    width: 13%;
+    background-color: #bbcdea;
+    border-radius: 7px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #0071bb;
 }
 
 .addJauge .buttons {
@@ -53,10 +59,13 @@ p{
     padding: 2%;
 }
 
-.addJauge .buttons .temp {
-    background-color: aquamarine;
-    width: 46%;
-    padding: 2%;
+.addJauge .button {
+    background-color: #01b5af;
+    color: #fff;
+    border-radius: 5%;
+    width: 48%;
+    margin: 1%;
+    text-align: center;
 }
 
 /* Jauge */
@@ -109,25 +118,16 @@ div.jauge img.arrow {
     width: 98%;
 }
 
-.graph_container > .button {
-    width: 10%;
-    height: 10%;
-    top: 2%;
-    text-align: center;
-    display: flex;
-    background-color: rgba(0, 0, 0, .6)
-}
-
-.graph_container > .button > span {
-    margin: auto;
-}
-
-.exportGraph {
-    right: 2%;
+.graph .button {
+    padding: 3px 10px;
+    margin: 5px 0px;
+    width: 35px;
+    height: 35px;
+    border-radius: 10px;
 }
 
 .addGraph {
-    right: 14%
+    right: 14%;
 }
 
 #edit{

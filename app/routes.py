@@ -8,7 +8,7 @@ Created on Tue Nov 20 17:31:24 2018
 from .functions import render_template
 from app import app
 from .database import cursor
-from flask import jsonify
+from flask import jsonify, request
 
 reseau = {
 	'bus': [{'x': 50, 'y': 30}, {'x': 50, 'y': 50}, {'x': 25, 'y': 75}, {'x': 75, 'y': 75}],
@@ -37,3 +37,7 @@ def resultats():
 @app.route('/unScenario')
 def getReseau():
 	return jsonify({'reseau' : reseau})
+
+@app.route('/parametres')
+def getParametres():
+	return render_template('_parametres', x = request.args['x'], y = request.args['y'])

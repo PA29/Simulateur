@@ -5,8 +5,8 @@ var reseau;
 var pointSize = 3;
 var selectionSize = 3;
 
-var IMAGE_WIDTH = 70;
-var IMAGE_HEIGHT = 70;
+var IMAGE_WIDTH = 8; //Max en % de la taille par rapport à la largeur
+var IMAGE_HEIGHT = 14; //Max en % de la taille par rapport à la hauteur
 
 var getReseau = new Promise(function(resolve, reject) {
 	$.get('unScenario', function(data) {
@@ -58,18 +58,30 @@ function resizeCanvas() {
 function initInteractions() {
 	$('#centerArea').on('mousemove', function(e) {
 		for (let bus of reseau.bus) {
-			if (!bus.inside(e.offsetX, e.offsetY) && bus.draw != bus.default) {
-				bus.draw = bus.default;
-				drawReseau();
+			if (bus.inside(e.offsetX, e.offsetY) && !bus.isHovered) {
+				bus.setHover();
 			}
-			if (bus.inside(e.offsetX, e.offsetY) && bus.draw != bus.hover) {
-				bus.draw = bus.hover;
-				drawReseau();
+			if (bus.isHovered && !bus.inside(e.offsetX, e.offsetY)) {
+				bus.clearHover();
 			}
 		}
 
 		for (let line of reseau.lines) {
 			// Gestion des interactions avec les lignes
+		}
+	});
+
+	$('#centerArea').on('click', function(e) {
+		for (let bus of reseau.bus) {
+		}
+
+		for (let line of reseau.lines) {
+		}
+
+		for (let image of reseau.images) {
+			if (image.inside(e.offsetX, e.offsetY)) {
+				image.showParameters();
+			}
 		}
 	});
 }
@@ -95,13 +107,24 @@ function Bus(data) {
 	bus.default = function() {
 		drawPoint(data, pointSize);
 	}
-	bus.inside = function(x, y) {
-		return Math.pow(x - absoluteX(data.x), 2) + Math.pow(y - absoluteY(data.y), 2) < Math.pow(pointSize + selectionSize, 2);
-	}
 	bus.hover = function() {
 		drawPoint(data, pointSize + selectionSize);
 	}
 	bus.draw = bus.default;
+
+	bus.inside = function(x, y) {
+		return Math.pow(x - absoluteX(data.x), 2) + Math.pow(y - absoluteY(data.y), 2) < Math.pow(pointSize + selectionSize, 2);
+	}
+	bus.setHover = function() {
+		this.isHovered = true;
+		bus.draw = bus.hover;
+		drawReseau();
+	}
+	bus.clearHover = function() {
+		this.isHovered = false;
+		bus.draw = bus.default;
+		drawReseau();
+	}
 
 	return bus;
 }
@@ -122,12 +145,23 @@ function Picture(data) {
 		drawStroke(data, reseau.bus[data.bus].data);
 		drawImage(data.type, data);
 	}
+	picture.inside = function(x, y) {
+		let relX = x - absoluteX(picture.data.x), relY = y - absoluteY(picture.data.y);
+		let imSize = Math.min(absoluteX(IMAGE_WIDTH), absoluteY(IMAGE_HEIGHT));
+		return ((Math.abs(relX) <= imSize / 2) && (Math.abs(relY) <= imSize / 2));
+	}
+	picture.showParameters = function() {
+		$.get('parametres', {x: data.x, y: data.y}, function(data) {
+			$('#centerArea .panel.edition').append(data);
+		})
+	}
 
 	return picture;
 }
 
 function Element(data) {
 	this.data = data;
+	this.isHovered = false;
 }
 
 function drawPoint(position, size) {
@@ -144,6 +178,8 @@ function drawStroke(position1, position2) {
 }
 
 function drawImage(imageName, position) {
+	let imSize = Math.min(absoluteX(IMAGE_WIDTH), absoluteY(IMAGE_HEIGHT))
+
 	if (!images.hasOwnProperty(imageName)) {
 		let im = new Image();
 		im.onload = function() {
@@ -155,13 +191,13 @@ function drawImage(imageName, position) {
 
 			images[imageName] = pre;
 
-			ctx.drawImage(pre, absoluteX(position.x) - IMAGE_WIDTH / 2, absoluteY(position.y) - IMAGE_HEIGHT / 2, IMAGE_WIDTH, IMAGE_HEIGHT);
+			ctx.drawImage(pre, absoluteX(position.x) - imSize / 2, absoluteY(position.y) - imSize / 2, imSize, imSize);
 		}
 		im.src = '/static/' + imageName + '.png';
 	}
 	else {
 		let pre = images[imageName]
-		ctx.drawImage(pre, absoluteX(position.x) - IMAGE_WIDTH / 2, absoluteY(position.y) - IMAGE_HEIGHT / 2, IMAGE_WIDTH, IMAGE_HEIGHT);
+		ctx.drawImage(pre, absoluteX(position.x) - imSize / 2, absoluteY(position.y) - imSize / 2, imSize, imSize);
 	}
 }
 
