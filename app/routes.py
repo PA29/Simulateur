@@ -13,7 +13,7 @@ from flask import jsonify, request
 reseau = {
 	'bus': [{'x': 50, 'y': 30}, {'x': 50, 'y': 50}, {'x': 25, 'y': 75}, {'x': 75, 'y': 75}],
 	'lines': [{'bus1': 0, 'bus2': 1, 'length': 10}, {'bus1': 1, 'bus2': 2, 'length': 10}, {'bus1': 1, 'bus2': 3, 'length': 10}],
-	'images': [{'type': 'transfo', 'x': 50, 'y': 20, 'bus': 0}, {'type': 'consommateur', 'x': 50, 'y': 90, 'bus': 2}]
+	'images': [{'type': 'transfo', 'x': 50, 'y': 20, 'bus': 0, 'P': 100, 'V': 230}, {'type': 'consommateur', 'x': 50, 'y': 90, 'bus': 2}]
 }
 
 @app.route('/')
@@ -40,4 +40,14 @@ def getReseau():
 
 @app.route('/parametres')
 def getParametres():
-	return render_template('_parametres', x = request.args['x'], y = request.args['y'])
+	return render_template('_parametres',
+		x = request.args['x'],
+		y = request.args['y'],
+		imageID = request.args['imageID'],
+		variables = getVariables(request.args['type']))
+
+def getVariables(type):
+	if type == 'transfo':
+		return {'P': [100, 200, 300], 'V': [230]}
+	elif type == 'consommateur':
+		return {'P': [100, 200, 300], 'Q': [100, 200, 300]}

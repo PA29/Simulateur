@@ -1,5 +1,4 @@
 function editionJS() {
-	console.log($('#simulate'));
 	$('#simulate').on('click', function() {
 		direct('resultats');
 	});

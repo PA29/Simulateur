@@ -1,7 +1,16 @@
-<div class="parametres window" style="top: {{y}}%; left: {{x}}%">
+<div class="parametres window" imageid="{{imageID}}" style="top: {{y}}%; left: {{x}}%">
     <div class=subTitle>
         <span>Paramètres</span>
     </div>
     <div class="valeurs">
+        {% for key, values in variables.items() %}
+            <div id="{{key}}">
+                <span class="variable">{{key}}</span>
+                {% for value in values %}
+                <input id="{{key}}_{{value}}" type="radio" name="{{key}}" value="{{value}}">
+                <label for={{key}}_{{value}}>{{value}}</label>
+                {% endfor %}
+            </div>
+        {% endfor %}
     </div>
 </div>
