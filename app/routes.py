@@ -38,13 +38,17 @@ def resultats():
 def getReseau():
 	return jsonify({'reseau' : reseau})
 
-@app.route('/parametres')
+@app.route('/parametres', methods = ['POST'])
 def getParametres():
-	return render_template('_parametres',
-		x = request.args['x'],
-		y = request.args['y'],
-		imageID = request.args['imageID'],
-		variables = getVariables(request.args['type']))
+
+	json = request.get_json()
+	return render_template('_parametres', json = json, variables = getVariables(json['data']['type']))
+
+@app.route('/addJauge', methods = ['POST'])
+def getAddJauge():
+
+	json = request.get_json()
+	return render_template('_addJauge', json = json)
 
 def getVariables(type):
 	if type == 'transfo':

@@ -31,6 +31,24 @@ body {
     border-color: #0071bb;
 }
 
+.window .close {
+    position: absolute;
+    width: 8%;
+    top: 2%;
+    right: 2%;
+}
+
+.window .close:hover {
+    background-color: white;
+}
+
+.window .header {
+    text-align: center;
+    font-size: 0.9vw;
+    font-weight: bold;
+    padding: 2% 1%;
+}
+
 /*.button {
     background-color: rgba(0,113,187,0.9);
     color: #fff;

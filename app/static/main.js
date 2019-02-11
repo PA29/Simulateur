@@ -17,6 +17,8 @@ function appendContent() {
 			$('#centerArea').append(data.centerPanel);
 			$('#rightArea').append(data.rightPanel);
 
+			console.log("Test");
+
 			resolve();
 			resultatsJS();
 		});

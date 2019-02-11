@@ -15,17 +15,6 @@
     bottom: 5%;
 }
 
-.subTitle {
-    padding: 2% 1%;
-    text-align: center;
-    font-size: 0.9vw;
-    font-weight: bold;
-}
-
-.subTitle > span {
-    margin: auto;
-}
-
 .panelTitle {
     color: rgb(0, 113, 187);
 	font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
@@ -42,15 +31,6 @@ p{
 }
 
 /* AddJauge */
-
-.addJauge {
-    width: 13%;
-    background-color: #bbcdea;
-    border-radius: 7px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #0071bb;
-}
 
 .addJauge .buttons {
     position: relative;

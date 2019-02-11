@@ -73,26 +73,32 @@ function initInteractions() {
 
 	$('#centerArea').on('mousedown', function(e) {
 
-		for (let bus of reseau.bus) {
-		}
-
-		for (let line of reseau.lines) {
-		}
-
-		let imageID = $('.parametres').attr('imageid')
-		if(!imageID || !reseau.images[parseInt(imageID)].inside(e.offsetX, e.offsetY)) {
-
-			if (!$(e.target).parents('.parametres').length) {
-				$('#centerArea .panel.edition .parametres').remove();
+		setInteraction('edition', reseau.images, e, function(image) {
+			if(!$('.parametres[imageid="' + reseau.images.indexOf(image) + '"]').length) {
+				image.showParameters();
 			}
+		});
 
-			for (let image of reseau.images) {
-				if (image.inside(e.offsetX, e.offsetY)) {
-					image.showParameters();
-				}
+		setInteraction('resultats', reseau.bus, e, function(bus) {
+			if(!$('.addJauge[busid="' + reseau.bus.indexOf(bus) + '"]').length) {
+				bus.showAddJauge();
 			}
-		}
+		})
 	});
+}
+
+function setInteraction(mode, triggers, event, callback) {
+	if ($('body').attr('id') == mode) {
+		for (let element of triggers) {
+			if (element.inside(event.offsetX, event.offsetY)) {
+				callback(element);
+			}
+		}
+	}
+
+	$('.window .close').on('click', function() {
+		$(this).parents('.window').remove();
+	})
 }
 
 function drawReseau() {
@@ -134,6 +140,21 @@ function Bus(data) {
 		bus.draw = bus.default;
 		drawReseau();
 	}
+	bus.showAddJauge = function() {
+		$.ajax({
+			url: 'addJauge',
+			type: 'POST',
+			data: JSON.stringify({
+				x: data.x + 1,
+				y: data.y - 1,
+				busID: reseau.bus.indexOf(this)
+			}),
+			contentType: 'application/json',
+			success: function(data) {
+				$('#centerArea .panel.resultats').append(data);
+			}
+		});
+	}
 
 	return bus;
 }
@@ -160,14 +181,20 @@ function Picture(data) {
 		return ((Math.abs(relX) <= imSize / 2) && (Math.abs(relY) <= imSize / 2));
 	}
 	picture.showParameters = function() {
-		$.get('parametres', {
-			x: data.x,
-			y: data.y,
-			type: data.type,
-			imageID: reseau.images.indexOf(this)
-		}, function(data) {
-			$('#centerArea .panel.edition').append(data);
-		})
+		$.ajax({
+			url: 'parametres',
+			type: 'POST',
+			data: JSON.stringify({
+				x: data.x + 5,
+				y: data.y - 3,
+				imageID: reseau.images.indexOf(this),
+				data: this.data
+			}),
+			contentType: 'application/json',
+			success: function(data) {
+				$('#centerArea .panel.edition').append(data);
+			}
+		});
 	}
 
 	return picture;
