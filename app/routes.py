@@ -30,6 +30,16 @@ def main():
 def edition():
 	return jsonify({'leftPanel': render_template('edition/leftPanel'), 'centerPanel': render_template('edition/centerPanel'), 'rightPanel': render_template('edition/rightPanel')});
 
+@app.route('/dureeSimulation', methods = ['POST'])
+def getDureeSimulation():
+	#A DEVELOPPER
+	return jsonify({'duree' : 0}) #TEMPORAIRE
+
+@app.route('/simulation', methods = ['POST'])
+def getResultatsSimulation():
+	#A DEVELOPPER
+	return jsonify({}) #TEMPORAIRE
+
 @app.route('/resultats')
 def resultats():
 	return jsonify({'leftPanel': '', 'centerPanel': render_template('resultats/centerPanel', jauges = [{'x':60, 'y':80}]), 'rightPanel': render_template('resultats/rightPanel')})

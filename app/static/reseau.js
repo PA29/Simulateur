@@ -152,8 +152,19 @@ function Bus(data) {
 			contentType: 'application/json',
 			success: function(data) {
 				$('#centerArea .panel.resultats').append(data);
+
+				$('.addJauge .button').on('click', function() {
+	    			let busID = $(this).parents('.addJauge').attr('busid');
+	    			let variable = $(this).attr('id');
+
+	    			reseau.bus[busID].showJauge(variable);
+	    			$(this).parents('.window').remove();
+	    		})
 			}
 		});
+	}
+	bus.showJauge = function(variable) {
+		console.log("Show Jauge : " + variable);
 	}
 
 	return bus;
