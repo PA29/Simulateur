@@ -10,7 +10,7 @@ from app import app
 from .database import cursor
 from flask import jsonify, request
 
-reseau = {
+grid = {
 	'bus': [{'x': 50, 'y': 30}, {'x': 50, 'y': 50}, {'x': 25, 'y': 75}, {'x': 75, 'y': 75}],
 	'lines': [{'bus1': 0, 'bus2': 1, 'length': 10}, {'bus1': 1, 'bus2': 2, 'length': 10}, {'bus1': 1, 'bus2': 3, 'length': 10}],
 	'images': [{'type': 'transfo', 'x': 50, 'y': 20, 'bus': 0, 'P': 100, 'V': 230}, {'type': 'consommateur', 'x': 50, 'y': 90, 'bus': 2}]
@@ -45,8 +45,8 @@ def resultats():
 	return jsonify({'leftPanel': '', 'centerPanel': render_template('resultats/centerPanel', jauges = [{'x':60, 'y':80}]), 'rightPanel': render_template('resultats/rightPanel')})
 
 @app.route('/unScenario')
-def getReseau():
-	return jsonify({'reseau' : reseau})
+def getGrid():
+	return jsonify({'grid' : grid})
 
 @app.route('/parametres', methods = ['POST'])
 def getParametres():

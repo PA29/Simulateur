@@ -3,7 +3,7 @@ function editionJS() {
 		$.ajax({
 			url: 'dureeSimulation',
 			type: 'POST',
-			data: JSON.stringify(reseau),
+			data: JSON.stringify(grid),
 			contentType: 'application/json',
 			success: function(data) {
 
@@ -11,11 +11,11 @@ function editionJS() {
 				$.ajax({
 					url: 'simulation',
 					type: 'POST',
-					data: JSON.stringify(reseau),
+					data: JSON.stringify(grid),
 					contentType: 'application/json',
 					success: function(data) {
 
-						reseau.simulation = data;
+						grid.simulation = data;
 						direct('resultats')
 					}
 				});
