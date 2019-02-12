@@ -1,38 +1,53 @@
 /* Fichier gérant le changement de fenêtre et le chargement des fichiers */
+
+// Temps de l'animation en fondu
 var fadingTime = 200;
 
+// Quand le main.html est chargé, on crée le réseau et on ajoute les panels
 $(document).ready(function() {
-	initContext();
-	direct('edition');
+	createGrid();
+	appendContent();
 });
 
+// Quand la fenêtre est redimensionnée, on redessine le réseau
 window.onresize = function() {
-	resizeCanvas();
+	redrawGrid();
 }
 
-function direct(page) {
-	//console.log('direct :' + page);
+// Ajoute tous les panels aux différentes zones (par défaut, ils sont invisibles)
+function appendContent() {
 
-	$.get(page, function(data) {
-		if ($('.panel').length) $('.panel').addClass('fading');
-		if ($('head .adaptable').length) $('head .adaptable').addClass('removable');
+	// Chargement du contenu du mode resultats
+	var resultsLoaded = new Promise(function(resolve, reject) {
+		$.get('resultats', function(data) {
+			$('#leftArea').append(data.leftPanel);
+			$('#centerArea').append(data.centerPanel);
+			$('#rightArea').append(data.rightPanel);
 
-		$('body').attr('id', page);
+			resolve(); // Quand le html est chargé, on le signale
+			resultatsJS(); // Chargement du javascript
+		});
+	});
+
+	// Chargement du contenu du mode edition
+	$.get('edition', function(data) {
 		$('#leftArea').append(data.leftPanel);
 		$('#centerArea').append(data.centerPanel);
 		$('#rightArea').append(data.rightPanel);
-		resizeCanvas();
-		loadFiles(page);
 
-		$('.fading').fadeOut(fadingTime);
-		$('.panel:not(.fading)').delay(fadingTime).fadeIn(fadingTime);
-		setTimeout(function() {
-			$('.removable, .fading').remove();
-		}, fadingTime);
-	})
+		// Après que le chargement du html du mode résultat ait été signalé
+		resultsLoaded.then(function() {
+			editionJS(); // Chargement du javascript
+		});
+
+		$('body').attr('id', 'edition'); // On change l'id du body (permet de changer le CSS qui est appliqué)
+		$('.edition').fadeIn(fadingTime); // Quand tout a été chargé, on affiche le mode edition en fondu
+	});
 }
 
-function loadFiles(page) {
-	$('head').append('<link class="adaptable" href="/static/' + page + '.css" type="text/css" rel="stylesheet">');
-	$('head').append('<script class="adaptable" src="/static/' + page + '.js"></script>');
+// Permet de changer de mode
+function direct(mode) {
+	$('body').attr('id', mode);
+	$('.panel:not(.' + mode + ')').fadeOut(fadingTime);
+	$('.' + mode).delay(fadingTime).fadeIn(fadingTime);
 }

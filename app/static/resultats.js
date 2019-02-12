@@ -1,4 +1,4 @@
-$(document).ready(function() {
+function resultatsJS() {
 	$('#edit').on('click', function() {
 		direct('edition');
 	});
@@ -6,4 +6,4 @@ $(document).ready(function() {
 	$('.time').on("input", function() {
         $('.time').val($(this).val());
     });
-})
+}

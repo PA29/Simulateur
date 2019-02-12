@@ -1,18 +1,3 @@
-html
-{
-	height: 100%;
-	width: 100%;
-	margin: 0;
-}
-
-body
-{
-	display: flex;
-	height: 100%;
-	width: 100%;
-	margin: 0;
-}
-
 @font-face{
 	font-family: 'Ubuntu';
 	src: url('\static\Ubuntu-M.ttf')
@@ -25,7 +10,7 @@ body
 
 .titrespanneauxlateraux
 {
-	color: rgb(1, 163, 1);
+	color: rgb(57, 178, 75);
 	font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
 	text-align: center;
 	font-size: 24px;
@@ -49,8 +34,8 @@ body
 	flex-direction: column;
 	margin: 10px auto;
 	padding: 10px;
-	background-color: rgba(31, 114, 192, 0.4);
-	border: 1px rgba(0,94,184,0.7) solid;
+	background-color: rgba(0, 113, 187, 0.4);
+	border: 1px rgba(0,113,187,0.7) solid;
 	border-radius: 10px;
 	color: white;
 	font-family: 'Ubuntu Light', 'Trebuchet MS', Helvetica, sans-serif;
@@ -62,18 +47,21 @@ body
 }
 .titrecentral
 {
-    color: rgb(0, 94, 184);
+    color: rgb(0, 113, 187);
 	font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
-    text-align: center;
-    margin-top:10px;
+	width: 100%;
+	text-align: center;
+    top:10px;
 	font-size: 24px;
 }
 #enregistrement 
 {
 	display: flex;
-	flex-direction: column;
+	justify-content: flex-start;
 	text-align: left;
-	margin-top : 10%;
+	top : 5px;
+	left: 5px;
+	width : 25%;
 }
 
 
@@ -81,28 +69,24 @@ body
 {
 	border: 0;
 	padding: 3px 10px;
-	margin-top: 45%;
-	margin-left: 70%;
+	bottom: 30px;
+	right: 10px;
 	width: 25%; 
     font-size: 1rem;
     text-align: center;
     color: #fff;
     border-radius: 5px;
-	background-color: rgba(0,94,184, 0.9);
+	background-color: rgba(0,113,187, 0.9);
 	
 }
 
-.bouton_enregistrement 
+.bouton_enregistrement, #accueil
 {
-	border: 0;
 	padding: 3px 10px;
-	margin: 5px 10px;
-	width: 25%; 
-    font-size: 1rem;
-    text-align: center;
-    color: #fff;
-    border-radius: 7px;
-	background-color: rgba(0,94,184, 0.9);
+	margin: 5px 0px;
+	width: 35px;
+	height: 35px;
+	border-radius: 10px;
     /*background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 30%,
@@ -113,57 +97,42 @@ body
 
 #simulate:hover
 {
-	border: 0;
-	padding: 3px 10px;
-	margin-top: 45%;
-	margin-left: 70%;
-	width: 25%; 
-    font-size: 1rem;
-    text-align: center;
-    color: #fff;
-    border-radius: 5px;
-	background-color: rgba(0,94,184, 0.6);
+	background-color: rgba(0,113,187, 0.6);
 	background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 30%,
                                       rgba(0, 0, 0, 0));
 }
 
-.bouton_enregistrement:hover 
+.bouton_enregistrement:hover, #accueil:hover
 {
-	border: 0;
-	padding: 3px 10px;
-	margin: 5px 10px;
-	width: 25%; 
-    font-size: 1rem;
-    text-align: center;
-    color: #fff;
-    border-radius: 7px;
-	background-color: rgba(0,94,184, 0.6);
-	background-image: linear-gradient(to top left,
-                                      rgba(0, 0, 0, .2),
-                                      rgba(0, 0, 0, .2) 30%,
-									  rgba(0, 0, 0, 0));
-									  
+	background-color: rgba(141,160,171, 0.25);
+}									  
 
-#element_reseau
+#elementsReseau
+{
+	margin: 5% 0;
+}
+
+.elementReseau
 {
 	display:flex;
 	flex-direction:column;
 	justify-content:space-around;
 	align-items: center;
-	margin:5%
+	margin: 3% 0;
 }
 
-.elementreseau
-{
-	height:15%;
-	width: 35%;
-	
+.elementReseau > img {
+	width: 38%;
 }
 
-#simul:active ,.bouton_enregistrement:active,.elementreseau:active 
+#simulate:active ,.bouton_enregistrement:active,.elementreseau:active 
 {
     box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
                 inset 2px 2px 3px rgba(0, 0, 0, .6);
+}
+
+.variable {
+	margin: 0 4px;
 }

@@ -8,31 +8,32 @@
 {% block body %}
     <h1>BIENVENUE</h1>
     <div class="container">
-        <div class="charger">
+        <!--<div class="charger">
             <input class="bouton_accueil" type="button" value="Charger">
-            <div class="dropdown">
-                <button class="dropButton">Choisir un scénario</button>
-                <div class="dropChoices">
-                    <div>Cheese</div>
-                    <div>Tomatoes</div>
-                    <div>Mozzarella</div>
-                    <div>Mushrooms</div>
-                    <div>Pepperoni</div>
-                    <div>Onions</div>
-                    <div>Cucumber</div>
-                    <div>Jam</div>
-                    <div>Potatoe</div>
-                    <div>Salad</div>
-                </div>
-            </div>
-        </div>
+            
+        </div>-->
+        <img class="logo" src="\static\accueil.png">
         <div class="bas">
-            <div class="créer">
+            <div class="creer">
                 <input class="bouton_accueil" type="button" value="Créer">
             </div>
-            <div class="ouvrir">
+            <div class="dropdown">
+                <button class="dropButton">Charger</button>
+                <div class="dropChoices">
+                    <div class="choix"><img class="logo_bis" src="\static\réseau.PNG"><span class="choix_texte">Beaucoup de producteurs</span></div>
+                    <div class="choix"><img class="logo_bis" src="\static\réseau.PNG"><span class="choix_texte">Peu de producteurs</span></div>
+                    <div class="choix"><img class="logo_bis" src="\static\réseau.PNG"><span class="choix_texte">Beaucoup de consommateurs</span></div>
+                    <div class="choix"><img class="logo_bis" src="\static\réseau.PNG"><span class="choix_texte">Peu de consommateurs</span></div>
+                    <div class="choix"><img class="logo_bis" src="\static\stylo.PNG"><span class="choix_texte">Nouveau réseau</span></div>
+                    <div class="choix"><img class="logo_bis" src="\static\stylo.PNG"><span class="choix_texte">Réseau personnel</span></div>
+                </div>
+            </div>
+            <!--<div class="ouvrir">
                 <input class="bouton_accueil" type="button" value="Ouvrir">
-            </div> 
+            </div>-->
+            <div class="tuto">
+                <input class="bouton_tuto" type ="button" value="Tutoriel">
+            </div>
         </div>
     </div>
 {% endblock %}

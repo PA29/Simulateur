@@ -1,17 +1,22 @@
-<div class="addJauge" style="top: 30%; left: 60%">
-    <div class=subTitle><span>Ajout d'une Jauge</span></div>
-    <div class="buttons">
-    	<div id="P" class="container">
-    		<div id="P" class="button">P</div>
-    	</div>
-    	<div id="Q" class="container">
-    		<div id="Q" class="button">Q</div>
-    	</div>
-    	<div id="U" class="container">
-    		<div id="U" class="button">U</div>
-    	</div>
-        <div id="I" class="container">
-        	<div id="I" class="button">I</div>
+{% extends "window.html" %}
+
+{% block title %}Ajout d'une Jauge{% endblock %}
+
+{% block content %}
+    <div class="addJauge" busid="{{json.busID}}">
+        <div class="buttons">
+        	<div id="P" class="button">
+        		<span>P</span>
+        	</div>
+        	<div id="Q" class="button">
+        		<span>Q</span>
+        	</div>
+        	<div id="U" class="button">
+        		<span>U</span>
+        	</div>
+            <div id="I" class="button">
+            	<span>I</span>
+            </div>
         </div>
     </div>
-</div>
+{% endblock %}

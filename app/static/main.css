@@ -18,15 +18,43 @@ body {
 
 .panel {
 	display: none;
+    overflow-y: auto;
 	width: 100%;
+	height: 100%;
 }
 
-.button {
-    background-color: #198099;
+.window {
+    background-color: #bbcdea;
+    border-radius: 7px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #0071bb;
+}
+
+.window .close {
+    position: absolute;
+    width: 8%;
+    top: 2%;
+    right: 2%;
+}
+
+.window .close:hover {
+    background-color: white;
+}
+
+.window .header {
+    text-align: center;
+    font-size: 0.9vw;
+    font-weight: bold;
+    padding: 2% 1%;
+}
+
+/*.button {
+    background-color: rgba(0,113,187,0.9);
     color: #fff;
     border: 1px solid transparent;
     border-radius: 5%;
-}
+}*/
 
 
 
@@ -35,20 +63,22 @@ body {
 }
 
 #centerArea {
+    width: 60%;
 	background-color: white;
 }
 
+#centerArea > *, #centerArea > .panel > *{
+	position: absolute;
+}
+
 #rightArea, #leftArea {
-    background-color: lightgrey;
+    background-color: rgba(141,160,171,0.25);
     color: white;
+    overflow: auto;
 }
 
 #edition #leftArea {
 	width: 20%;
-}
-
-#edition #centerArea {
-	width: 60%;
 }
 
 #edition #rightArea {
@@ -57,10 +87,6 @@ body {
 
 #resultats #leftArea {
 	width: 0%;
-}
-
-#resultats #centerArea {
-	width: 60%;
 }
 
 #resultats #rightArea {

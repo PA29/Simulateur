@@ -1,10 +1,13 @@
-/* Style de la zone centrale */
+/* Style de la zone centrale .*/
 
-#edit {
-    left: 5%;
-    top: 5%;
-    width: 10%;
-    height: 5%;
+#reseauTitle {
+    color: rgb(0, 113, 187);
+	font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
+	width: 100%;
+    text-align: center;
+    font-weight: bold;
+    top:10px;
+	font-size: 24px;
 }
 
 #scale {
@@ -12,21 +15,27 @@
     bottom: 5%;
 }
 
-.subTitle {
-    display: flex;
-    position: relative;
-    padding: 1% 5%;
+.panelTitle {
+    color: rgb(0, 113, 187);
+	font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
+	width: 100%;
+    text-align: center;
+    font-weight: bold;
+    top:10px;
+	font-size: 24px;
 }
 
-.subTitle > span {
-    margin: auto;
+p{
+    font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
+    left: 5px; 
+    width: 80%;
+    right: 15%;
+    top:4%;
+    margin:0;
+    text-align: center;
 }
 
 /* AddJauge */
-
-.addJauge {
-    background-color: lightseagreen;
-}
 
 .addJauge .buttons {
     position: relative;
@@ -35,13 +44,13 @@
     padding: 2%;
 }
 
-.addJauge .buttons .container {
-    background-color: aquamarine;
-    width: 46%;
-}
-
-.addJauge .buttons .container {
-    padding: 2%;
+.addJauge .button {
+    background-color: #01b5af;
+    color: #fff;
+    border-radius: 5%;
+    width: 48%;
+    margin: 1%;
+    text-align: center;
 }
 
 /* Jauge */
@@ -67,9 +76,9 @@ div.jauge img.arrow {
 .graph_container {
     position: relative;
     width: 80%;
-    height: 29%;
+    height: 45%;
     margin: 2% 10%;
-    background-color: lightsalmon;
+    background-color: rgba(0,113,187, 0.6);
 }
 
 .graph_container > * {
@@ -77,12 +86,11 @@ div.jauge img.arrow {
 }
 
 .graph {
-    margin: 2%;
-    top: 20%;
-    bottom: 0;
-    left: 0;
-    right: 20%;
-    background-color: lightcoral;
+    top: 14%;
+    bottom: 2%;
+    left: 2%;
+    right: 2%;
+    background-color: white;
 }
 
 .time {
@@ -94,16 +102,20 @@ div.jauge img.arrow {
     width: 98%;
 }
 
+
 .graph_container > .button {
-    width: 10%;
-    height: 10%;
+    width: 7%;
+    height: 7%;
     top: 2%;
     text-align: center;
     display: flex;
+    background-color: rgba(0,113,187, 0);
 }
 
-.graph_container > .button > span {
-    margin: auto;
+.add, .export{
+    width: 70%;
+    height: 100%;
+    margin: 0px auto;
 }
 
 .exportGraph {
@@ -111,5 +123,26 @@ div.jauge img.arrow {
 }
 
 .addGraph {
-    right: 14%
+    right: 10%
 }
+
+#edit{
+    border: 0;
+	padding: 3px 10px;
+	margin: 5px 10px;
+	width: 20%; 
+    font-size: 1rem;
+    text-align: center;
+    color: #fff;
+    border-radius: 7px;
+	background-color: rgba(0,113,187, 0.9);
+}
+
+#edit:hover 
+{
+	background-color: rgba(0,113,187, 0.6);
+	background-image: linear-gradient(to top left,
+                                      rgba(0, 0, 0, .2),
+                                      rgba(0, 0, 0, .2) 30%,
+									  rgba(0, 0, 0, 0));
+}									  
