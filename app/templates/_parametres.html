@@ -1,0 +1,24 @@
+{% extends "window.html" %}
+
+{% block title %}Paramètres{% endblock %}
+
+{% block content %}
+    <div class="parametres" imageid="{{json.imageID}}">
+        <div class="valeurs">
+            {% for key, values in variables.items() %}
+            <div id="{{key}}">
+                <span class="variable">{{key}}</span>
+                {% for value in values %}
+
+                <input id="{{key}}_{{value}}" type="radio" name="{{key}}" value="{{value}}"
+                    {% if key in json.data and json.data.get(key) == value %}
+                    checked="checked" 
+                    {% endif %}
+                >
+                <label for={{key}}_{{value}}>{{value}}</label>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

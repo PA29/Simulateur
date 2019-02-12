@@ -1,4 +1,4 @@
-/* Style de la zone centrale */
+/* Style de la zone centrale .*/
 
 #reseauTitle {
     color: rgb(0, 113, 187);
@@ -13,16 +13,6 @@
 #scale {
     left: 5%;
     bottom: 5%;
-}
-
-.subTitle {
-    display: flex;
-    position: relative;
-    padding: 1% 5%;
-}
-
-.subTitle > span {
-    margin: auto;
 }
 
 .panelTitle {
@@ -47,10 +37,6 @@ p{
 
 /* AddJauge */
 
-.addJauge {
-    background-color: lightseagreen;
-}
-
 .addJauge .buttons {
     position: relative;
     display: flex;
@@ -58,10 +44,13 @@ p{
     padding: 2%;
 }
 
-.addJauge .buttons .temp {
-    background-color: aquamarine;
-    width: 46%;
-    padding: 2%;
+.addJauge .button {
+    background-color: #01b5af;
+    color: #fff;
+    border-radius: 5%;
+    width: 48%;
+    margin: 1%;
+    text-align: center;
 }
 
 /* Jauge */
@@ -113,6 +102,7 @@ div.jauge img.arrow {
     width: 98%;
 }
 
+<<<<<<< HEAD
 .graph_container > .button {
     width: 7%;
     height: 7%;
@@ -134,6 +124,18 @@ div.jauge img.arrow {
 
 .addGraph {
     right: 10%
+=======
+.graph .button {
+    padding: 3px 10px;
+    margin: 5px 0px;
+    width: 35px;
+    height: 35px;
+    border-radius: 10px;
+}
+
+.addGraph {
+    right: 14%;
+>>>>>>> 9c99a0c9ba540195c5a321ebe119425dc6075b33
 }
 
 #edit{

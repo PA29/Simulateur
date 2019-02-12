@@ -1,0 +1,10 @@
+<div class="window" style="top: {{json.y}}%; left: {{json.x}}%">
+	<div class="header">
+		<span class="title">{% block title %}{% endblock %}</span>
+		<img class="close" src="/static/croix.png">
+	</div>
+	<div class="content">
+		{% block content %}
+		{% endblock %}
+	</div>
+</div>

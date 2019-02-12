@@ -2,12 +2,12 @@
 var fadingTime = 200;
 
 $(document).ready(function() {
-	createReseau();
+	createGrid();
 	appendContent();
 });
 
 window.onresize = function() {
-	resizeCanvas();
+	redrawGrid();
 }
 
 function appendContent() {
