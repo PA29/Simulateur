@@ -28,6 +28,11 @@
 p{
     font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
     left: 5px; 
+    width: 80%;
+    right: 15%;
+    top:4%;
+    margin:0;
+    text-align: center;
 }
 
 /* AddJauge */
@@ -71,7 +76,7 @@ div.jauge img.arrow {
 .graph_container {
     position: relative;
     width: 80%;
-    height: 29%;
+    height: 45%;
     margin: 2% 10%;
     background-color: rgba(0,113,187, 0.6);
 }
@@ -81,11 +86,10 @@ div.jauge img.arrow {
 }
 
 .graph {
-    margin: 2%;
-    top: 20%;
-    bottom: 0;
-    left: 0;
-    right: 20%;
+    top: 14%;
+    bottom: 2%;
+    left: 2%;
+    right: 2%;
     background-color: white;
 }
 
@@ -98,6 +102,29 @@ div.jauge img.arrow {
     width: 98%;
 }
 
+<<<<<<< HEAD
+.graph_container > .button {
+    width: 7%;
+    height: 7%;
+    top: 2%;
+    text-align: center;
+    display: flex;
+    background-color: rgba(0,113,187, 0);
+}
+
+.add, .export{
+    width: 70%;
+    height: 100%;
+    margin: 0px auto;
+}
+
+.exportGraph {
+    right: 2%;
+}
+
+.addGraph {
+    right: 10%
+=======
 .graph .button {
     padding: 3px 10px;
     margin: 5px 0px;
@@ -108,6 +135,7 @@ div.jauge img.arrow {
 
 .addGraph {
     right: 14%;
+>>>>>>> 9c99a0c9ba540195c5a321ebe119425dc6075b33
 }
 
 #edit{
