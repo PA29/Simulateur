@@ -1,6 +1,7 @@
 function editionJS() {
 	console.log($('#simulate'));
 	$('#simulate').on('click', function() {
+		background_chart();
 		direct('resultats');
 	});
 
