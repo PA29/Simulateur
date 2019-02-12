@@ -18,11 +18,7 @@ body {
 
 .panel {
 	display: none;
-<<<<<<< HEAD
     overflow-y: auto;
-=======
-    overflow: auto;
->>>>>>> 9c99a0c9ba540195c5a321ebe119425dc6075b33
 	width: 100%;
 	height: 100%;
 }
