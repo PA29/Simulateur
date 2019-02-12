@@ -5,28 +5,28 @@ var chart;
 var pointSize = 2;
 var selectionSize = 1;
 
-function absoluteX(x){
+function absoluteXBis(x){
     return x / 100 * ctx.canvas.width;
 }
 
-function absoluteY(y) {
+function absoluteYBis(y) {
 	return y / 100 * ctx.canvas.height;
 }
 
-function drawPoint(position, size) {
+function drawPointBis(position, size) {
 	ctx.beginPath();
 	ctx.arc(absoluteX(position.x), absoluteY(position.y), size, 0, 2 * Math.PI);
 	ctx.fill();
 }
 
-function drawStroke(position1, position2) {
+function drawStrokeBis(position1, position2) {
 	ctx.beginPath();
 	ctx.moveTo(absoluteX(position1.x), absoluteY(position1.y));
 	ctx.lineTo(absoluteX(position2.x), absoluteY(position2.y));
 	ctx.stroke();
 }
 
-function drawImage(imageName) {
+function drawImageBis(imageName) {
 	if (!images.hasOwnProperty(imageName)) {
 		let im = new Image();
 		im.onload = function() {
