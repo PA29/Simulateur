@@ -11,27 +11,11 @@ var IMAGE_HEIGHT = 14; //Max en % de la taille par rapport à la hauteur
 //TEMPORAIRE// Chargement d'un réseau de base - Exécution dès le chargement du fichier
 var getGrid = new Promise(function(resolve, reject) {
 	$.get('unScenario', function(data) {
-		grid = convertGrid(data.grid);
+		//grid = convertGrid(data.grid);
+		grid = new Grid(data.grid);
 		resolve();
 	});
 });
-
-//Transforme les objets JSON contenus dans 'data' en objets Bus, Line ou Picture
-function convertGrid(data) {
-	let grid = {bus: [], lines: [], images: []};
-
-	for (let bus of data.bus) {
-		grid.bus.push(new Bus(bus));
-	}
-	for (let line of data.lines) {
-		grid.lines.push(new Line(line));
-	}
-	for (let image of data.images) {
-		grid.images.push(new Picture(image));
-	}
-
-	return grid
-}
 
 /* Affichage et interactions avec le réseau */
 
@@ -41,95 +25,97 @@ function createGrid() {
 	ctx = canvas.getContext('2d');
 
 	getGrid.then(function() {
-		initInteractions();
-		redrawGrid();
+		//initInteractions();
+		//redrawGrid();
+		grid.setInteractions();
+		grid.redraw();
 	}).catch(function() {
 		console.log("Impossible d'afficher le réseau");
 	});
 }
 
-// Redessine le réseau à partir des dimensions du canvas
-function redrawGrid() {
-	let centerArea = document.getElementById('centerArea');
-	let canvas = document.getElementById('grid');
-
-	canvas.width = centerArea.offsetWidth;
-	canvas.height = centerArea.offsetHeight;
-
-	drawGrid(grid);
-}
-
 // Active les intéractions avec le réseau (survol, click, drag, ...)
 function initInteractions() {
 
+	// Interactions liées à l'appui sur le bouton gauche de la souris
+	$('#centerArea').on('mousedown', function(e) {
+		for (let bus of grid.bus) {
+			bus.onMouseDown();
+		}
+	});
+
 	// Interactions liées au déplacement de la souris
 	$('#centerArea').on('mousemove', function(e) {
-		for (let bus of grid.bus) {
-			if (bus.inside(e.offsetX, e.offsetY) && !bus.isHovered) {
-				bus.setHover();
-			}
-			if (bus.isHovered && !bus.inside(e.offsetX, e.offsetY)) {
-				bus.clearHover();
-			}
-		}
 
-		for (let line of grid.lines) {
-			// A DEVELOPPER - Survol des lignes
-		}
-
-		// A DEVELOPPER - Survol des images
 	});
 
-	// Interactions liées à l'appuis sur le bouton gauche de la souris (!= du click)
-	$('#centerArea').on('mousedown', function(e) {
+	// Interactions liées à la relache du bouton gauche de la souris
+	$('#centerArea').on('mousemove', function(e) {
+		
+	});
+}
 
-		// Interaction sur les images en mode édition
-		setInteraction('edition', grid.images, e, function(image) {
-			if(!$('.parametres[imageid="' + grid.images.indexOf(image) + '"]').length) {
-				image.showParameters();
-			}
-		});
+function Grid(data) {
 
-		// Interaction sur les bus en mode résultats
-		setInteraction('resultats', grid.bus, e, function(bus) {
-			if(!$('.addJauge[busid="' + grid.bus.indexOf(bus) + '"]').length) {
-				bus.showAddJauge();
-			}
+	this.bus = [];
+	for (let bus of data.bus) {
+		this.bus.push(new Bus(bus));
+	}
+	this.lines = [];
+	for (let line of data.lines) {
+		this.lines.push(new Line(line));
+	}
+	this.images = [];
+	for (let image of data.images) {
+		this.images.push(new Picture(image));
+	}
+
+	this.redraw = function() {
+		let centerArea = document.getElementById('centerArea');
+		let canvas = document.getElementById('grid');
+
+		canvas.width = centerArea.offsetWidth;
+		canvas.height = centerArea.offsetHeight;
+
+		this.draw();
+	}
+
+	this.draw = function() {
+		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+		this.forAll(function(elmt) {
+			elmt.draw();
 		})
-	});
+	}
 
-	$('#centerArea').on('dragstart')
-}
+	this.setInteractions = function() {
+		thisElmt = this;
+		$('#centerArea').on('mousedown', function(e) {
+			thisElmt.forAll(function(elmt) {
+				elmt.onMouseDown(e);
+			});
+		});
+		$('#centerArea').on('mousemove', function(e) {
+			thisElmt.forAll(function(elmt) {
+				elmt.onMouseMove(e);
+			});
+		});
+		$('#centerArea').on('mouseup', function(e) {
+			thisElmt.forAll(function(elmt) {
+				elmt.onMouseUp(e);
+			});
+		});
+	}
 
-// Crée une interaction spécifique aux paramètres dans une nouvelle fenêtre
-function setInteraction(mode, triggers, event, callback) {
-	if ($('body').attr('id') == mode) {
-		for (let element of triggers) {
-			if (element.inside(event.offsetX, event.offsetY)) {
-				callback(element);
-			}
+	this.forAll = function(f) {
+		for (let bus of grid.bus) {
+			f(bus);
 		}
-	}
-
-	$('.window .close').on('click', function() {
-		$(this).parents('.window').remove();
-	})
-}
-
-// Dessine le réseau
-function drawGrid() {
-	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-	for (let bus of grid.bus) {
-		bus.draw();
-	}
-
-	for (let line of grid.lines) {
-		line.draw();
-	}
-
-	for (let image of grid.images) {
-		image.draw();
+		for (let line of grid.lines) {
+			f(line);
+		}
+		for (let image of grid.images) {
+			f(image);
+		}
 	}
 }
 
@@ -155,14 +141,19 @@ function Bus(data) {
 	bus.setHover = function() {
 		this.isHovered = true;
 		bus.draw = bus.hover;
-		drawGrid();
+		grid.redraw();
 	}
 	// Fonction appelée quand l'élément cesse d'être survolé
 	bus.clearHover = function() {
 		this.isHovered = false;
 		bus.draw = bus.default;
-		drawGrid();
+		grid.redraw();
 	}
+	bus.onClick = function(x, y) {
+		if ($('body').attr('id') == 'resultats') {
+			bus.showAddJauge();
+		}
+	} 
 	// Affiche la fenêtre d'ajout d'un jauge (est appelée lors du click dans le mode résultats)
 	bus.showAddJauge = function() {
 		$.ajax({
@@ -178,6 +169,10 @@ function Bus(data) {
 				// Ajout du html à la zone centrale
 				$('#centerArea .panel.resultats').append(data);
 
+				$('.window .close').on('click', function() {
+					$(this).parents('.window').remove();
+				});
+
 				// Ajout de l'interaction avec les boutons
 				$('.addJauge .button').on('click', function() {
 	    			let busID = $(this).parents('.addJauge').attr('busid');
@@ -186,7 +181,7 @@ function Bus(data) {
 	    			//Affichage de la Jauge et suppression de la fenêtre d'ajout d'une jauge
 	    			grid.bus[busID].showJauge(variable);
 	    			$(this).parents('.window').remove();
-	    		})
+	    		});
 			}
 		});
 	}
@@ -206,6 +201,10 @@ function Line(data) {
 	}
 	line.draw = line.default;
 
+	line.inside = function(x, y) {
+		return false;
+	}
+
 	return line;
 }
 
@@ -219,10 +218,21 @@ function Picture(data) {
 	picture.draw = picture.default;
 
 	picture.inside = function(x, y) {
-		let relX = x - absoluteX(picture.data.x), relY = y - absoluteY(picture.data.y);
+		let absX = x - absoluteX(picture.data.x), absY = y - absoluteY(picture.data.y);
 		let imSize = Math.min(absoluteX(IMAGE_WIDTH), absoluteY(IMAGE_HEIGHT));
-		return ((Math.abs(relX) <= imSize / 2) && (Math.abs(relY) <= imSize / 2));
+		return ((Math.abs(absX) <= imSize / 2) && (Math.abs(absY) <= imSize / 2));
 	}
+	picture.onClick = function(x, y) {
+		if ($('body').attr('id') == 'edition') {
+			picture.showParameters();
+		}
+	}
+	picture.dragEdit = function(x, y) {
+		this.data.x = (x - this.mousedown.x) / ctx.canvas.width * 100;
+		this.data.y = (y - this.mousedown.y) / ctx.canvas.height * 100;
+		grid.redraw();
+	}
+
 	// Affiche la fenêtre des paramètres de l'élément
 	picture.showParameters = function() {
 		$.ajax({
@@ -237,6 +247,10 @@ function Picture(data) {
 			contentType: 'application/json',
 			success: function(data) {
 				$('#centerArea .panel.edition').append(data);
+
+				$('.window .close').on('click', function() {
+					$(this).parents('.window').remove();
+				});
 			}
 		});
 	}
@@ -248,6 +262,35 @@ function Picture(data) {
 function Element(data) {
 	this.data = data;
 	this.isHovered = false;
+	this.isDragged = false;
+
+	this.onMouseDown = function(e) {
+		if (this.inside(e.offsetX, e.offsetY)) {
+			this.mousedown = {
+				x: e.offsetX - absoluteX(this.data.x),
+				y: e.offsetY - absoluteY(this.data.y)
+			};
+		}
+	}
+	this.onMouseMove = function(e) {
+		if (this.inside(e.offsetX, e.offsetY) && !this.hasOwnProperty('mousedown') && !this.isHovered && this.hasOwnProperty('setHover')) {
+			this.setHover();
+		}
+		else if (this.hasOwnProperty('mousedown') && this.hasOwnProperty('dragEdit')) {
+			this.dragEdit(e.offsetX, e.offsetY);
+			this.isDragged = true;
+		}
+		else if (!this.inside(e.offsetX, e.offsetY) && this.isHovered && this.hasOwnProperty('clearHover')) {
+			this.clearHover();
+		}
+	}
+	this.onMouseUp = function(e) {
+		if (this.hasOwnProperty('mousedown') && !this.isDragged && this.hasOwnProperty('onClick')) {
+			this.onClick(this.mousedown.x, this.mousedown.y);
+		}
+		delete this.mousedown;
+		this.isDragged = false;
+	}
 }
 
 function drawPoint(position, size) {
@@ -296,4 +339,12 @@ function absoluteX(x) {
 
 function absoluteY(y) {
 	return y / 100 * ctx.canvas.height;
+}
+
+function relativeX(x) {
+	return x / ctx.canvas.width * 100;
+}
+
+function relativeY(y) {
+	return y / ctx.canvas.height * 100;
 }

@@ -2,8 +2,8 @@ var ctx;
 var background;
 var chart;
 
-var pointSize = 2;
-var selectionSize = 1;
+var pointSizeBis = 2;
+var selectionSizeBis = 1;
 
 function absoluteXBis(x){
     return x / 100 * ctx.canvas.width;
