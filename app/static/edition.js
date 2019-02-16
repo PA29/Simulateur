@@ -33,6 +33,24 @@ function editionJS() {
 	$('#accueil').on('click', function() {
 		document.location.href = "accueil";
 	});
+
+	$('#ilotage input').on('change', function() {
+		if (this.checked) {
+			$('#dureeIlotage').show();
+		}
+		else {
+			$('#dureeIlotage').hide();
+		}
+	});
+
+	$('#ilotagePermanent input').on('change', function() {
+		if (this.checked) {
+			$('#periodeIlotage').hide();
+		}
+		else {
+			$('#periodeIlotage').show();
+		}
+	})
 }
 
 // Animation pendant le calcul de la simulation

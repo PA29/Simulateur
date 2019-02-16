@@ -1,5 +1,3 @@
-var ctx;
-var images = {};
 var grid;
 
 var pointSize = 3; //Rayon d'un bus (point)
@@ -21,8 +19,9 @@ var getGrid = new Promise(function(resolve, reject) {
 
 // Créer le réseau (interactions + affichage)
 function createGrid() {
-	let canvas = document.getElementById('grid');
-	ctx = canvas.getContext('2d');
+	//let canvas = document.getElementById('grid');
+	//ctx = canvas.getContext('2d');
+	canvasGrid = new Canvas('grid');
 
 	getGrid.then(function() {
 		//initInteractions();
@@ -74,14 +73,14 @@ function Grid(data) {
 		let centerArea = document.getElementById('centerArea');
 		let canvas = document.getElementById('grid');
 
-		canvas.width = centerArea.offsetWidth;
-		canvas.height = centerArea.offsetHeight;
+		canvasGrid.canvas.width = centerArea.offsetWidth;
+		canvasGrid.canvas.height = centerArea.offsetHeight;
 
 		this.draw();
 	}
 
 	this.draw = function() {
-		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+		canvasGrid.ctx.clearRect(0, 0, canvasGrid.canvas.width, canvasGrid.canvas.height);
 		this.forAll(function(elmt) {
 			elmt.draw();
 		})
@@ -125,17 +124,17 @@ function Bus(data) {
 
 	// Affichage par défaut
 	bus.default = function() {
-		drawPoint(data, pointSize);
+		canvasGrid.drawPoint(data, pointSize);
 	}
 	// Affichage lors du survol
 	bus.hover = function() {
-		drawPoint(data, pointSize + selectionSize);
+		canvasGrid.drawPoint(data, pointSize + selectionSize);
 	}
 	bus.draw = bus.default; // Variable stockant le type d'affichage
 
 	// Indique si les coordonnées sont dans la zone de sélection de l'élément
 	bus.inside = function(x, y) {
-		return Math.pow(x - absoluteX(data.x), 2) + Math.pow(y - absoluteY(data.y), 2) < Math.pow(pointSize + selectionSize, 2);
+		return Math.pow(x - canvasGrid.absoluteX(data.x), 2) + Math.pow(y - canvasGrid.absoluteY(data.y), 2) < Math.pow(pointSize + selectionSize, 2);
 	}
 	// Fonction appelée quand l'élément commence à être survolé
 	bus.setHover = function() {
@@ -197,7 +196,7 @@ function Bus(data) {
 function Line(data) {
 	let line = new Element(data);
 	line.default = function() {
-		drawStroke(grid.bus[data.bus1].data, grid.bus[data.bus2].data);
+		canvasGrid.drawStroke(grid.bus[data.bus1].data, grid.bus[data.bus2].data);
 	}
 	line.draw = line.default;
 
@@ -212,14 +211,14 @@ function Line(data) {
 function Picture(data) {
 	let picture = new Element(data);
 	picture.default = function() {
-		drawStroke(data, grid.bus[data.bus].data);
-		drawImage(data.type, data);
+		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
+		canvasGrid.drawImage(data.type, data);
 	}
 	picture.draw = picture.default;
 
 	picture.inside = function(x, y) {
-		let absX = x - absoluteX(picture.data.x), absY = y - absoluteY(picture.data.y);
-		let imSize = Math.min(absoluteX(IMAGE_WIDTH), absoluteY(IMAGE_HEIGHT));
+		let absX = x - canvasGrid.absoluteX(picture.data.x), absY = y - canvasGrid.absoluteY(picture.data.y);
+		let imSize = Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT));
 		return ((Math.abs(absX) <= imSize / 2) && (Math.abs(absY) <= imSize / 2));
 	}
 	picture.onClick = function(x, y) {
@@ -228,9 +227,11 @@ function Picture(data) {
 		}
 	}
 	picture.dragEdit = function(x, y) {
-		this.data.x = (x - this.mousedown.x) / ctx.canvas.width * 100;
-		this.data.y = (y - this.mousedown.y) / ctx.canvas.height * 100;
-		grid.redraw();
+		if ($('body').attr('id') == 'edition') {
+			this.data.x = (x - this.mousedown.x) / canvasGrid.canvas.width * 100;
+			this.data.y = (y - this.mousedown.y) / canvasGrid.canvas.height * 100;
+			grid.redraw();
+		}
 	}
 
 	// Affiche la fenêtre des paramètres de l'élément
@@ -267,8 +268,8 @@ function Element(data) {
 	this.onMouseDown = function(e) {
 		if (this.inside(e.offsetX, e.offsetY)) {
 			this.mousedown = {
-				x: e.offsetX - absoluteX(this.data.x),
-				y: e.offsetY - absoluteY(this.data.y)
+				x: e.offsetX - canvasGrid.absoluteX(this.data.x),
+				y: e.offsetY - canvasGrid.absoluteY(this.data.y)
 			};
 		}
 	}
@@ -293,7 +294,7 @@ function Element(data) {
 	}
 }
 
-function drawPoint(position, size) {
+/*function drawPoint(position, size) {
 	ctx.beginPath();
 	ctx.arc(absoluteX(position.x), absoluteY(position.y), size, 0, 2 * Math.PI);
 	ctx.fill();
@@ -347,4 +348,4 @@ function relativeX(x) {
 
 function relativeY(y) {
 	return y / ctx.canvas.height * 100;
-}
+}*/

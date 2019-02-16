@@ -16,16 +16,26 @@
     <div class="container">
         <h1 class="titrespanneauxlateraux">
             ILOTAGE  
-        </h1>
-            
-        <div id = "controlbox">
-        <input type="checkbox" /> îlotage
+        </h1>   
+        <div id="ilotage" class="option">
+            <input type="checkbox" />
+            <label>Ilotage</label>
         </div>
-        <div id = "controlbox">
-        <input type="range" value="heure de debut" id="zoom" min="0" max="24" step="0.5">heure de début <br/>
-        <input type="range" value="heure de fin" id="zoom" min="0" max="24" step="0.5"> heure de fin
-        <div id = "controlbox">
-        <input type="checkbox" /> îlotage permanent 
+        <div id="dureeIlotage" style="display: none">
+            <div id="ilotagePermanent" class="option">
+                <input type="checkbox" />
+                <label>Ilotage permanent</label>
+            </div>
+            <div id="periodeIlotage" class="option">
+                <div id="ilotageDebut">
+                    <span>Heure de début</span>
+                    <input type="range" min="0" max="24" step="0.5">
+                </div>
+                <div id="ilotageFin">
+                    <span>Heure de fin</span>
+                    <input type="range" min="0" max="24" step="0.5">
+                </div>
+            </div>
         </div>
     </div>
 </div>
