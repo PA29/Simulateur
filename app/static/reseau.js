@@ -1,4 +1,8 @@
-var grid;
+/*
+Ce fichier gère le réseau affiché dans les deux modes : edition / résultats
+*/
+
+var grid; //Variable stockant les données du réseau
 
 var pointSize = 3; //Rayon d'un bus (point)
 var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection
@@ -9,59 +13,33 @@ var IMAGE_HEIGHT = 14; //Max en % de la taille par rapport à la hauteur
 var ANIMATION_DISTANCE = 4;
 var ANIMATION_DURATION = 2000;
 
-var tempPower = [true, true, true];
+var tempPower = [true, true, true]; //TEMP// Variable pour tester l'affichage des flux de puissance
 
 //TEMPORAIRE// Chargement d'un réseau de base - Exécution dès le chargement du fichier
 var getGrid = new Promise(function(resolve, reject) {
-	$.get('unScenario', function(data) {
-		//grid = convertGrid(data.grid);
-		grid = new Grid(data.grid);
-		resolve();
+	$.get('unScenario', function(data) { //Requête GET pour obtenir la dernière sauvegarde du réseau
+		grid = new Grid(data.grid); //Création de l'instance de la classe Grid avec les données récupérées
+		resolve(); //Cette ligne appelle la fonction passée en paramètre de getGrid.then() : permet d'attendre que le réseau soit chargé
 	});
 });
 
-/* Affichage et interactions avec le réseau */
-
 // Créer le réseau (interactions + affichage)
 function createGrid() {
-	//let canvas = document.getElementById('grid');
-	//ctx = canvas.getContext('2d');
-	canvasGrid = new Canvas('grid');
+	canvasGrid = new Canvas('grid'); //Création de l'instance de la classe Canvas
 
-	getGrid.then(function() {
-		//initInteractions();
-		//redrawGrid();
-		grid.setInteractions();
-		grid.redraw();
-	}).catch(function() {
+	getGrid.then(function() { //Quand le réseau est chargé (requête GET ligne 20)
+		grid.setInteractions(); //Créer les interactions du réseau avec l'utilisateur (click, survol, etc.)
+		grid.redraw(); //Dessine le réseau (en redimensionnant les éléments en fonction de la taille du canvas)
+	}).catch(function() { //Si un problème s'est produit
 		console.log("Impossible d'afficher le réseau");
 	});
 }
 
-// Active les intéractions avec le réseau (survol, click, drag, ...)
-function initInteractions() {
-
-	// Interactions liées à l'appui sur le bouton gauche de la souris
-	$('#centerArea').on('mousedown', function(e) {
-		for (let bus of grid.bus) {
-			bus.onMouseDown();
-		}
-	});
-
-	// Interactions liées au déplacement de la souris
-	$('#centerArea').on('mousemove', function(e) {
-
-	});
-
-	// Interactions liées à la relache du bouton gauche de la souris
-	$('#centerArea').on('mousemove', function(e) {
-		
-	});
-}
-
+//Classe représentant le réseau
 function Grid(data) {
 	var instance = this;
 
+	//Création de l'instance avec création des attributs bus, lines et images
 	this.bus = [];
 	for (let bus of data.bus) {
 		instance.bus.push(new Bus(bus));
@@ -75,6 +53,7 @@ function Grid(data) {
 		instance.images.push(new Picture(image));
 	}
 
+	//Dessine le réseau en actualisant les dimensions du canvas
 	this.redraw = function() {
 		let centerArea = document.getElementById('centerArea');
 		let canvas = document.getElementById('grid');
@@ -85,9 +64,10 @@ function Grid(data) {
 		instance.draw();
 	}
 
+	//Dessine le réseau
 	this.draw = function() {
-		canvasGrid.ctx.clearRect(0, 0, canvasGrid.canvas.width, canvasGrid.canvas.height);
-		instance.forAll(function(elmt) {
+		canvasGrid.ctx.clearRect(0, 0, canvasGrid.canvas.width, canvasGrid.canvas.height); //Efface tout le contenu du canvas
+		instance.forEach(function(elmt) { //Dessine chaque élément du réseau
 			elmt.draw();
 		});
 
@@ -99,24 +79,26 @@ function Grid(data) {
 		}
 	}
 
+	//Créer les interactions entre le canvas et l'utilisateur
 	this.setInteractions = function() {
 		$('#centerArea').on('mousedown', function(e) {
-			instance.forAll(function(elmt) {
+			instance.forEach(function(elmt) {
 				elmt.onMouseDown(e);
 			});
 		});
 		$('#centerArea').on('mousemove', function(e) {
-			instance.forAll(function(elmt) {
+			instance.forEach(function(elmt) {
 				elmt.onMouseMove(e);
 			});
 		});
 		$('#centerArea').on('mouseup', function(e) {
-			instance.forAll(function(elmt) {
+			instance.forEach(function(elmt) {
 				elmt.onMouseUp(e);
 			});
 		});
 	}
 
+	//Démarre la boucle permettant d'animer le canvas autour de 60FPS
 	this.startPowerFlow = function() {
 		let t0 = (new Date()).getTime(), dt = 0;
 
@@ -133,11 +115,13 @@ function Grid(data) {
 		instance.request = requestAnimationFrame(refresh);
 	}
 
+	//Arrête la boucle
 	this.stopPowerFlow = function() {
 		cancelAnimationFrame(instance.request);
 	}
 
-	this.forAll = function(f) {
+	//Appelle la fonction f pour chaque élément du réseau
+	this.forEach = function(f) {
 		for (let bus of grid.bus) {
 			f(bus);
 		}
@@ -342,59 +326,3 @@ function Element(data) {
 		this.isDragged = false;
 	}
 }
-
-/*function drawPoint(position, size) {
-	ctx.beginPath();
-	ctx.arc(absoluteX(position.x), absoluteY(position.y), size, 0, 2 * Math.PI);
-	ctx.fill();
-}
-
-function drawStroke(position1, position2) {
-	ctx.beginPath();
-	ctx.moveTo(absoluteX(position1.x), absoluteY(position1.y));
-	ctx.lineTo(absoluteX(position2.x), absoluteY(position2.y));
-	ctx.stroke();
-}
-
-function drawImage(imageName, position) {
-	let imSize = Math.min(absoluteX(IMAGE_WIDTH), absoluteY(IMAGE_HEIGHT))
-
-	if (!images.hasOwnProperty(imageName)) { // Si l'image n'est pas stocké dans 'images' (= si elle n'a oas déjà été chargée)
-		let im = new Image();
-		im.onload = function() { // Quand l'image sera chargée
-			pre = document.createElement('canvas'); // Sorte de sous-canvas permettant de pré-rendre l'image (gain en performances)
-			pre.width = im.width;
-			pre.height = im.height;
-			preCtx = pre.getContext('2d');
-			preCtx.drawImage(im, 0, 0); // L'image est rendue sur le sous-canvas
-
-			// On stocke le sous-canvas si l'image doit être ré-utilisée
-			images[imageName] = pre;
-
-			// On affiche le sous-canvas sur le canvas visible à l'écran
-			ctx.drawImage(pre, absoluteX(position.x) - imSize / 2, absoluteY(position.y) - imSize / 2, imSize, imSize);
-		}
-		im.src = '/static/' + imageName + '.png';
-	}
-	else { // Si l'image avait déjà été chargée, on réutilise le sous-canvas (on ne recharge pas l'image)
-		let pre = images[imageName]
-		ctx.drawImage(pre, absoluteX(position.x) - imSize / 2, absoluteY(position.y) - imSize / 2, imSize, imSize);
-	}
-}
-
-// Conversion entre position relative (en %) et position absolue (en px)
-function absoluteX(x) {
-	return x / 100 * ctx.canvas.width;
-}
-
-function absoluteY(y) {
-	return y / 100 * ctx.canvas.height;
-}
-
-function relativeX(x) {
-	return x / ctx.canvas.width * 100;
-}
-
-function relativeY(y) {
-	return y / ctx.canvas.height * 100;
-}*/

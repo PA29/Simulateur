@@ -1,16 +1,25 @@
+/*
+Ce fichier implémente la classe Canvas, utilisée dans les fichiers reseau.js et chart.js
+La classe contient des méthodes pour dessiner l'ensemble du contenu graphique nécéssaire (pour l'instant surtout pour reseau.js)
+*/
+
 var images = {};
 
 function Canvas(id) {
-	this.canvas = document.getElementById(id);
-	this.ctx = this.canvas.getContext('2d');
+	this.canvas = document.getElementById(id); //Le canvas, comme objet HTML, récupéré par son identifiant
+	this.ctx = this.canvas.getContext('2d'); //Le contexte associé au canvas. Nécéssaire pour dessiner sur le canvas
 
 	this.drawPoint = function(position, size) {
+		//Dessine un point à la position définie (en %) et de rayon size (en px)
+
 		this.ctx.beginPath();
 		this.ctx.arc(this.absoluteX(position.x), this.absoluteY(position.y), size, 0, 2 * Math.PI);
 		this.ctx.fill();
 	}
 
 	this.drawStroke = function(position1, position2) {
+		//Dessine un trait entre la position1 (en %) et la position2 (en %)
+
 		this.ctx.beginPath();
 		this.ctx.moveTo(this.absoluteX(position1.x), this.absoluteY(position1.y));
 		this.ctx.lineTo(this.absoluteX(position2.x), this.absoluteY(position2.y));
@@ -18,12 +27,17 @@ function Canvas(id) {
 	}
 
 	this.drawImage = function(imageName, position) {
-		let imSize = Math.min(this.absoluteX(IMAGE_WIDTH), this.absoluteY(IMAGE_HEIGHT))
+		/*Dessine l'image de nom 'imageName' centrée en une certaine position (en %)
+		La fonction utilise la variable 'images' pour stocker les images chargées.
+		Lorsqu'une image a déjà été utilisée, elle est récupérée à partir de la variable 'images'
+		Cela évite de recharger plusieurs fois la même image*/
 
-		if (!images.hasOwnProperty(imageName)) { // Si l'image n'est pas stocké dans 'images' (= si elle n'a oas déjà été chargée)
-			let obj = this;
+		let instance = this; //Permet de stocker l'instance de Canvas. La variable this change de valeur avec 'im.onload'
+		let imSize = Math.min(this.absoluteX(IMAGE_WIDTH), this.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
+
+		if (!images.hasOwnProperty(imageName)) { // Si l'image n'est pas stockée dans 'images' (= si elle n'a pas déjà été chargée)
 			let im = new Image();
-			im.onload = function() { // Quand l'image sera chargée
+			im.onload = function() { // Quand l'image est chargée
 				pre = document.createElement('canvas'); // Sorte de sous-canvas permettant de pré-rendre l'image (gain en performances)
 				pre.width = im.width;
 				pre.height = im.height;
@@ -34,9 +48,9 @@ function Canvas(id) {
 				images[imageName] = pre;
 
 				// On affiche le sous-canvas sur le canvas visible à l'écran
-				obj.ctx.drawImage(pre, obj.absoluteX(position.x) - imSize / 2, obj.absoluteY(position.y) - imSize / 2, imSize, imSize);
+				instance.ctx.drawImage(pre, instance.absoluteX(position.x) - imSize / 2, instance.absoluteY(position.y) - imSize / 2, imSize, imSize);
 			}
-			im.src = '/static/' + imageName + '.png';
+			im.src = '/static/' + imageName + '.png'; //L'url de l'image est fourni (le chargement de l'image commence dès que cette ligne est executée)
 		}
 		else { // Si l'image avait déjà été chargée, on réutilise le sous-canvas (on ne recharge pas l'image)
 			let pre = images[imageName]
