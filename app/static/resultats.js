@@ -1,5 +1,6 @@
 function resultatsJS() {
 	$('#edit').on('click', function() {
+		grid.stopPowerFlow();
 		direct('edition');
 	});
 

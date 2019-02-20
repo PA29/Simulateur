@@ -37,7 +37,10 @@ def getDureeSimulation():
 
 @app.route('/simulation', methods = ['POST'])
 def getResultatsSimulation():
+	json = request.get_json()
+
 	#A DEVELOPPER
+	print("Simulation avec ", json)
 	return jsonify({}) #TEMPORAIRE
 
 @app.route('/resultats')
