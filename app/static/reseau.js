@@ -10,6 +10,8 @@ var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sél
 var IMAGE_WIDTH = 8; //Max en % de la taille par rapport à la largeur
 var IMAGE_HEIGHT = 14; //Max en % de la taille par rapport à la hauteur
 
+var SHADOW_COLOR = 'lightgrey';
+
 var ANIMATION_DISTANCE = 4;
 var ANIMATION_DURATION = 2000;
 
@@ -145,6 +147,7 @@ function Bus(data) {
 	}
 	// Affichage lors du survol
 	bus.hover = function() {
+		console.log("Test");
 		canvasGrid.drawPoint(data, pointSize + selectionSize);
 	}
 	bus.draw = bus.default; // Variable stockant le type d'affichage
@@ -152,18 +155,6 @@ function Bus(data) {
 	// Indique si les coordonnées sont dans la zone de sélection de l'élément
 	bus.inside = function(x, y) {
 		return Math.pow(x - canvasGrid.absoluteX(data.x), 2) + Math.pow(y - canvasGrid.absoluteY(data.y), 2) < Math.pow(pointSize + selectionSize, 2);
-	}
-	// Fonction appelée quand l'élément commence à être survolé
-	bus.setHover = function() {
-		this.isHovered = true;
-		bus.draw = bus.hover;
-		grid.redraw();
-	}
-	// Fonction appelée quand l'élément cesse d'être survolé
-	bus.clearHover = function() {
-		this.isHovered = false;
-		bus.draw = bus.default;
-		grid.redraw();
 	}
 	bus.onClick = function(x, y) {
 		if ($('body').attr('id') == 'resultats') {
@@ -243,9 +234,19 @@ function Line(data) {
 // Classe définissant un élément du réseau
 function Picture(data) {
 	let picture = new Element(data);
+	let imSize = function() {
+		return Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
+	}
+
 	picture.default = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
-		canvasGrid.drawImage(data.type, data);
+		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, 'white');
+		canvasGrid.drawImage(data.type, data, imSize());
+	}
+	picture.hover = function() {
+		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
+		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, SHADOW_COLOR);
+		canvasGrid.drawImage(data.type, data, imSize());
 	}
 	picture.draw = picture.default;
 
@@ -294,35 +295,47 @@ function Picture(data) {
 
 // Classe générique pour Bus, Line et Picture
 function Element(data) {
-	this.data = data;
-	this.isHovered = false;
-	this.isDragged = false;
+	let instance = this;
+	instance.data = data;
+	instance.isHovered = false;
+	instance.isDragged = false;
 
-	this.onMouseDown = function(e) {
-		if (this.inside(e.offsetX, e.offsetY)) {
-			this.mousedown = {
-				x: e.offsetX - canvasGrid.absoluteX(this.data.x),
-				y: e.offsetY - canvasGrid.absoluteY(this.data.y)
+	instance.onMouseDown = function(e) {
+		if (instance.inside(e.offsetX, e.offsetY)) {
+			instance.mousedown = {
+				x: e.offsetX - canvasGrid.absoluteX(instance.data.x),
+				y: e.offsetY - canvasGrid.absoluteY(instance.data.y)
 			};
 		}
 	}
-	this.onMouseMove = function(e) {
-		if (this.inside(e.offsetX, e.offsetY) && !this.hasOwnProperty('mousedown') && !this.isHovered && this.hasOwnProperty('setHover')) {
-			this.setHover();
+	instance.onMouseMove = function(e) {
+
+		if (instance.inside(e.offsetX, e.offsetY) && !instance.hasOwnProperty('mousedown') && !instance.isHovered) {
+			instance.isHovered = true;
+
+			if (instance.hasOwnProperty('hover')) {
+				instance.draw = instance.hover;
+				grid.draw();
+			}
 		}
-		else if (this.hasOwnProperty('mousedown') && this.hasOwnProperty('dragEdit')) {
-			this.dragEdit(e.offsetX, e.offsetY);
-			this.isDragged = true;
+		else if (instance.hasOwnProperty('mousedown') && instance.hasOwnProperty('dragEdit')) {
+			instance.dragEdit(e.offsetX, e.offsetY);
+			instance.isDragged = true;
 		}
-		else if (!this.inside(e.offsetX, e.offsetY) && this.isHovered && this.hasOwnProperty('clearHover')) {
-			this.clearHover();
+		else if (!instance.inside(e.offsetX, e.offsetY) && instance.isHovered) {
+			instance.isHovered = false;
+
+			if (instance.draw != instance.default) {
+				instance.draw = instance.default;
+				grid.draw();
+			}
 		}
 	}
-	this.onMouseUp = function(e) {
-		if (this.hasOwnProperty('mousedown') && !this.isDragged && this.hasOwnProperty('onClick')) {
-			this.onClick(this.mousedown.x, this.mousedown.y);
+	instance.onMouseUp = function(e) {
+		if (instance.hasOwnProperty('mousedown') && !instance.isDragged && instance.hasOwnProperty('onClick')) {
+			instance.onClick(instance.mousedown.x, instance.mousedown.y);
 		}
-		delete this.mousedown;
-		this.isDragged = false;
+		delete instance.mousedown;
+		instance.isDragged = false;
 	}
 }
