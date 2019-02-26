@@ -57,6 +57,27 @@ function Grid(data) {
 		instance.images.push(new Picture(image));
 	}
 
+	//Renvoie les données nécéssaires à la simulation
+	this.simulationParam = function() {
+		let param = {
+			bus: [],
+			lines: [],
+			components: []
+		}
+
+		for (let bus of grid.bus) {
+			param.bus.push(bus.data);
+		}
+		for (let line of grid.lines) {
+			param.lines.push(line.data);
+		}
+		for (let component of grid.images) {
+			param.components.push(component.data);
+		}
+
+		return param;
+	}
+
 	//Dessine le réseau en actualisant les dimensions du canvas
 	this.redraw = function() {
 		let centerArea = document.getElementById('centerArea');

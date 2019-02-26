@@ -13,7 +13,7 @@ function editionJS() {
 
 				animationSimulation(data.duree); // Lancement de l'animation
 
-				let simulationParam = {grid : grid};
+				let simulationParam = {grid : grid.simulationParam()};
 				simulationParam.season = false;
 				if ($('#ilotage input')[0].checked) {
 					if ($('#ilotagePermanent input')[0].checked) {
