@@ -3,6 +3,7 @@ Ce fichier gère le réseau affiché dans les deux modes : edition / résultats
 */
 
 var grid; //Variable stockant les données du réseau
+var canvasGrid; //Variable stockant le canvas du réseau
 
 var pointSize = 3; //Rayon d'un bus (point)
 var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection
@@ -15,7 +16,7 @@ var SHADOW_COLOR = 'lightgrey';
 var ANIMATION_DISTANCE = 4;
 var ANIMATION_DURATION = 2000;
 
-var tempPower = [true, true, true]; //TEMP// Variable pour tester l'affichage des flux de puissance
+var tempPower = [true, false, true]; //TEMP// Variable pour tester l'affichage des flux de puissance
 
 //TEMPORAIRE// Chargement d'un réseau de base - Exécution dès le chargement du fichier
 var getGrid = new Promise(function(resolve, reject) {
@@ -27,6 +28,7 @@ var getGrid = new Promise(function(resolve, reject) {
 
 // Créer le réseau (interactions + affichage)
 function createGrid() {
+	console.log(canvasGrid);
 	canvasGrid = new Canvas('grid'); //Création de l'instance de la classe Canvas
 
 	getGrid.then(function() { //Quand le réseau est chargé (requête GET ligne 20)
