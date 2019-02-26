@@ -6,7 +6,7 @@ Created on Tue Jan 15 11:22:17 2019
 """
 
 # fichier _init_.py uniquement pour créer un package de modules
-import calc
-import construct
-import lines_values
-print('cc')
+from loadflow_NR_battery import calc
+from loadflow_NR_battery import construct
+from loadflow_NR_battery import lines_values
+from loadflow_NR_battery import total_lf

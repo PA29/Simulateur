@@ -5,15 +5,16 @@ Created on Tue Nov 20 17:31:24 2018
 @author: Tanguy
 """
 
-from .functions import render_template
 from app import app
+from .functions import render_template
 from .database import cursor
 from flask import jsonify, request
+from loadflow_NR_battery import total_lf
 
 grid = {
 	'bus': [{'x': 50, 'y': 30}, {'x': 50, 'y': 50}, {'x': 25, 'y': 75}, {'x': 75, 'y': 75}],
-	'lines': [{'bus1': 0, 'bus2': 1, 'length': 10}, {'bus1': 1, 'bus2': 2, 'length': 10}, {'bus1': 1, 'bus2': 3, 'length': 10}],
-	'images': [{'type': 'transfo', 'x': 50, 'y': 20, 'bus': 0, 'P': 100, 'V': 230}, {'type': 'consommateur', 'x': 50, 'y': 90, 'bus': 2}]
+	'lines': [{'bus1': 0, 'bus2': 1, 'r':0.44, 'x':0.35, 'length': 10}, {'bus1': 1, 'bus2': 2, 'r':0.44, 'x':0.35, 'length': 10}, {'bus1': 1, 'bus2': 3, 'r':0.44, 'x':0.35,  'length': 10}],
+	'images': [{'type': 'transfo', 'x': 50, 'y': 20, 'bus': 0, 'Theta': 0.0, 'V': 400}, {'type': 'consommateur', 'x': 50, 'y': 80, 'bus': 1, 'P':-3.0, 'Q':-1.8}, {'type': 'consommateur', 'x': 20, 'y': 90, 'bus': 2, 'P':-3.0, 'Q':-1.8}, {'type': 'producteur', 'x': 80, 'y': 50, 'bus': 3, 'P':6, 'V':405}]
 }
 
 @app.route('/')
@@ -37,8 +38,10 @@ def getDureeSimulation():
 
 @app.route('/simulation', methods = ['POST'])
 def getResultatsSimulation():
-	#A DEVELOPPER
-	return jsonify({}) #TEMPORAIRE
+    #A DEVELOPPER
+    buses, lines = total_lf.listsfromdict(grid)
+    buses, lines, liste_buses, P, Q, V, theta, I, Sl, S = total_lf.calcul_total(buses, lines)
+    return jsonify({"buses":buses, "lines":lines, "liste_bus":liste_buses.tolist(), "P":P.tolist(), "Q":Q.tolist(), "V":V.tolist(), "theta":theta.tolist(), "abs(I)":(abs(I)).tolist(), "Sl":(abs(Sl)).tolist(), "S":(abs(S)).tolist()}) #TEMPORAIRE
 
 @app.route('/resultats')
 def resultats():
@@ -61,7 +64,9 @@ def getAddJauge():
 	return render_template('_addJauge', json = json)
 
 def getVariables(type):
-	if type == 'transfo':
-		return {'P': [100, 200, 300], 'V': [230]}
-	elif type == 'consommateur':
-		return {'P': [100, 200, 300], 'Q': [100, 200, 300]}
+    if type == 'transfo':
+        return {'Tension (V)': [380, 400, 420]}
+    elif type == 'consommateur':
+        return {'Puissance (kW)': [3, 6, 9, 12], 'Facteur de puissance': [0.8, 0.9, 1]}
+    elif type == 'producteur':
+        return {'Puissance (kW)': [3, 6, 9, 12], 'Tension (V)': [380, 400, 420]}

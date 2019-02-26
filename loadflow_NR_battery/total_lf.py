@@ -4,17 +4,27 @@ Created on Tue Feb 12 14:37:48 2019
 
 @author: Loïc
 """
-#import sys
-##ajout du dossier au path pour pouvoir importer les modules sans les déplacer dans le site-package d'anaconda
-#sys.path.append('C:\\Users\\Loïc\\Documents\\Cours\\PA IntiGrid\\LoadFlow')
-import loadflow_NR_battery as lf
-import loadflow_NR_battery.construct
-import loadflow_NR_battery.calc
-import loadflow_NR_battery.lines_values
-from copy import deepcopy
-import numpy as np
 
-def total_lf(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 50000):
+##ajout du dossier au path pour pouvoir importer les modules sans les déplacer dans le site-package d'anaconda
+import sys
+sys.path.append('C:\\Users\\Loïc\\Documents\\Cours\\PA IntiGrid\\LoadFlow\\GitHub\\Simulateur')
+import loadflow_NR_battery as lf
+from copy import deepcopy
+
+
+def listsfromdict(grid):
+    dict_bus = grid.get('images')
+    buses = []
+    for bus in dict_bus:
+        buses.append([bus.get('bus'), bus.get('type'), bus.get('Theta'), bus.get('P'), bus.get('Q'), bus.get('V')])
+    buses = [[i for i in buses[j] if i!=None] for j in range(len(buses))]
+    dict_line = grid.get('lines')
+    lines = []
+    for line in dict_line:
+        lines.append([line.get('bus1'), line.get('bus2'), line.get('r'), line.get('x'), line.get('length')])
+    return(buses, lines)
+
+def calcul_total(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 50000):
     Pb = Sb #VAR (égal à Sb)
     Qb = Sb #VAR (égal à Sb)
     Ib = Sb/(3**(1/2) * Ub)
@@ -25,16 +35,16 @@ def total_lf(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 50000):
         line[4] = line[4]
     buses0 = deepcopy(buses)
     for bus in buses0:
-        if bus[1] == 0:
+        if bus[1] == 'transfo':
             bus[3] = bus[3]/Ub
-        if bus[1] == 1:
+        if bus[1] == 'consommateur':
             bus[2] = bus[2]*1000/Pb
             bus[3] = bus[3]*1000/Qb
-        if bus[1] == 2:
+        if bus[1] == 'producteur':
             bus[2] = bus[2]*1000/Pb
             bus[3] = bus[3]/Ub
-        if bus[1] == 3:             # conso avec P, Q = 0
-            bus[1] = 1
+        if bus[1] == 'batterie':             # conso avec P, Q = 0
+            bus[1] = 'consommateur'
             bus[2] = 0
             bus[3] = 0
     Y = lf.construct.Y(lines, buses0)
@@ -55,40 +65,40 @@ def total_lf(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 50000):
 
     if P_r[0] > Ps :
         for bus in buses1:
-            if bus[1] == 0:
+            if bus[1] == 'transfo':
                 bus[3] = bus[3]/Ub
-            if bus[1] == 1:
+            if bus[1] == 'consommateur':
                 bus[2] = bus[2]*1000/Pb
                 bus[3] = bus[3]*1000/Qb
-            if bus[1] == 2:
+            if bus[1] == 'producteur':
                 bus[2] = bus[2]*1000/Pb
                 bus[3] = bus[3]/Ub
-            if bus[1] == 3:             # conso avec P, Q = 0
+            if bus[1] == 'batterie':             # conso avec P, Q = 0
                 if bus[3] < Cs:
-                    bus[1] = 1
+                    bus[1] = 'consommateur'
                     bus[2] = 0
                     bus[3] = 0
                 if bus[3] > Cs:         # prod avec P=Pbat, V=Vnom
-                    bus[1] = 2
+                    bus[1] = 'producteur'
                     bus[2] = bus[2]*1000/Pb
                     bus[3] = 1
     else:
         for bus in buses1:
-            if bus[1] == 0:
+            if bus[1] == 'transfo':
                 bus[3] = bus[3]/Ub
-            if bus[1] == 1:
+            if bus[1] == 'consommateur':
                 bus[2] = bus[2]*1000/Pb
                 bus[3] = bus[3]*1000/Qb
-            if bus[1] == 2:
+            if bus[1] == 'producteur':
                 bus[2] = bus[2]*1000/Pb
                 bus[3] = bus[3]/Ub
-            if bus[1] == 3:             # conso avec P, Q = -Pbatt, -Qbatt
+            if bus[1] == 'batterie':             # conso avec P, Q = -Pbatt, -Qbatt
                 if bus[3] < 0.95:
-                    bus[1] = 1
+                    bus[1] = 'consommateur'
                     bus[2] = -bus[2]*1000/Pb
                     bus[3] = 0.48 * bus[2]
                 else:                   #conso avec P,Q = 0
-                    bus[1] = 1
+                    bus[1] = 'consommateur'
                     bus[2] = 0
                     bus[3] = 0
         
@@ -119,7 +129,7 @@ def total_lf(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 50000):
     buses2 = deepcopy(buses)
     pas_temps = 0.5 #heure
     for bus in buses2:
-        if bus[1] == 3:
+        if bus[1] == 'batterie':
             Cmax = bus[4]
             SOC = bus[3]
             id_bus = bus[0]

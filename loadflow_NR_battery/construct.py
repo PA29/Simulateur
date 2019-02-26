@@ -35,19 +35,19 @@ def powers(matY, buses=buses):
     t0 = np.array([])
     liste = np.array([])
     for bus in buses:
-        if bus[1] == 0:
+        if bus[1] == 'transfo':
             t0 = np.append(t0, bus[2])
             V = np.append(V, bus[3])
             liste = np.append(liste, bus[0])
     for bus in buses:
-        if bus[1] == 1:
+        if bus[1] == 'consommateur':
             P = np.append(P, bus[2])
             Q = np.append(Q, bus[3])
             V = np.append(V, 1.0)
             t0 = np.append(t0, 0.0)
             liste = np.append(liste, bus[0])
     for bus in buses:
-        if bus[1] == 2:
+        if bus[1] == 'producteur':
             P = np.append(P, bus[2])
             V = np.append(V, bus[3])
             t0 = np.append(t0, 0.0)
