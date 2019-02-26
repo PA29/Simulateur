@@ -11,7 +11,7 @@ $(document).ready(function() {
 
 // Quand la fenêtre est redimensionnée, on redessine le réseau
 window.onresize = function() {
-	redrawGrid();
+	grid.redraw();
 }
 
 // Ajoute tous les panels aux différentes zones (par défaut, ils sont invisibles)

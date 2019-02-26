@@ -1,6 +1,8 @@
-var ctx;
-var images = {};
-var grid;
+/*
+Ce fichier gère le réseau affiché dans les deux modes : edition / résultats
+*/
+
+var grid; //Variable stockant les données du réseau
 
 var pointSize = 3; //Rayon d'un bus (point)
 var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection
@@ -8,161 +10,157 @@ var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sél
 var IMAGE_WIDTH = 8; //Max en % de la taille par rapport à la largeur
 var IMAGE_HEIGHT = 14; //Max en % de la taille par rapport à la hauteur
 
+var SHADOW_COLOR = 'lightgrey';
+
+var ANIMATION_DISTANCE = 4;
+var ANIMATION_DURATION = 2000;
+
+var tempPower = [true, true, true]; //TEMP// Variable pour tester l'affichage des flux de puissance
+
 //TEMPORAIRE// Chargement d'un réseau de base - Exécution dès le chargement du fichier
 var getGrid = new Promise(function(resolve, reject) {
-	$.get('unScenario', function(data) {
-		grid = convertGrid(data.grid);
-		resolve();
+	$.get('unScenario', function(data) { //Requête GET pour obtenir la dernière sauvegarde du réseau
+		grid = new Grid(data.grid); //Création de l'instance de la classe Grid avec les données récupérées
+		resolve(); //Cette ligne appelle la fonction passée en paramètre de getGrid.then() : permet d'attendre que le réseau soit chargé
 	});
 });
 
-//Transforme les objets JSON contenus dans 'data' en objets Bus, Line ou Picture
-function convertGrid(data) {
-	let grid = {bus: [], lines: [], images: []};
-
-	for (let bus of data.bus) {
-		grid.bus.push(new Bus(bus));
-	}
-	for (let line of data.lines) {
-		grid.lines.push(new Line(line));
-	}
-	for (let image of data.images) {
-		grid.images.push(new Picture(image));
-	}
-
-	return grid
-}
-
-/* Affichage et interactions avec le réseau */
-
 // Créer le réseau (interactions + affichage)
 function createGrid() {
-	let canvas = document.getElementById('grid');
-	ctx = canvas.getContext('2d');
+	canvasGrid = new Canvas('grid'); //Création de l'instance de la classe Canvas
 
-	getGrid.then(function() {
-		initInteractions();
-		redrawGrid();
-	}).catch(function() {
+	getGrid.then(function() { //Quand le réseau est chargé (requête GET ligne 20)
+		grid.setInteractions(); //Créer les interactions du réseau avec l'utilisateur (click, survol, etc.)
+		grid.redraw(); //Dessine le réseau (en redimensionnant les éléments en fonction de la taille du canvas)
+	}).catch(function() { //Si un problème s'est produit
 		console.log("Impossible d'afficher le réseau");
 	});
 }
 
-// Redessine le réseau à partir des dimensions du canvas
-function redrawGrid() {
-	let centerArea = document.getElementById('centerArea');
-	let canvas = document.getElementById('grid');
+//Classe représentant le réseau
+function Grid(data) {
+	var instance = this;
 
-	canvas.width = centerArea.offsetWidth;
-	canvas.height = centerArea.offsetHeight;
+	//Création de l'instance avec création des attributs bus, lines et images
+	this.bus = [];
+	for (let bus of data.bus) {
+		instance.bus.push(new Bus(bus));
+	}
+	this.lines = [];
+	for (let line of data.lines) {
+		instance.lines.push(new Line(line));
+	}
+	this.images = [];
+	for (let image of data.images) {
+		instance.images.push(new Picture(image));
+	}
 
-	drawGrid(grid);
-}
+	//Dessine le réseau en actualisant les dimensions du canvas
+	this.redraw = function() {
+		let centerArea = document.getElementById('centerArea');
+		let canvas = document.getElementById('grid');
 
-// Active les intéractions avec le réseau (survol, click, drag, ...)
-function initInteractions() {
+		canvasGrid.canvas.width = centerArea.offsetWidth;
+		canvasGrid.canvas.height = centerArea.offsetHeight;
 
-	// Interactions liées au déplacement de la souris
-	$('#centerArea').on('mousemove', function(e) {
-		for (let bus of grid.bus) {
-			if (bus.inside(e.offsetX, e.offsetY) && !bus.isHovered) {
-				bus.setHover();
-			}
-			if (bus.isHovered && !bus.inside(e.offsetX, e.offsetY)) {
-				bus.clearHover();
-			}
-		}
+		instance.draw();
+	}
 
-		for (let line of grid.lines) {
-			// A DEVELOPPER - Survol des lignes
-		}
-
-		// A DEVELOPPER - Survol des images
-	});
-
-	// Interactions liées à l'appuis sur le bouton gauche de la souris (!= du click)
-	$('#centerArea').on('mousedown', function(e) {
-
-		// Interaction sur les images en mode édition
-		setInteraction('edition', grid.images, e, function(image) {
-			if(!$('.parametres[imageid="' + grid.images.indexOf(image) + '"]').length) {
-				image.showParameters();
-			}
+	//Dessine le réseau
+	this.draw = function() {
+		canvasGrid.ctx.clearRect(0, 0, canvasGrid.canvas.width, canvasGrid.canvas.height); //Efface tout le contenu du canvas
+		instance.forEach(function(elmt) { //Dessine chaque élément du réseau
+			elmt.draw();
 		});
 
-		// Interaction sur les bus en mode résultats
-		setInteraction('resultats', grid.bus, e, function(bus) {
-			if(!$('.addJauge[busid="' + grid.bus.indexOf(bus) + '"]').length) {
-				bus.showAddJauge();
-			}
-		})
-	});
-
-	$('#centerArea').on('dragstart')
-}
-
-// Crée une interaction spécifique aux paramètres dans une nouvelle fenêtre
-function setInteraction(mode, triggers, event, callback) {
-	if ($('body').attr('id') == mode) {
-		for (let element of triggers) {
-			if (element.inside(event.offsetX, event.offsetY)) {
-				callback(element);
-			}
+		if ($('body').attr('id') == 'resultats') {
+			instance.lines.forEach(function(elmt) {
+				let intensity = (tempPower[grid.lines.indexOf(elmt)]) ? 1 : -1;
+				elmt.drawFlow(intensity);
+			})
 		}
 	}
 
-	$('.window .close').on('click', function() {
-		$(this).parents('.window').remove();
-	})
-}
-
-// Dessine le réseau
-function drawGrid() {
-	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-	for (let bus of grid.bus) {
-		bus.draw();
+	//Créer les interactions entre le canvas et l'utilisateur
+	this.setInteractions = function() {
+		$('#centerArea').on('mousedown', function(e) {
+			instance.forEach(function(elmt) {
+				elmt.onMouseDown(e);
+			});
+		});
+		$('#centerArea').on('mousemove', function(e) {
+			instance.forEach(function(elmt) {
+				elmt.onMouseMove(e);
+			});
+		});
+		$('#centerArea').on('mouseup', function(e) {
+			instance.forEach(function(elmt) {
+				elmt.onMouseUp(e);
+			});
+		});
 	}
 
-	for (let line of grid.lines) {
-		line.draw();
+	//Démarre la boucle permettant d'animer le canvas autour de 60FPS
+	this.startPowerFlow = function() {
+		let t0 = (new Date()).getTime(), dt = 0;
+
+		function refresh() {
+			dt = (new Date()).getTime() - t0;
+			t0 = (new Date()).getTime();
+
+			grid.bus[0].arrowPos = (grid.bus[0].arrowPos - dt / ANIMATION_DURATION * ANIMATION_DISTANCE) % ANIMATION_DISTANCE;
+			instance.draw();
+
+			instance.request = requestAnimationFrame(refresh);
+		}
+
+		instance.request = requestAnimationFrame(refresh);
 	}
 
-	for (let image of grid.images) {
-		image.draw();
+	//Arrête la boucle
+	this.stopPowerFlow = function() {
+		cancelAnimationFrame(instance.request);
+	}
+
+	//Appelle la fonction f pour chaque élément du réseau
+	this.forEach = function(f) {
+		for (let bus of grid.bus) {
+			f(bus);
+		}
+		for (let line of grid.lines) {
+			f(line);
+		}
+		for (let image of grid.images) {
+			f(image);
+		}
 	}
 }
 
 // Classe définissant un bus
 function Bus(data) {
 	let bus = new Element(data);
+	bus.arrowPos = 0;
 
 	// Affichage par défaut
 	bus.default = function() {
-		drawPoint(data, pointSize);
+		canvasGrid.drawPoint(data, pointSize);
 	}
 	// Affichage lors du survol
 	bus.hover = function() {
-		drawPoint(data, pointSize + selectionSize);
+		console.log("Test");
+		canvasGrid.drawPoint(data, pointSize + selectionSize);
 	}
 	bus.draw = bus.default; // Variable stockant le type d'affichage
 
 	// Indique si les coordonnées sont dans la zone de sélection de l'élément
 	bus.inside = function(x, y) {
-		return Math.pow(x - absoluteX(data.x), 2) + Math.pow(y - absoluteY(data.y), 2) < Math.pow(pointSize + selectionSize, 2);
+		return Math.pow(x - canvasGrid.absoluteX(data.x), 2) + Math.pow(y - canvasGrid.absoluteY(data.y), 2) < Math.pow(pointSize + selectionSize, 2);
 	}
-	// Fonction appelée quand l'élément commence à être survolé
-	bus.setHover = function() {
-		this.isHovered = true;
-		bus.draw = bus.hover;
-		drawGrid();
-	}
-	// Fonction appelée quand l'élément cesse d'être survolé
-	bus.clearHover = function() {
-		this.isHovered = false;
-		bus.draw = bus.default;
-		drawGrid();
-	}
+	bus.onClick = function(x, y) {
+		if ($('body').attr('id') == 'resultats') {
+			bus.showAddJauge();
+		}
+	} 
 	// Affiche la fenêtre d'ajout d'un jauge (est appelée lors du click dans le mode résultats)
 	bus.showAddJauge = function() {
 		$.ajax({
@@ -178,6 +176,10 @@ function Bus(data) {
 				// Ajout du html à la zone centrale
 				$('#centerArea .panel.resultats').append(data);
 
+				$('.window .close').on('click', function() {
+					$(this).parents('.window').remove();
+				});
+
 				// Ajout de l'interaction avec les boutons
 				$('.addJauge .button').on('click', function() {
 	    			let busID = $(this).parents('.addJauge').attr('busid');
@@ -186,7 +188,7 @@ function Bus(data) {
 	    			//Affichage de la Jauge et suppression de la fenêtre d'ajout d'une jauge
 	    			grid.bus[busID].showJauge(variable);
 	    			$(this).parents('.window').remove();
-	    		})
+	    		});
 			}
 		});
 	}
@@ -201,10 +203,30 @@ function Bus(data) {
 // Classe définissant une ligne
 function Line(data) {
 	let line = new Element(data);
+
 	line.default = function() {
-		drawStroke(grid.bus[data.bus1].data, grid.bus[data.bus2].data);
+		canvasGrid.drawStroke(grid.bus[data.bus1].data, grid.bus[data.bus2].data);
 	}
 	line.draw = line.default;
+
+	line.drawFlow = function(intensity) {
+		grid.bus[line.data.bus2].arrowPos = (grid.bus[line.data.bus1].arrowPos + ((intensity >= 0) ? line.data.length : -line.data.length)) % ANIMATION_DISTANCE;
+		let startBus = (intensity >= 0) ? grid.bus[line.data.bus1] : grid.bus[line.data.bus2];
+		let endBus = (intensity >= 0) ? grid.bus[line.data.bus2] : grid.bus[line.data.bus1];
+
+		for (let d = (ANIMATION_DISTANCE - startBus.arrowPos) % ANIMATION_DISTANCE; d < line.data.length; d += ANIMATION_DISTANCE) {
+			
+			let a = d / line.data.length;
+			canvasGrid.drawPoint({
+				x: startBus.data.x * (1 - a) + endBus.data.x * a,
+				y: startBus.data.y * (1 - a) + endBus.data.y * a
+			}, pointSize);
+		}
+	}
+
+	line.inside = function(x, y) {
+		return false;
+	}
 
 	return line;
 }
@@ -212,17 +234,40 @@ function Line(data) {
 // Classe définissant un élément du réseau
 function Picture(data) {
 	let picture = new Element(data);
+	let imSize = function() {
+		return Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
+	}
+
 	picture.default = function() {
-		drawStroke(data, grid.bus[data.bus].data);
-		drawImage(data.type, data);
+		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
+		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, 'white');
+		canvasGrid.drawImage(data.type, data, imSize());
+	}
+	picture.hover = function() {
+		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
+		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, SHADOW_COLOR);
+		canvasGrid.drawImage(data.type, data, imSize());
 	}
 	picture.draw = picture.default;
 
 	picture.inside = function(x, y) {
-		let relX = x - absoluteX(picture.data.x), relY = y - absoluteY(picture.data.y);
-		let imSize = Math.min(absoluteX(IMAGE_WIDTH), absoluteY(IMAGE_HEIGHT));
-		return ((Math.abs(relX) <= imSize / 2) && (Math.abs(relY) <= imSize / 2));
+		let absX = x - canvasGrid.absoluteX(picture.data.x), absY = y - canvasGrid.absoluteY(picture.data.y);
+		let imSize = Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT));
+		return ((Math.abs(absX) <= imSize / 2) && (Math.abs(absY) <= imSize / 2));
 	}
+	picture.onClick = function(x, y) {
+		if ($('body').attr('id') == 'edition') {
+			picture.showParameters();
+		}
+	}
+	picture.dragEdit = function(x, y) {
+		if ($('body').attr('id') == 'edition') {
+			this.data.x = (x - this.mousedown.x) / canvasGrid.canvas.width * 100;
+			this.data.y = (y - this.mousedown.y) / canvasGrid.canvas.height * 100;
+			grid.redraw();
+		}
+	}
+
 	// Affiche la fenêtre des paramètres de l'élément
 	picture.showParameters = function() {
 		$.ajax({
@@ -237,6 +282,10 @@ function Picture(data) {
 			contentType: 'application/json',
 			success: function(data) {
 				$('#centerArea .panel.edition').append(data);
+
+				$('.window .close').on('click', function() {
+					$(this).parents('.window').remove();
+				});
 			}
 		});
 	}
@@ -246,54 +295,47 @@ function Picture(data) {
 
 // Classe générique pour Bus, Line et Picture
 function Element(data) {
-	this.data = data;
-	this.isHovered = false;
-}
+	let instance = this;
+	instance.data = data;
+	instance.isHovered = false;
+	instance.isDragged = false;
 
-function drawPoint(position, size) {
-	ctx.beginPath();
-	ctx.arc(absoluteX(position.x), absoluteY(position.y), size, 0, 2 * Math.PI);
-	ctx.fill();
-}
-
-function drawStroke(position1, position2) {
-	ctx.beginPath();
-	ctx.moveTo(absoluteX(position1.x), absoluteY(position1.y));
-	ctx.lineTo(absoluteX(position2.x), absoluteY(position2.y));
-	ctx.stroke();
-}
-
-function drawImage(imageName, position) {
-	let imSize = Math.min(absoluteX(IMAGE_WIDTH), absoluteY(IMAGE_HEIGHT))
-
-	if (!images.hasOwnProperty(imageName)) { // Si l'image n'est pas stocké dans 'images' (= si elle n'a oas déjà été chargée)
-		let im = new Image();
-		im.onload = function() { // Quand l'image sera chargée
-			pre = document.createElement('canvas'); // Sorte de sous-canvas permettant de pré-rendre l'image (gain en performances)
-			pre.width = im.width;
-			pre.height = im.height;
-			preCtx = pre.getContext('2d');
-			preCtx.drawImage(im, 0, 0); // L'image est rendue sur le sous-canvas
-
-			// On stocke le sous-canvas si l'image doit être ré-utilisée
-			images[imageName] = pre;
-
-			// On affiche le sous-canvas sur le canvas visible à l'écran
-			ctx.drawImage(pre, absoluteX(position.x) - imSize / 2, absoluteY(position.y) - imSize / 2, imSize, imSize);
+	instance.onMouseDown = function(e) {
+		if (instance.inside(e.offsetX, e.offsetY)) {
+			instance.mousedown = {
+				x: e.offsetX - canvasGrid.absoluteX(instance.data.x),
+				y: e.offsetY - canvasGrid.absoluteY(instance.data.y)
+			};
 		}
-		im.src = '/static/' + imageName + '.png';
 	}
-	else { // Si l'image avait déjà été chargée, on réutilise le sous-canvas (on ne recharge pas l'image)
-		let pre = images[imageName]
-		ctx.drawImage(pre, absoluteX(position.x) - imSize / 2, absoluteY(position.y) - imSize / 2, imSize, imSize);
+	instance.onMouseMove = function(e) {
+
+		if (instance.inside(e.offsetX, e.offsetY) && !instance.hasOwnProperty('mousedown') && !instance.isHovered) {
+			instance.isHovered = true;
+
+			if (instance.hasOwnProperty('hover')) {
+				instance.draw = instance.hover;
+				grid.draw();
+			}
+		}
+		else if (instance.hasOwnProperty('mousedown') && instance.hasOwnProperty('dragEdit')) {
+			instance.dragEdit(e.offsetX, e.offsetY);
+			instance.isDragged = true;
+		}
+		else if (!instance.inside(e.offsetX, e.offsetY) && instance.isHovered) {
+			instance.isHovered = false;
+
+			if (instance.draw != instance.default) {
+				instance.draw = instance.default;
+				grid.draw();
+			}
+		}
 	}
-}
-
-// Conversion entre position relative (en %) et position absolue (en px)
-function absoluteX(x) {
-	return x / 100 * ctx.canvas.width;
-}
-
-function absoluteY(y) {
-	return y / 100 * ctx.canvas.height;
+	instance.onMouseUp = function(e) {
+		if (instance.hasOwnProperty('mousedown') && !instance.isDragged && instance.hasOwnProperty('onClick')) {
+			instance.onClick(instance.mousedown.x, instance.mousedown.y);
+		}
+		delete instance.mousedown;
+		instance.isDragged = false;
+	}
 }

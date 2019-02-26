@@ -38,10 +38,13 @@ def getDureeSimulation():
 
 @app.route('/simulation', methods = ['POST'])
 def getResultatsSimulation():
-    #A DEVELOPPER
+    #A DEVELOPPER	
+    json = request.get_json()
+    print("Simulation avec ", json)
     buses, lines = total_lf.listsfromdict(grid)
     buses, lines, liste_buses, P, Q, V, theta, I, Sl, S = total_lf.calcul_total(buses, lines)
     return jsonify({"buses":buses, "lines":lines, "liste_bus":liste_buses.tolist(), "P":P.tolist(), "Q":Q.tolist(), "V":V.tolist(), "theta":theta.tolist(), "abs(I)":(abs(I)).tolist(), "Sl":(abs(Sl)).tolist(), "S":(abs(S)).tolist()}) #TEMPORAIRE
+
 
 @app.route('/resultats')
 def resultats():
