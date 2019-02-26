@@ -1,12 +1,15 @@
 <div class="graph_container" id="graph_{{ i }}">
     <p>Une courbe</p>
     <div class="button addGraph">
-    	<span>+</span>
+    	<img class="add" src="\static\add.png">
     </div>
     <div class="button exportGraph">
-    	<span>exp</span>
+    	<img class="export" src="\static\export.png">
     </div>
     <div class="graph">
+        <div class="chart_area">
+            <canvas id="chart"></canvas>
+        </div>
     	<input class="time" id="time_{{ i }}" type="range" min=0 max=100>
     </div>
 </div>

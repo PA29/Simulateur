@@ -1,133 +1,253 @@
 var ctx;
 var images = {};
-var reseau;
+var grid;
 
-var pointSize = 3;
-var selectionSize = 3;
+var pointSize = 3; //Rayon d'un bus (point)
+var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection
 
-var IMAGE_WIDTH = 70;
-var IMAGE_HEIGHT = 70;
+var IMAGE_WIDTH = 8; //Max en % de la taille par rapport à la largeur
+var IMAGE_HEIGHT = 14; //Max en % de la taille par rapport à la hauteur
 
-var getReseau = new Promise(function(resolve, reject) {
+//TEMPORAIRE// Chargement d'un réseau de base - Exécution dès le chargement du fichier
+var getGrid = new Promise(function(resolve, reject) {
 	$.get('unScenario', function(data) {
-		reseau = convertReseau(data.reseau);
+		grid = convertGrid(data.grid);
 		resolve();
 	});
 });
 
-function convertReseau(data) {
-	let reseau = {bus: [], lines: [], images: []};
+//Transforme les objets JSON contenus dans 'data' en objets Bus, Line ou Picture
+function convertGrid(data) {
+	let grid = {bus: [], lines: [], images: []};
 
 	for (let bus of data.bus) {
-		reseau.bus.push(new Bus(bus));
+		grid.bus.push(new Bus(bus));
 	}
 	for (let line of data.lines) {
-		reseau.lines.push(new Line(line));
+		grid.lines.push(new Line(line));
 	}
 	for (let image of data.images) {
-		reseau.images.push(new Picture(image));
+		grid.images.push(new Picture(image));
 	}
 
-	return reseau
+	return grid
 }
 
 /* Affichage et interactions avec le réseau */
 
-function createReseau() {
-	let canvas = document.getElementById('reseau');
+// Créer le réseau (interactions + affichage)
+function createGrid() {
+	let canvas = document.getElementById('grid');
 	ctx = canvas.getContext('2d');
 
-	getReseau.then(function() {
-		resizeCanvas();
+	getGrid.then(function() {
 		initInteractions();
+		redrawGrid();
 	}).catch(function() {
 		console.log("Impossible d'afficher le réseau");
 	});
 }
 
-function resizeCanvas() {
+// Redessine le réseau à partir des dimensions du canvas
+function redrawGrid() {
 	let centerArea = document.getElementById('centerArea');
-	let canvas = document.getElementById('reseau');
+	let canvas = document.getElementById('grid');
 
 	canvas.width = centerArea.offsetWidth;
 	canvas.height = centerArea.offsetHeight;
 
-	drawReseau(reseau);
+	drawGrid(grid);
 }
 
+// Active les intéractions avec le réseau (survol, click, drag, ...)
 function initInteractions() {
+
+	// Interactions liées au déplacement de la souris
 	$('#centerArea').on('mousemove', function(e) {
-		for (let bus of reseau.bus) {
-			if (!bus.inside(e.offsetX, e.offsetY) && bus.draw != bus.default) {
-				bus.draw = bus.default;
-				drawReseau();
+		for (let bus of grid.bus) {
+			if (bus.inside(e.offsetX, e.offsetY) && !bus.isHovered) {
+				bus.setHover();
 			}
-			if (bus.inside(e.offsetX, e.offsetY) && bus.draw != bus.hover) {
-				bus.draw = bus.hover;
-				drawReseau();
+			if (bus.isHovered && !bus.inside(e.offsetX, e.offsetY)) {
+				bus.clearHover();
 			}
 		}
 
-		for (let line of reseau.lines) {
-			// Gestion des interactions avec les lignes
+		for (let line of grid.lines) {
+			// A DEVELOPPER - Survol des lignes
 		}
+
+		// A DEVELOPPER - Survol des images
 	});
+
+	// Interactions liées à l'appuis sur le bouton gauche de la souris (!= du click)
+	$('#centerArea').on('mousedown', function(e) {
+
+		// Interaction sur les images en mode édition
+		setInteraction('edition', grid.images, e, function(image) {
+			if(!$('.parametres[imageid="' + grid.images.indexOf(image) + '"]').length) {
+				image.showParameters();
+			}
+		});
+
+		// Interaction sur les bus en mode résultats
+		setInteraction('resultats', grid.bus, e, function(bus) {
+			if(!$('.addJauge[busid="' + grid.bus.indexOf(bus) + '"]').length) {
+				bus.showAddJauge();
+			}
+		})
+	});
+
+	$('#centerArea').on('dragstart')
 }
 
-function drawReseau() {
+// Crée une interaction spécifique aux paramètres dans une nouvelle fenêtre
+function setInteraction(mode, triggers, event, callback) {
+	if ($('body').attr('id') == mode) {
+		for (let element of triggers) {
+			if (element.inside(event.offsetX, event.offsetY)) {
+				callback(element);
+			}
+		}
+	}
+
+	$('.window .close').on('click', function() {
+		$(this).parents('.window').remove();
+	})
+}
+
+// Dessine le réseau
+function drawGrid() {
 	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-	for (let bus of reseau.bus) {
+	for (let bus of grid.bus) {
 		bus.draw();
 	}
 
-	for (let line of reseau.lines) {
+	for (let line of grid.lines) {
 		line.draw();
 	}
 
-	for (let image of reseau.images) {
+	for (let image of grid.images) {
 		image.draw();
 	}
 }
 
+// Classe définissant un bus
 function Bus(data) {
 	let bus = new Element(data);
+
+	// Affichage par défaut
 	bus.default = function() {
 		drawPoint(data, pointSize);
 	}
-	bus.inside = function(x, y) {
-		return Math.pow(x - absoluteX(data.x), 2) + Math.pow(y - absoluteY(data.y), 2) < Math.pow(pointSize + selectionSize, 2);
-	}
+	// Affichage lors du survol
 	bus.hover = function() {
 		drawPoint(data, pointSize + selectionSize);
 	}
-	bus.draw = bus.default;
+	bus.draw = bus.default; // Variable stockant le type d'affichage
+
+	// Indique si les coordonnées sont dans la zone de sélection de l'élément
+	bus.inside = function(x, y) {
+		return Math.pow(x - absoluteX(data.x), 2) + Math.pow(y - absoluteY(data.y), 2) < Math.pow(pointSize + selectionSize, 2);
+	}
+	// Fonction appelée quand l'élément commence à être survolé
+	bus.setHover = function() {
+		this.isHovered = true;
+		bus.draw = bus.hover;
+		drawGrid();
+	}
+	// Fonction appelée quand l'élément cesse d'être survolé
+	bus.clearHover = function() {
+		this.isHovered = false;
+		bus.draw = bus.default;
+		drawGrid();
+	}
+	// Affiche la fenêtre d'ajout d'un jauge (est appelée lors du click dans le mode résultats)
+	bus.showAddJauge = function() {
+		$.ajax({
+			url: 'addJauge',
+			type: 'POST',
+			data: JSON.stringify({
+				x: data.x + 1, //TEMPORAIRE// Position de la fenêtre en x
+				y: data.y - 1, //TEMPORAIRE// Position de la fenêtre en y
+				busID: grid.bus.indexOf(this)
+			}),
+			contentType: 'application/json',
+			success: function(data) {
+				// Ajout du html à la zone centrale
+				$('#centerArea .panel.resultats').append(data);
+
+				// Ajout de l'interaction avec les boutons
+				$('.addJauge .button').on('click', function() {
+	    			let busID = $(this).parents('.addJauge').attr('busid');
+	    			let variable = $(this).attr('id');
+
+	    			//Affichage de la Jauge et suppression de la fenêtre d'ajout d'une jauge
+	    			grid.bus[busID].showJauge(variable);
+	    			$(this).parents('.window').remove();
+	    		})
+			}
+		});
+	}
+	// Affiche la jauge associé au bus (est appelée lors du click sur un bouton de la fenêtre d'ajout d'une jauge)
+	bus.showJauge = function(variable) {
+		console.log("Show Jauge : " + variable);
+	}
 
 	return bus;
 }
 
+// Classe définissant une ligne
 function Line(data) {
 	let line = new Element(data);
 	line.default = function() {
-		drawStroke(reseau.bus[data.bus1].data, reseau.bus[data.bus2].data);
+		drawStroke(grid.bus[data.bus1].data, grid.bus[data.bus2].data);
 	}
 	line.draw = line.default;
 
 	return line;
 }
 
+// Classe définissant un élément du réseau
 function Picture(data) {
 	let picture = new Element(data);
-	picture.draw = function() {
-		drawStroke(data, reseau.bus[data.bus].data);
+	picture.default = function() {
+		drawStroke(data, grid.bus[data.bus].data);
 		drawImage(data.type, data);
+	}
+	picture.draw = picture.default;
+
+	picture.inside = function(x, y) {
+		let relX = x - absoluteX(picture.data.x), relY = y - absoluteY(picture.data.y);
+		let imSize = Math.min(absoluteX(IMAGE_WIDTH), absoluteY(IMAGE_HEIGHT));
+		return ((Math.abs(relX) <= imSize / 2) && (Math.abs(relY) <= imSize / 2));
+	}
+	// Affiche la fenêtre des paramètres de l'élément
+	picture.showParameters = function() {
+		$.ajax({
+			url: 'parametres',
+			type: 'POST',
+			data: JSON.stringify({
+				x: data.x + 5,
+				y: data.y - 3,
+				imageID: grid.images.indexOf(this),
+				data: this.data
+			}),
+			contentType: 'application/json',
+			success: function(data) {
+				$('#centerArea .panel.edition').append(data);
+			}
+		});
 	}
 
 	return picture;
 }
 
+// Classe générique pour Bus, Line et Picture
 function Element(data) {
 	this.data = data;
+	this.isHovered = false;
 }
 
 function drawPoint(position, size) {
@@ -144,27 +264,32 @@ function drawStroke(position1, position2) {
 }
 
 function drawImage(imageName, position) {
-	if (!images.hasOwnProperty(imageName)) {
+	let imSize = Math.min(absoluteX(IMAGE_WIDTH), absoluteY(IMAGE_HEIGHT))
+
+	if (!images.hasOwnProperty(imageName)) { // Si l'image n'est pas stocké dans 'images' (= si elle n'a oas déjà été chargée)
 		let im = new Image();
-		im.onload = function() {
-			pre = document.createElement('canvas');
+		im.onload = function() { // Quand l'image sera chargée
+			pre = document.createElement('canvas'); // Sorte de sous-canvas permettant de pré-rendre l'image (gain en performances)
 			pre.width = im.width;
 			pre.height = im.height;
 			preCtx = pre.getContext('2d');
-			preCtx.drawImage(im, 0, 0);
+			preCtx.drawImage(im, 0, 0); // L'image est rendue sur le sous-canvas
 
+			// On stocke le sous-canvas si l'image doit être ré-utilisée
 			images[imageName] = pre;
 
-			ctx.drawImage(pre, absoluteX(position.x) - IMAGE_WIDTH / 2, absoluteY(position.y) - IMAGE_HEIGHT / 2, IMAGE_WIDTH, IMAGE_HEIGHT);
+			// On affiche le sous-canvas sur le canvas visible à l'écran
+			ctx.drawImage(pre, absoluteX(position.x) - imSize / 2, absoluteY(position.y) - imSize / 2, imSize, imSize);
 		}
 		im.src = '/static/' + imageName + '.png';
 	}
-	else {
+	else { // Si l'image avait déjà été chargée, on réutilise le sous-canvas (on ne recharge pas l'image)
 		let pre = images[imageName]
-		ctx.drawImage(pre, absoluteX(position.x) - IMAGE_WIDTH / 2, absoluteY(position.y) - IMAGE_HEIGHT / 2, IMAGE_WIDTH, IMAGE_HEIGHT);
+		ctx.drawImage(pre, absoluteX(position.x) - imSize / 2, absoluteY(position.y) - imSize / 2, imSize, imSize);
 	}
 }
 
+// Conversion entre position relative (en %) et position absolue (en px)
 function absoluteX(x) {
 	return x / 100 * ctx.canvas.width;
 }

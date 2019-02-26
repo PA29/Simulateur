@@ -1,4 +1,4 @@
-/* Style de la zone centrale */
+/* Style de la zone centrale .*/
 
 #reseauTitle {
     color: rgb(0, 113, 187);
@@ -15,16 +15,6 @@
     bottom: 5%;
 }
 
-.subTitle {
-    display: flex;
-    position: relative;
-    padding: 1% 5%;
-}
-
-.subTitle > span {
-    margin: auto;
-}
-
 .panelTitle {
     color: rgb(0, 113, 187);
 	font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
@@ -38,13 +28,14 @@
 p{
     font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
     left: 5px; 
+    width: 80%;
+    right: 15%;
+    top:4%;
+    margin:0;
+    text-align: center;
 }
 
 /* AddJauge */
-
-.addJauge {
-    background-color: lightseagreen;
-}
 
 .addJauge .buttons {
     position: relative;
@@ -53,10 +44,13 @@ p{
     padding: 2%;
 }
 
-.addJauge .buttons .temp {
-    background-color: aquamarine;
-    width: 46%;
-    padding: 2%;
+.addJauge .button {
+    background-color: #01b5af;
+    color: #fff;
+    border-radius: 5%;
+    width: 48%;
+    margin: 1%;
+    text-align: center;
 }
 
 /* Jauge */
@@ -82,7 +76,7 @@ div.jauge img.arrow {
 .graph_container {
     position: relative;
     width: 80%;
-    height: 29%;
+    height: 45%;
     margin: 2% 10%;
     background-color: rgba(0,113,187, 0.6);
 }
@@ -92,11 +86,10 @@ div.jauge img.arrow {
 }
 
 .graph {
-    margin: 2%;
-    top: 20%;
-    bottom: 0;
-    left: 0;
-    right: 20%;
+    top: 14%;
+    bottom: 2%;
+    left: 2%;
+    right: 2%;
     background-color: white;
 }
 
@@ -109,17 +102,20 @@ div.jauge img.arrow {
     width: 98%;
 }
 
+
 .graph_container > .button {
-    width: 10%;
-    height: 10%;
+    width: 7%;
+    height: 7%;
     top: 2%;
     text-align: center;
     display: flex;
-    background-color: rgba(0, 0, 0, .6)
+    background-color: rgba(0,113,187, 0);
 }
 
-.graph_container > .button > span {
-    margin: auto;
+.add, .export{
+    width: 70%;
+    height: 100%;
+    margin: 0px auto;
 }
 
 .exportGraph {
@@ -127,7 +123,7 @@ div.jauge img.arrow {
 }
 
 .addGraph {
-    right: 14%
+    right: 10%
 }
 
 #edit{
