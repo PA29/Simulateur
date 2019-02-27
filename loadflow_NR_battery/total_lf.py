@@ -24,7 +24,8 @@ def listsfromdict(grid):
         lines.append([line.get('bus1'), line.get('bus2'), line.get('r'), line.get('x'), line.get('length')])
     return(buses, lines)
 
-def calcul_total(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 50000):
+def calcul_total(buses, lines0, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 50000):
+    lines = deepcopy(lines0) #évite la modification de lines en entrée
     Pb = Sb #VAR (égal à Sb)
     Qb = Sb #VAR (égal à Sb)
     Ib = Sb/(3**(1/2) * Ub)
@@ -145,4 +146,4 @@ def calcul_total(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 50000):
                         SOC1 = 1
                     bus[3] = SOC1
     ##############################################################################
-    return(buses2, lines, liste_buses1, P_r1, Q_r1, V_r1, theta_r1, I_r1, Sl_r1, S_r1)
+    return(buses2, lines0, liste_buses1, P_r1, Q_r1, V_r1, theta_r1, I_r1, Sl_r1, S_r1)
