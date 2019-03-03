@@ -43,6 +43,8 @@ function createGrid() {
 function Grid(data) {
 	var instance = this;
 
+	this.statusPowerFlow = false;
+
 	//Création de l'instance avec création des attributs bus, lines et images
 	this.bus = [];
 	for (let bus of data.bus) {
@@ -96,7 +98,7 @@ function Grid(data) {
 			elmt.draw();
 		});
 
-		if ($('body').attr('id') == 'resultats') {
+		if (instance.statusPowerFlow) {
 			instance.lines.forEach(function(elmt) {
 				let intensity = (tempPower[grid.lines.indexOf(elmt)]) ? 1 : -1;
 				elmt.drawFlow(intensity);
@@ -125,6 +127,7 @@ function Grid(data) {
 
 	//Démarre la boucle permettant d'animer le canvas autour de 60FPS
 	this.startPowerFlow = function() {
+		instance.statusPowerFlow = true;
 		let t0 = (new Date()).getTime(), dt = 0;
 
 		function refresh() {
@@ -142,7 +145,9 @@ function Grid(data) {
 
 	//Arrête la boucle
 	this.stopPowerFlow = function() {
+		instance.statusPowerFlow = false;
 		cancelAnimationFrame(instance.request);
+		instance.draw();
 	}
 
 	//Appelle la fonction f pour chaque élément du réseau
@@ -170,7 +175,6 @@ function Bus(data) {
 	}
 	// Affichage lors du survol
 	bus.hover = function() {
-		console.log("Test");
 		canvasGrid.drawPoint(data, pointSize + selectionSize);
 	}
 	bus.draw = bus.default; // Variable stockant le type d'affichage
