@@ -16,7 +16,7 @@ def listsfromdict(grid):
     dict_bus = grid.get('images')
     buses = []
     for bus in dict_bus:
-        buses.append([bus.get('bus'), bus.get('type'), bus.get('Theta'), bus.get('P'), bus.get('Q'), bus.get('V')])
+        buses.append([bus.get('bus'), bus.get('type'), bus.get('Theta'), bus.get('P'), bus.get('Q'), bus.get('V'), bus.get('SOC'), bus.get('capacity')])
     buses = [[i for i in buses[j] if i!=None] for j in range(len(buses))]
     dict_line = grid.get('lines')
     lines = []
@@ -24,7 +24,7 @@ def listsfromdict(grid):
         lines.append([line.get('bus1'), line.get('bus2'), line.get('r'), line.get('x'), line.get('length')])
     return(buses, lines)
 
-def calcul_total(buses, lines0, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 50000):
+def calcul_total(buses, lines0, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 500):
     lines = deepcopy(lines0) #évite la modification de lines en entrée
     Pb = Sb #VAR (égal à Sb)
     Qb = Sb #VAR (égal à Sb)
@@ -44,7 +44,7 @@ def calcul_total(buses, lines0, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 50000):
         if bus[1] == 'producteur':
             bus[2] = bus[2]*1000/Pb
             bus[3] = bus[3]/Ub
-        if bus[1] == 'batterie':             # conso avec P, Q = 0
+        if bus[1] == 'stockage':             # conso avec P, Q = 0
             bus[1] = 'consommateur'
             bus[2] = 0
             bus[3] = 0
@@ -74,7 +74,7 @@ def calcul_total(buses, lines0, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 50000):
             if bus[1] == 'producteur':
                 bus[2] = bus[2]*1000/Pb
                 bus[3] = bus[3]/Ub
-            if bus[1] == 'batterie':             # conso avec P, Q = 0
+            if bus[1] == 'stockage':             # conso avec P, Q = 0
                 if bus[3] < Cs:
                     bus[1] = 'consommateur'
                     bus[2] = 0
@@ -93,7 +93,7 @@ def calcul_total(buses, lines0, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 50000):
             if bus[1] == 'producteur':
                 bus[2] = bus[2]*1000/Pb
                 bus[3] = bus[3]/Ub
-            if bus[1] == 'batterie':             # conso avec P, Q = -Pbatt, -Qbatt
+            if bus[1] == 'stockage':             # conso avec P, Q = -Pbatt, -Qbatt
                 if bus[3] < 0.95:
                     bus[1] = 'consommateur'
                     bus[2] = -bus[2]*1000/Pb
@@ -130,7 +130,7 @@ def calcul_total(buses, lines0, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 50000):
     buses2 = deepcopy(buses)
     pas_temps = 0.5 #heure
     for bus in buses2:
-        if bus[1] == 'batterie':
+        if bus[1] == 'stockage':
             Cmax = bus[4]
             SOC = bus[3]
             id_bus = bus[0]
