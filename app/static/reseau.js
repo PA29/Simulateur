@@ -336,7 +336,6 @@ function Element(data) {
 		}
 	}
 	instance.onMouseMove = function(e) {
-
 		if (instance.inside(e.offsetX, e.offsetY) && !instance.hasOwnProperty('mousedown') && !instance.isHovered) {
 			instance.isHovered = true;
 
