@@ -261,6 +261,8 @@ function Line(data) {
 // Classe définissant un élément du réseau
 function Picture(data) {
 	let picture = new Element(data);
+	picture.parametersOpened = false;
+
 	let imSize = function() {
 		return Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
 	}
@@ -283,7 +285,7 @@ function Picture(data) {
 		return ((Math.abs(absX) <= imSize / 2) && (Math.abs(absY) <= imSize / 2));
 	}
 	picture.onClick = function(x, y) {
-		if ($('body').attr('id') == 'edition') {
+		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
 			picture.showParameters();
 		}
 	}
@@ -297,21 +299,26 @@ function Picture(data) {
 
 	// Affiche la fenêtre des paramètres de l'élément
 	picture.showParameters = function() {
+		let imageID = grid.images.indexOf(picture);
+		picture.parametersOpened = true;
+
 		$.ajax({
 			url: 'parametres',
 			type: 'POST',
 			data: JSON.stringify({
 				x: data.x + 5,
 				y: data.y - 3,
-				imageID: grid.images.indexOf(this),
-				data: this.data
+				imageID: imageID,
+				data: picture.data
 			}),
 			contentType: 'application/json',
 			success: function(data) {
 				$('#centerArea .panel.edition').append(data);
 
-				$('.window .close').on('click', function() {
-					$(this).parents('.window').remove();
+				let window = $('.parametres[imageID="' + imageID + '"]').parents('.window');
+				window.find('.close').on('click', function() {
+					window.remove();
+					picture.parametersOpened = false;
 				});
 			}
 		});
