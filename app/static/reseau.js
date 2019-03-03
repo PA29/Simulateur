@@ -97,6 +97,8 @@ function initInteractions() {
 			}
 		})
 	});
+
+	$('#centerArea').on('dragstart')
 }
 
 // Crée une interaction spécifique aux paramètres dans une nouvelle fenêtre
@@ -210,10 +212,12 @@ function Line(data) {
 // Classe définissant un élément du réseau
 function Picture(data) {
 	let picture = new Element(data);
-	picture.draw = function() {
+	picture.default = function() {
 		drawStroke(data, grid.bus[data.bus].data);
 		drawImage(data.type, data);
 	}
+	picture.draw = picture.default;
+
 	picture.inside = function(x, y) {
 		let relX = x - absoluteX(picture.data.x), relY = y - absoluteY(picture.data.y);
 		let imSize = Math.min(absoluteX(IMAGE_WIDTH), absoluteY(IMAGE_HEIGHT));

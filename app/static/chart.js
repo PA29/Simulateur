@@ -7,11 +7,11 @@ var images = {};
 var pointSize = 2;
 var selectionSize = 1;
 
-function absoluteX(x){
+function absoluteXBis(x){
     return x / 100 * ctx.canvas.width;
 }
 
-function absoluteY(y) {
+function absoluteYBis(y) {
 	return y / 100 * ctx.canvas.height;
 }
 
@@ -55,7 +55,7 @@ function drawImageChart(imageName) {
 	}
 }
 
-/*function background_chart() {
+function background_chart() {
 	let picture = new Element();
 	console.log("hello");
 	console.log(imgName)
@@ -63,27 +63,4 @@ function drawImageChart(imageName) {
 		canvas.drawImageChart(imgName);
 		console.log("draw");
     }
-}*/
-
-im.onload = function background_chart() {
-	console.log("on avance");
-	var c = document.getElementById("chart");
-	console.log("on avance 1");
-	var ctx = c.getContext("2d");
-	console.log("on avance 2");
-	var img = new Image();
-	img.onload = function() {
-		pre = document.createElement('canvas');
-		pre.width = img.width;
-		pre.height = img.height;
-		preCtx = pre.getContext('2d');
-		preCtx.background_chart(img, 0, 0);
-		console.log("helloif")
-		imageName = pre;
-		console.log(imageName)
-
-		ctx.drawImage(pre, 0, 0, 1000, 2000);
-	}
-	img.src = "/static/back_chart.png";
-  ctx.drawImage(img, 0, 0);
-};
+}
