@@ -16,6 +16,7 @@ function editionJS() {
 					success: function(data) {
 
 						grid.simulation = data;
+						background_chart()
 						direct('resultats')
 					}
 				});

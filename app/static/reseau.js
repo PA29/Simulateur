@@ -260,6 +260,7 @@ function drawStroke(position1, position2) {
 }
 
 function drawImage(imageName, position) {
+	console.log("réseau"+imageName)
 	let imSize = Math.min(absoluteX(IMAGE_WIDTH), absoluteY(IMAGE_HEIGHT))
 
 	if (!images.hasOwnProperty(imageName)) { // Si l'image n'est pas stocké dans 'images' (= si elle n'a oas déjà été chargée)
