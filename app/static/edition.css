@@ -127,6 +127,18 @@
 	width: 38%;
 }
 
+.activeElementReseau
+{
+	display:flex;
+	flex-direction:column;
+	justify-content:space-around;
+	align-items: center;
+	margin: 3% 0;
+}
+.activeElementReseau > img {
+	width: 20%;
+}
+
 #simulate:active ,.bouton_enregistrement:active,.elementreseau:active 
 {
     box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),

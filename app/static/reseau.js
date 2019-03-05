@@ -3,6 +3,7 @@ Ce fichier gère le réseau affiché dans les deux modes : edition / résultats
 */
 
 var grid; //Variable stockant les données du réseau
+var canvasGrid; //Variable stockant le canvas du réseau
 
 var pointSize = 3; //Rayon d'un bus (point)
 var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection
@@ -10,10 +11,12 @@ var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sél
 var IMAGE_WIDTH = 8; //Max en % de la taille par rapport à la largeur
 var IMAGE_HEIGHT = 14; //Max en % de la taille par rapport à la hauteur
 
+var SHADOW_COLOR = 'lightgrey';
+
 var ANIMATION_DISTANCE = 4;
 var ANIMATION_DURATION = 2000;
 
-var tempPower = [true, true, true]; //TEMP// Variable pour tester l'affichage des flux de puissance
+var tempPower = [true, false, true]; //TEMP// Variable pour tester l'affichage des flux de puissance
 
 //TEMPORAIRE// Chargement d'un réseau de base - Exécution dès le chargement du fichier
 var getGrid = new Promise(function(resolve, reject) {
@@ -25,6 +28,7 @@ var getGrid = new Promise(function(resolve, reject) {
 
 // Créer le réseau (interactions + affichage)
 function createGrid() {
+	console.log(canvasGrid);
 	canvasGrid = new Canvas('grid'); //Création de l'instance de la classe Canvas
 
 	getGrid.then(function() { //Quand le réseau est chargé (requête GET ligne 20)
@@ -39,6 +43,8 @@ function createGrid() {
 function Grid(data) {
 	var instance = this;
 
+	this.statusPowerFlow = false;
+
 	//Création de l'instance avec création des attributs bus, lines et images
 	this.bus = [];
 	for (let bus of data.bus) {
@@ -51,6 +57,27 @@ function Grid(data) {
 	this.images = [];
 	for (let image of data.images) {
 		instance.images.push(new Picture(image));
+	}
+
+	//Renvoie les données nécéssaires à la simulation
+	this.simulationParam = function() {
+		let param = {
+			bus: [],
+			lines: [],
+			components: []
+		}
+
+		for (let bus of grid.bus) {
+			param.bus.push(bus.data);
+		}
+		for (let line of grid.lines) {
+			param.lines.push(line.data);
+		}
+		for (let component of grid.images) {
+			param.components.push(component.data);
+		}
+
+		return param;
 	}
 
 	//Dessine le réseau en actualisant les dimensions du canvas
@@ -71,7 +98,7 @@ function Grid(data) {
 			elmt.draw();
 		});
 
-		if ($('body').attr('id') == 'resultats') {
+		if (instance.statusPowerFlow) {
 			instance.lines.forEach(function(elmt) {
 				let intensity = (tempPower[grid.lines.indexOf(elmt)]) ? 1 : -1;
 				elmt.drawFlow(intensity);
@@ -100,6 +127,7 @@ function Grid(data) {
 
 	//Démarre la boucle permettant d'animer le canvas autour de 60FPS
 	this.startPowerFlow = function() {
+		instance.statusPowerFlow = true;
 		let t0 = (new Date()).getTime(), dt = 0;
 
 		function refresh() {
@@ -117,7 +145,9 @@ function Grid(data) {
 
 	//Arrête la boucle
 	this.stopPowerFlow = function() {
+		instance.statusPowerFlow = false;
 		cancelAnimationFrame(instance.request);
+		instance.draw();
 	}
 
 	//Appelle la fonction f pour chaque élément du réseau
@@ -173,18 +203,6 @@ function Bus(data) {
 	// Indique si les coordonnées sont dans la zone de sélection de l'élément
 	bus.inside = function(x, y) {
 		return Math.pow(x - canvasGrid.absoluteX(data.x), 2) + Math.pow(y - canvasGrid.absoluteY(data.y), 2) < Math.pow(pointSize + selectionSize, 2);
-	}
-	// Fonction appelée quand l'élément commence à être survolé
-	bus.setHover = function() {
-		this.isHovered = true;
-		bus.draw = bus.hover;
-		grid.redraw();
-	}
-	// Fonction appelée quand l'élément cesse d'être survolé
-	bus.clearHover = function() {
-		this.isHovered = false;
-		bus.draw = bus.default;
-		grid.redraw();
 	}
 	bus.onClick = function(x, y) {
 		if ($('body').attr('id') == 'resultats') {
@@ -264,9 +282,21 @@ function Line(data) {
 // Classe définissant un élément du réseau
 function Picture(data) {
 	let picture = new Element(data);
+	picture.parametersOpened = false;
+
+	let imSize = function() {
+		return Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
+	}
+
 	picture.default = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
-		canvasGrid.drawImage(data.type, data);
+		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, 'white');
+		canvasGrid.drawImage(data.type, data, imSize());
+	}
+	picture.hover = function() {
+		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
+		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, SHADOW_COLOR);
+		canvasGrid.drawImage(data.type, data, imSize());
 	}
 	
 	picture.hoover = function() {
@@ -281,7 +311,7 @@ function Picture(data) {
 		return ((Math.abs(absX) <= imSize / 2) && (Math.abs(absY) <= imSize / 2));
 	}
 	picture.onClick = function(x, y) {
-		if ($('body').attr('id') == 'edition') {
+		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
 			picture.showParameters();
 		}
 	}
@@ -295,21 +325,26 @@ function Picture(data) {
 
 	// Affiche la fenêtre des paramètres de l'élément
 	picture.showParameters = function() {
+		let imageID = grid.images.indexOf(picture);
+		picture.parametersOpened = true;
+
 		$.ajax({
 			url: 'parametres',
 			type: 'POST',
 			data: JSON.stringify({
 				x: data.x + 5,
 				y: data.y - 3,
-				imageID: grid.images.indexOf(this),
-				data: this.data
+				imageID: imageID,
+				data: picture.data
 			}),
 			contentType: 'application/json',
 			success: function(data) {
 				$('#centerArea .panel.edition').append(data);
 
-				$('.window .close').on('click', function() {
-					$(this).parents('.window').remove();
+				let window = $('.parametres[imageID="' + imageID + '"]').parents('.window');
+				window.find('.close').on('click', function() {
+					window.remove();
+					picture.parametersOpened = false;
 				});
 			}
 		});
@@ -320,35 +355,46 @@ function Picture(data) {
 
 // Classe générique pour Bus, Line et Picture
 function Element(data) {
-	this.data = data;
-	this.isHovered = false;
-	this.isDragged = false;
+	let instance = this;
+	instance.data = data;
+	instance.isHovered = false;
+	instance.isDragged = false;
 
-	this.onMouseDown = function(e) {
-		if (this.inside(e.offsetX, e.offsetY)) {
-			this.mousedown = {
-				x: e.offsetX - canvasGrid.absoluteX(this.data.x),
-				y: e.offsetY - canvasGrid.absoluteY(this.data.y)
+	instance.onMouseDown = function(e) {
+		if (instance.inside(e.offsetX, e.offsetY)) {
+			instance.mousedown = {
+				x: e.offsetX - canvasGrid.absoluteX(instance.data.x),
+				y: e.offsetY - canvasGrid.absoluteY(instance.data.y)
 			};
 		}
 	}
-	this.onMouseMove = function(e) {
-		if (this.inside(e.offsetX, e.offsetY) && !this.hasOwnProperty('mousedown') && !this.isHovered && this.hasOwnProperty('setHover')) {
-			this.setHover();
+	instance.onMouseMove = function(e) {
+		if (instance.inside(e.offsetX, e.offsetY) && !instance.hasOwnProperty('mousedown') && !instance.isHovered) {
+			instance.isHovered = true;
+
+			if (instance.hasOwnProperty('hover')) {
+				instance.draw = instance.hover;
+				grid.draw();
+			}
 		}
-		else if (this.hasOwnProperty('mousedown') && this.hasOwnProperty('dragEdit')) {
-			this.dragEdit(e.offsetX, e.offsetY);
-			this.isDragged = true;
+		else if (instance.hasOwnProperty('mousedown') && instance.hasOwnProperty('dragEdit')) {
+			instance.dragEdit(e.offsetX, e.offsetY);
+			instance.isDragged = true;
 		}
-		else if (!this.inside(e.offsetX, e.offsetY) && this.isHovered && this.hasOwnProperty('clearHover')) {
-			this.clearHover();
+		else if (!instance.inside(e.offsetX, e.offsetY) && instance.isHovered) {
+			instance.isHovered = false;
+
+			if (instance.draw != instance.default) {
+				instance.draw = instance.default;
+				grid.draw();
+			}
 		}
 	}
-	this.onMouseUp = function(e) {
-		if (this.hasOwnProperty('mousedown') && !this.isDragged && this.hasOwnProperty('onClick')) {
-			this.onClick(this.mousedown.x, this.mousedown.y);
+	instance.onMouseUp = function(e) {
+		if (instance.hasOwnProperty('mousedown') && !instance.isDragged && instance.hasOwnProperty('onClick')) {
+			instance.onClick(instance.mousedown.x, instance.mousedown.y);
 		}
-		delete this.mousedown;
-		this.isDragged = false;
+		delete instance.mousedown;
+		instance.isDragged = false;
 	}
 }
