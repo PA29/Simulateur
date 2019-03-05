@@ -8,8 +8,7 @@ var canvasGrid; //Variable stockant le canvas du réseau
 var pointSize = 3; //Rayon d'un bus (point)
 var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection
 
-var IMAGE_WIDTH = 8; //Max en % de la taille par rapport à la largeur
-var IMAGE_HEIGHT = 14; //Max en % de la taille par rapport à la hauteur
+var IMAGE_WIDTH = 8; //% de la taille par rapport à la largeur
 
 var SHADOW_COLOR = 'lightgrey';
 
@@ -263,26 +262,22 @@ function Picture(data) {
 	let picture = new Element(data);
 	picture.parametersOpened = false;
 
-	let imSize = function() {
-		return Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
-	}
-
 	picture.default = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
-		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, 'white');
-		canvasGrid.drawImage(data.type, data, imSize());
+		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
+		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
 	}
 	picture.hover = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
-		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, SHADOW_COLOR);
-		canvasGrid.drawImage(data.type, data, imSize());
+		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, SHADOW_COLOR);
+		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
 	}
 	picture.draw = picture.default;
 
 	picture.inside = function(x, y) {
 		let absX = x - canvasGrid.absoluteX(picture.data.x), absY = y - canvasGrid.absoluteY(picture.data.y);
-		let imSize = Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT));
-		return ((Math.abs(absX) <= imSize / 2) && (Math.abs(absY) <= imSize / 2));
+		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
+		return ((Math.abs(absX) <= absSize / 2) && (Math.abs(absY) <= absSize / 2));
 	}
 	picture.onClick = function(x, y) {
 		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
