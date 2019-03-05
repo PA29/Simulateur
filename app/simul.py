@@ -63,7 +63,6 @@ def run_simul(grid, json):
     
     P_seuil_batteries=Pt[0]
     
-    print ("Pseuil batteries est" + str(P_seuil_batteries))
     
     
     #######Calcul de P, Q, V, theta pour tous les t 

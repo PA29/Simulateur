@@ -12,11 +12,7 @@ from flask import jsonify, request
 from .simul import *
 from json import dumps
 
-grid = {
-	'bus': [{'x': 50, 'y': 30}, {'x': 50, 'y': 50}, {'x': 25, 'y': 75}, {'x': 75, 'y': 75}],
-	'lines': [{'bus1': 0, 'bus2': 1, 'r':0.44, 'x':0.35, 'length': 10}, {'bus1': 1, 'bus2': 2, 'r':0.44, 'x':0.35, 'length': 10}, {'bus1': 1, 'bus2': 3, 'r':0.44, 'x':0.35,  'length': 10}, {'bus1': 2, 'bus2': 3, 'r':0.44, 'x':0.35,  'length': 100}, {'bus1': 0, 'bus2': 3, 'r':0.44, 'x':0.35,  'length': 2}],
-	'images': [{'type': 'transfo', 'x': 50, 'y': 20, 'bus': 0, 'Theta': 0.0, 'V': 400}, {'type': 'consommateur', 'x': 50, 'y': 80, 'bus': 1, 'P':-3.0, 'Q':-1.8}, {'type': 'stockage', 'x': 20, 'y': 90, 'bus': 2, 'P':3.0, 'SOC':0.8, 'capacity':10000}, {'type': 'producteur', 'x': 80, 'y': 50, 'bus': 3, 'P':6, 'V':405}]
-}
+
 
 @app.route('/')
 @app.route('/index')
@@ -41,7 +37,8 @@ def getDureeSimulation():
 def getResultatsSimulation():
     #A DEVELOPPER	
     json = request.get_json()
-    #grid = getGrid() recuperer le grid
+    grid = json.get('grid')
+    
     results = run_simul(grid, json) #run la simulation, fichier simul.py
     return dumps({"results":results}, cls=NumpyEncoder) #TEMPORAIRE
 
@@ -57,14 +54,14 @@ def getGrid():
 @app.route('/parametres', methods = ['POST'])
 def getParametres():
 
-	json = request.get_json()
-	return render_template('_parametres', json = json, variables = getVariables(json['data']['type']))
+    json = request.get_json()
+    
+    return render_template('_parametres', json = json, variables = getVariables(json['data']['type']))
 
 @app.route('/addJauge', methods = ['POST'])
 def getAddJauge():
-
-	json = request.get_json()
-	return render_template('_addJauge', json = json)
+    json = request.get_json()
+    return render_template('_addJauge', json = json)
 
 def getVariables(type):
     if type == 'transfo':
