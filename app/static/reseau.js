@@ -132,6 +132,27 @@ function Grid(data) {
 			f(image);
 		}
 	}
+	
+	//Supprime un bus
+	del_bus=function(bus){
+		for (let i=0,i<grid.bus.length,i++) {
+			if (bus===grid.bus[i]){delete(grid.bus[i]);}
+		}
+		
+	}
+	
+	//Supprime deux lignes et remplace par une ligne
+	del_lignes=function(ligne1,ligne2){
+		startBus=ligne1.bus1
+		endBus=ligne2.bus2
+		length=ligne1.length+ligne2.length
+		for (let i=0,i<grid.lines.length,i++) {
+			if (ligne1===grid.lines[i]){delete(grid.lines[i]);}
+			if (ligne2===grid.lines[i]){delete(grid.lines[i]);}
+		}
+		new Line(startBus,endBus,length)
+	}
+	
 }
 
 // Classe définissant un bus
@@ -232,7 +253,7 @@ function Line(data) {
 			}, pointSize);
 		}
 	}
-
+	
 	line.inside = function(x, y) {
 		return false;
 	}
@@ -247,6 +268,11 @@ function Picture(data) {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
 		canvasGrid.drawImage(data.type, data);
 	}
+	
+	picture.hoover = function() {
+		canvasGrid.drawStroke
+	}
+	
 	picture.draw = picture.default;
 
 	picture.inside = function(x, y) {
