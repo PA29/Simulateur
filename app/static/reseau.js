@@ -161,7 +161,7 @@ function Grid(data) {
 			f(image);
 		}
 	}
-}
+	
 
 // Classe définissant un bus
 function Bus(data) {
@@ -249,7 +249,7 @@ function Line(data) {
 			}, pointSize);
 		}
 	}
-
+	
 	line.inside = function(x, y) {
 		return false;
 	}
@@ -272,6 +272,7 @@ function Picture(data) {
 		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, SHADOW_COLOR);
 		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
 	}
+	
 	picture.draw = picture.default;
 
 	picture.inside = function(x, y) {
@@ -366,4 +367,4 @@ function Element(data) {
 		delete instance.mousedown;
 		instance.isDragged = false;
 	}
-}
+};
