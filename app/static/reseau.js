@@ -3,6 +3,7 @@ Ce fichier gère le réseau affiché dans les deux modes : edition / résultats
 */
 
 var grid; //Variable stockant les données du réseau
+var canvasGrid;
 
 var pointSize = 3; //Rayon d'un bus (point)
 var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection

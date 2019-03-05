@@ -112,17 +112,31 @@ function setupBuildZone(build_zone){
 	
 	drop_position = {"x": event.layerX, "y": event.layerY}; //position de la souris au drop
 	
+	
+	
+	var canvas_width = canvasGrid.canvas.width
+	var canvas_height = canvasGrid.canvas.height
+	
+	
+	
 	position = {
-	    	"x": (drop_position.x - drag_position.x), 
-	    	"y": (drop_position.y - drag_position.y) 
-	    }; // position de drop calculée (aimanté au quandrillage)
+	    	"x": (drop_position.x - drag_position.x )*100/canvas_width, 
+	    	"y": (drop_position.y - drag_position.y )*100/canvas_height
+	    }; 
 
+	
 	    if(position.x < 0) position.x = 0; // évite le drop hors zone
 	    if(position.y < 0) position.y = 0; // évite le drop hors zone
 	    
 	    
+	position2 = {
+			"x": 30, 
+	    	"y": 70
+	};
+		
+	canvasGrid.drawImage(drag_position.element.name, position);
 	
-	drawImage(drag_position.element.name, position) 
+	
 	// ajouter les méthodes permettant de créer un nouvel élément 
 	
 	//var newElement = document.createElement("div"); // on crer un nouvel élément hors du DOM
@@ -157,17 +171,18 @@ function setupBuildElement(build_element){
 	//}); 
 	
 	var build_element_position = build_element.getBoundingClientRect(); // on recupere la position de l'element 
-
+	
+	
+	
 	    drag_position = JSON.stringify({
-	    	"x": event.clientX - build_element_position.x, //on calcule la position de la souris par rapport à l'élément attrapé
-	    	"y": event.clientY - build_element_position.y, 
+	    	"x": event.clientX - build_element_position.x - build_element_position.width/2, //on calcule la position de la souris par rapport au milieu l'élément attrapé
+	    	"y": event.clientY - build_element_position.y - build_element_position.height/2, 
 	    	"element": {
 	    		"name": event.target.getAttribute("id"),
 	    		"image": event.target.getAttribute("src"),
 	    	} // on copie les propriétés 
 	    }); 
-	   
-	    
+	console.log(event.clientX)   
 	    // event.datatransfer est un stockage lié à l'event
 	event.dataTransfer.setData('text/plain', drag_position); // event.datatransfer est un stockage lié à l'event    
  	}, false);
