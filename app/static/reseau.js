@@ -162,6 +162,7 @@ function Grid(data) {
 			f(image);
 		}
 	}
+}
 	
 
 // Classe définissant un bus
@@ -276,6 +277,7 @@ function Picture(data) {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
 		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, SHADOW_COLOR);
 		canvasGrid.drawImage(data.type, data, imSize());
+		canvasGrid.drawImage('croix', data, imSize());
 	}
 	
 	picture.draw = picture.default;
