@@ -8,8 +8,7 @@ var canvasGrid; //Variable stockant le canvas du réseau
 var pointSize = 3; //Rayon d'un bus (point)
 var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection
 
-var IMAGE_WIDTH = 8; //Max en % de la taille par rapport à la largeur
-var IMAGE_HEIGHT = 14; //Max en % de la taille par rapport à la hauteur
+var IMAGE_WIDTH = 8; //% de la taille par rapport à la largeur
 
 var SHADOW_COLOR = 'lightgrey';
 
@@ -163,6 +162,7 @@ function Grid(data) {
 		}
 	}
 }
+	
 
 // Classe définissant un bus
 function Bus(data) {
@@ -250,7 +250,7 @@ function Line(data) {
 			}, pointSize);
 		}
 	}
-
+	
 	line.inside = function(x, y) {
 		return false;
 	}
@@ -261,29 +261,32 @@ function Line(data) {
 // Classe définissant un élément du réseau
 function Picture(data) {
 	let picture = new Element(data);
-	let imSize = function() {
-		return Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
-	}
+	picture.parametersOpened = false;
 
 	picture.default = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
-		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, 'white');
-		canvasGrid.drawImage(data.type, data, imSize());
+		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
+		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
 	}
-	picture.hover = function() {
+	
+		picture.hover = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
 		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, SHADOW_COLOR);
 		canvasGrid.drawImage(data.type, data, imSize());
+		canvasGrid.drawImage('croix', data, imSize());
+		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, SHADOW_COLOR);
+		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
 	}
+	
 	picture.draw = picture.default;
 
 	picture.inside = function(x, y) {
 		let absX = x - canvasGrid.absoluteX(picture.data.x), absY = y - canvasGrid.absoluteY(picture.data.y);
-		let imSize = Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT));
-		return ((Math.abs(absX) <= imSize / 2) && (Math.abs(absY) <= imSize / 2));
+		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
+		return ((Math.abs(absX) <= absSize / 2) && (Math.abs(absY) <= absSize / 2));
 	}
 	picture.onClick = function(x, y) {
-		if ($('body').attr('id') == 'edition') {
+		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
 			picture.showParameters();
 		}
 	}
@@ -297,21 +300,26 @@ function Picture(data) {
 
 	// Affiche la fenêtre des paramètres de l'élément
 	picture.showParameters = function() {
+		let imageID = grid.images.indexOf(picture);
+		picture.parametersOpened = true;
+
 		$.ajax({
 			url: 'parametres',
 			type: 'POST',
 			data: JSON.stringify({
 				x: data.x + 5,
 				y: data.y - 3,
-				imageID: grid.images.indexOf(this),
-				data: this.data
+				imageID: imageID,
+				data: picture.data
 			}),
 			contentType: 'application/json',
 			success: function(data) {
 				$('#centerArea .panel.edition').append(data);
 
-				$('.window .close').on('click', function() {
-					$(this).parents('.window').remove();
+				let window = $('.parametres[imageID="' + imageID + '"]').parents('.window');
+				window.find('.close').on('click', function() {
+					window.remove();
+					picture.parametersOpened = false;
 				});
 			}
 		});
