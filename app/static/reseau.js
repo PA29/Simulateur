@@ -268,7 +268,15 @@ function Picture(data) {
 		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
 		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
 	}
-
+	
+		picture.hover = function() {
+		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
+		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, SHADOW_COLOR);
+		canvasGrid.drawImage(data.type, data, imSize());
+		canvasGrid.drawImage('croix', data, imSize());
+		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, SHADOW_COLOR);
+		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
+	}
 	
 	picture.draw = picture.default;
 
