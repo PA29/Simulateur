@@ -1,67 +1,88 @@
-var ctx;
-var background;
-var canvas = document.querySelector('#chart')
 var imgName = "back_chart";
-var chart;
+var pointSizeChart = 4;
+var x_axis = [2,5,8,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59,62,65,68,71];
+var y_axis = [];
 
-var pointSizeBis = 2;
-var selectionSizeBis = 1;
-var images = {};
 
-function absoluteXBis(x){
-    return x / 100 * ctx.canvas.width;
+function createChart () {
+	canvasChart = new Canvas('chart_0');
+	canvasChart.drawImage(imgName, {x:100,y:150, corner:true}, 400);
+	var i;
+	for (i=0; i<24; i++) {
+		Point({x:x_axis[i],y:y_axis[i]})
+	}
 }
 
-function absoluteYBis(y) {
-	return y / 100 * ctx.canvas.height;
+//Conversion des résultats bruts en coordonnées en %
+function y_axis(rawdata){
+	var i;
+	for (i=0; i<24; i++){
+		y_axis[i] = rawdata[i]*100/Math.max(rawdata)
+	}
 }
 
-function drawPointChart(position, size) {
-	ctx.beginPath();
-	ctx.arc(absoluteX(position.x), absoluteY(position.y), size, 0, 2 * Math.PI);
-	ctx.fill();
+//Classe définissant un point
+function Point(data) {
+	let point = new Element(data);
+
+	point.default = function(){
+		canvasChart.drawPoint(data, pointSizeChart);
+	}
+	point.draw = point.default
 }
 
-function drawStrokeChart(position1, position2) {
-	ctx.beginPath();
-	ctx.moveTo(absoluteX(position1.x), absoluteY(position1.y));
-	ctx.lineTo(absoluteX(position2.x), absoluteY(position2.y));
-	ctx.stroke();
+//Classe définissant une ligne
+function LineChart(data) {
+	let lineChart = new Element(data);
+
+	lineChart.default = function(){
+		canvasChart.drawStroke(data[i-1], data[i])
+	}
 }
 
-function drawImageChart(imageName) {
-	console.log(images)
-	console.log(imageName)
-	if (!images.hasOwnProperty(imageName)) {
-		let im = new Image();
-		
-		im.onload = function() {
-			pre = document.createElement('canvas');
-			pre.width = im.width;
-			pre.height = im.height;
-			preCtx = pre.getContext('2d');
-			preCtx.drawImage(im, 0, 0);
-			console.log("helloif")
-			imageName = pre;
-			console.log(imageName)
 
-			ctx.drawImage(pre, 0, 0, 1000, 2000);
+// Classe générique pour Point, Line
+function Elementbis(data) {
+	let instance = this;
+	instance.data = data;
+	instance.isHovered = false;
+	instance.isDragged = false;
+
+	instance.onMouseDown = function(e) {
+		if (instance.inside(e.offsetX, e.offsetY)) {
+			instance.mousedown = {
+				x: e.offsetX - canvasGrid.absoluteX(instance.data.x),
+				y: e.offsetY - canvasGrid.absoluteY(instance.data.y)
+			};
 		}
-		im.src = '/static/' + imageName + '.png';
 	}
-	else {
-		console.log("Helloelse");
-		let pre = images[imageName];
-		ctx.drawImage(pre, absoluteX(position.x) - IMAGE_WIDTH / 2, absoluteY(position.y) - IMAGE_HEIGHT / 2, IMAGE_WIDTH, IMAGE_HEIGHT);
-	}
-}
+	instance.onMouseMove = function(e) {
+		if (instance.inside(e.offsetX, e.offsetY) && !instance.hasOwnProperty('mousedown') && !instance.isHovered) {
+			instance.isHovered = true;
 
-function background_chart() {
-	let picture = new Element();
-	console.log("hello");
-	console.log(imgName)
-  picture.draw = function() {
-		canvas.drawImageChart(imgName);
-		console.log("draw");
-    }
+			if (instance.hasOwnProperty('hover')) {
+				instance.draw = instance.hover;
+				grid.draw();
+			}
+		}
+		else if (instance.hasOwnProperty('mousedown') && instance.hasOwnProperty('dragEdit')) {
+			instance.dragEdit(e.offsetX, e.offsetY);
+			instance.isDragged = true;
+		}
+		else if (!instance.inside(e.offsetX, e.offsetY) && instance.isHovered) {
+			instance.isHovered = false;
+
+			if (instance.draw != instance.default) {
+				instance.draw = instance.default;
+				grid.draw();
+			}
+		}
+	}
+	instance.onMouseUp = function(e) {
+		if (instance.hasOwnProperty('mousedown') && !instance.isDragged && instance.hasOwnProperty('onClick')) {
+			instance.onClick(instance.mousedown.x, instance.mousedown.y);
+		}
+		delete instance.mousedown;
+		instance.isDragged = false;
+	}
 }

@@ -53,7 +53,7 @@ function Canvas(id) {
 		La fonction utilise la variable 'images' pour stocker les images chargées.
 		Lorsqu'une image a déjà été utilisée, elle est récupérée à partir de la variable 'images'
 		Cela évite de recharger plusieurs fois la même image*/
-
+		console.log("test1")
 		let instance = this; //Permet de stocker l'instance de Canvas. La variable this change de valeur avec 'im.onload'
 
 		if (!images.hasOwnProperty(imageName)) { // Si l'image n'est pas stockée dans 'images' (= si elle n'a pas déjà été chargée)

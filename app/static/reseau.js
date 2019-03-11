@@ -31,7 +31,7 @@ function createGrid() {
 	console.log(canvasGrid);
 	canvasGrid = new Canvas('grid'); //Création de l'instance de la classe Canvas
 
-	getGrid.then(function() { //Quand le réseau est chargé (requête GET ligne 20)
+	getGrid.then(function() { //Quand le réseau est chargé (requête GET ligne 23)
 		grid.setInteractions(); //Créer les interactions du réseau avec l'utilisateur (click, survol, etc.)
 		grid.redraw(); //Dessine le réseau (en redimensionnant les éléments en fonction de la taille du canvas)
 	}).catch(function() { //Si un problème s'est produit
