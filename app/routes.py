@@ -15,7 +15,7 @@ grid = {
 	'lines': [{'bus1': 0, 'bus2': 1, 'length': 10}, {'bus1': 1, 'bus2': 2, 'length': 10}, {'bus1': 1, 'bus2': 3, 'length': 10}],
 	'images': [{'type': 'transfo', 'x': 50, 'y': 20, 'bus': 0, 'P': 100, 'V': 230}, {'type': 'consommateur', 'x': 50, 'y': 90, 'bus': 2}]
 }
-
+ 
 @app.route('/')
 @app.route('/index')
 @app.route('/accueil')
