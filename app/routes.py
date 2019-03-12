@@ -8,7 +8,9 @@ Created on Tue Nov 20 17:31:24 2018
 from .functions import render_template
 from app import app
 from .database import cursor
-from flask import jsonify, request
+from flask import jsonify, request, session, redirect
+from tkinter import filedialog
+from tkinter import *
 
 grid = {
 	'bus': [{'x': 50, 'y': 30}, {'x': 50, 'y': 50}, {'x': 25, 'y': 75}, {'x': 75, 'y': 75}],
@@ -22,9 +24,23 @@ grid = {
 def accueil():
     return render_template('accueil')
 
-@app.route('/main')
-def main():
-    return render_template('main')
+@app.route('/creer')
+def creer():
+	session['type'] = 'none'
+	return render_template('main')
+
+@app.route('/charger/<type>')
+def charger(type):
+	print(type)
+
+	if (type == 'personal'):
+		print("Test")
+		root = Tk()
+		root.withdraw()
+		filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
+		return render_template('main', save_path = filename)
+	elif (type != None):
+		return render_template('main', model = type)
 
 @app.route('/edition')
 def edition():
@@ -49,6 +65,7 @@ def resultats():
 
 @app.route('/unScenario')
 def getGrid():
+	print(grid)
 	return jsonify({'grid' : grid})
 
 @app.route('/parametres', methods = ['POST'])

@@ -16,7 +16,14 @@
 	<div class="area" id="leftArea">
 	</div>
 	<div class="area" id="centerArea">
-		<canvas id="grid"></canvas>
+		<canvas id="grid"
+			{% if modele %}
+				modele = "{{modele}}"
+			{% endif %}
+			{% if save_path %}
+				path = "{{save_path}}"
+			{% endif %}
+		></canvas>
 	</div>
 	<div class="area" id="rightArea">
 	</div>
