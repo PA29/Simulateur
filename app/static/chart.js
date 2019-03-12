@@ -7,6 +7,7 @@ var images = {};
 var pointSize = 2;
 var selectionSize = 1;
 
+
 function absoluteXBis(x){
     return x / 100 * ctx.canvas.width;
 }
