@@ -273,14 +273,34 @@ function Picture(data) {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
 		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
 		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
-		canvasGrid.drawImage('croix', data, IMAGE_WIDTH);
-	
+		canvasGrid.drawImage('croix', {'x':data.x+IMAGE_WIDTH/2,'y':data.y-IMAGE_WIDTH/2}, IMAGE_WIDTH/2);
 	}
 	
 /*	picture.del = function() {
-		if (picture.isHovered && picture.inside(?,?)) {
+		for (let image in grid.images) {
+			if (picture===image){delete(images[image]);}
+		}
+		for (let bus in grid.bus) {
+			if (bus.id===picture.bus){delete(grid.bus[bus]);}
+		}
+		let id_line_before=None;
+		let deja_trouve=False;
+		let uncite=True
+		for (let i=0;i<grid.lines.lenght;i++) {
+			if (line_before===line.bus2 && !deja_trouve) {
+				deja_trouve=True;
+				id_line_before=i;
+			}
+			if (line_before===line.bus2 && deja_trouve) {
+				unicite=False;
+			}
+		if (unicite) {
 			
 		}
+		if (!unicite) {
+			
+		}		
+		grid.draw();
 	}
 */
 	
@@ -291,11 +311,24 @@ function Picture(data) {
 		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
 		return ((Math.abs(absX) <= absSize / 2) && (Math.abs(absY) <= absSize / 2));
 	}
+	
+/*	picture.on_cross = function(x,y) {
+		let absX = x - canvasGrid.absoluteX(picture.data.x), absY = y - canvasGrid.absoluteY(picture.data.y);
+		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
+		(absX >= absSize/2 && absX <= 3*absSize/2) && (absY >= -3*absSize/2 && absY <= -absSize/2);
+	}
+*/
 	picture.onClick = function(x, y) {
+/*		if (picture.inside(x,y)){
+			picture.del();
+		}
+*/
 		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
 			picture.showParameters();
 		}
+
 	}
+
 	picture.dragEdit = function(x, y) {
 		if ($('body').attr('id') == 'edition') {
 			this.data.x = (x - this.mousedown.x) / canvasGrid.canvas.width * 100;
