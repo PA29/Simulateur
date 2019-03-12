@@ -82,8 +82,8 @@ def run_simul(grid, json):
     
     ##### Définition de P_seuil_batteries des batteries à partir de la puissance à t=0 du slack
     
-    buses0=deepcopy(B)
-    for bus in buses0:
+    busesp=deepcopy(B)
+    for bus in busesp:
         if bus[1]=='consommateur':
             bus[2]=bus[2]*coeffs[0][1]
             bus[3]=bus[3]*coeffs[0][1]
@@ -94,9 +94,9 @@ def run_simul(grid, json):
             bus[1]='consommateur'
             bus[2]=0  
             bus[3]=0
-    busest, linest, liste_busest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.calcul_total(buses0, L)
+    busesp, linesp, liste_busesp, Pp, Qp, Vp, thetap, Ip, Slp, Sp = total_lf.calcul_total(busesp, L)
     
-    P_seuil_batteries=Pt[0]
+    P_seuil_batteries=Pp[0]
 
     #######Calcul de P, Q, V, theta pour tous les t 
     
