@@ -65,14 +65,14 @@ def run_simul(grid, json):
     t1, t2 = convert_ilotage(season, ilotage)
     ###########################################
     if season == False :
-        coeffs_conso = get_coeff('2018-08-09T08:30:00+02:00', '2018-08-10T08:30:00+02:00', 'RES1_BASE')
+        coeffs_conso = get_coeff('2018-08-09T00:00:00+02:00', '2018-08-10T00:00:00+02:00', 'RES1_BASE')
         coeffs_conso = sorted(coeffs_conso)
-        coeffs_prod = get_coeff('2018-08-09T08:30:00+02:00', '2018-08-10T08:30:00+02:00', 'PRD3_BASE')
+        coeffs_prod = get_coeff('2018-08-09T00:00:00+02:00', '2018-08-10T00:00:00+02:00', 'PRD3_BASE')
         coeffs_prod = sorted(coeffs_prod)
     else :
-        coeffs_conso = get_coeff('2018-01-20T08:30:00+02:00', '2018-01-21T08:30:00+02:00', 'RES1_BASE')
+        coeffs_conso = get_coeff('2018-01-20T00:00:00+02:00', '2018-01-21T00:00:00+02:00', 'RES1_BASE')
         coeffs_conso = sorted(coeffs_conso)
-        coeffs_prod = get_coeff('2018-01-20T08:30:00+02:00', '2018-01-20T08:30:00+02:00', 'PRD3_BASE')
+        coeffs_prod = get_coeff('2018-01-20T00:00:00+02:00', '2018-01-20T00:00:00+02:00', 'PRD3_BASE')
         coeffs_prod = sorted(coeffs_prod)
     coeffs = [[coeffs_conso[i][0], coeffs_conso[i][1], coeffs_prod[i][1]]for i in range(len(coeffs_conso))] #coeffs_conso[~][0] : heure , coeffs_conso[~][1] :coeff de consommateur type , coeffs_conso[~][2] :coeff de producteur type
     ###########################################################################
@@ -85,10 +85,11 @@ def run_simul(grid, json):
     busesp=deepcopy(B)
     for bus in busesp:
         if bus[1]=='consommateur':
-            bus[2]=bus[2]*coeffs[0][1]
-            bus[3]=bus[3]*coeffs[0][1]
+            # on veut avoir la puissance à 9h du matin
+            bus[2]=bus[2]*coeffs[16][1]
+            bus[3]=bus[3]*coeffs[16][1]
         if bus[1]=='producteur':
-            bus[2]=bus[2]*coeffs[0][2]
+            bus[2]=bus[2]*coeffs[16][2]
         if bus[1]=='stockage':
             #pour cette première étape les batteries sont consideres comme des consommateurs nuls
             bus[1]='consommateur'
