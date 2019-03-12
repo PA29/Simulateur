@@ -60,7 +60,7 @@ def getResultatsSimulation():
     json = request.get_json()
     grid = json.get('grid')
     results = run_simul(grid, json) #run la simulation, fichier simul.py
-    return dumps({"results":results}, cls=NumpyEncoder)
+	return dumps({"results":results}, cls=NumpyEncoder)
 
 
 @app.route('/resultats')
