@@ -30,7 +30,7 @@ var getGrid = new Promise(function(resolve, reject) {
 function createGrid() {
 	canvasGrid = new Canvas('grid'); //Création de l'instance de la classe Canvas
 
-	getGrid.then(function() { //Quand le réseau est chargé (requête GET ligne 23)
+	getGrid.then(function() { //Quand le réseau est chargé (requête GET ligne 20)
 		grid.setInteractions(); //Créer les interactions du réseau avec l'utilisateur (click, survol, etc.)
 		grid.redraw(); //Dessine le réseau (en redimensionnant les éléments en fonction de la taille du canvas)
 	}).catch(function() { //Si un problème s'est produit
@@ -265,6 +265,15 @@ function Picture(data) {
 	picture.default = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
 		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
+		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
+	}
+	
+		picture.hover = function() {
+		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
+		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, SHADOW_COLOR);
+		canvasGrid.drawImage(data.type, data, imSize());
+		canvasGrid.drawImage('croix', data, imSize());
+		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, SHADOW_COLOR);
 		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
 	}
 	

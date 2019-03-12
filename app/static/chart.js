@@ -5,6 +5,7 @@ var y_axis = [];
 var rawdata = [5.2,3,7,5,9,2.6,7,8,5,4,2,8,6,5]
 
 
+
 function createChart () {
 	// 1) Création d'un objet jsGraphDisplay
 	var graph = new jsGraphDisplay(/*{
