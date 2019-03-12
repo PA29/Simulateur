@@ -63,7 +63,7 @@ function Grid(data) {
 		let param = {
 			bus: [],
 			lines: [],
-			components: []
+			images: []
 		}
 
 		for (let bus of grid.bus) {
@@ -72,8 +72,8 @@ function Grid(data) {
 		for (let line of grid.lines) {
 			param.lines.push(line.data);
 		}
-		for (let component of grid.images) {
-			param.components.push(component.data);
+		for (let image of grid.images) {
+			param.images.push(image.data);
 		}
 
 		return param;

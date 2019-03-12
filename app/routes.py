@@ -56,12 +56,12 @@ def getDureeSimulation():
 
 @app.route('/simulation', methods = ['POST'])
 def getResultatsSimulation():
-    #les parametres de simulation (saison, ilotage, grid)
-    json = request.get_json()
-    grid = json.get('grid')
-    results = run_simul(grid, json) #run la simulation, fichier simul.py
+	#les parametres de simulation (saison, ilotage, grid)
+	json = request.get_json()
+	grid = json.get('grid')
+	print(grid)
+	results = run_simul(grid, json) #run la simulation, fichier simul.py
 	return dumps({"results":results}, cls=NumpyEncoder)
-
 
 @app.route('/resultats')
 def resultats():

@@ -17,12 +17,12 @@ def listsfromdict(grid):
     dict_bus = grid.get('images')
     buses = []
     for bus in dict_bus:
-        buses.append([bus.get('data').get('bus'), bus.get('data').get('type'), bus.get('data').get('Theta'), bus.get('data').get('P'), bus.get('data').get('Q'), bus.get('data').get('V'), bus.get('data').get('SOC'), bus.get('data').get('capacity')])
+        buses.append([bus.get('bus'), bus.get('type'), bus.get('Theta'), bus.get('P'), bus.get('Q'), bus.get('V'), bus.get('SOC'), bus.get('capacity')])
     buses = [[i for i in buses[j] if i!=None] for j in range(len(buses))]
     dict_line = grid.get('lines')
     lines = []
     for line in dict_line:
-        lines.append([line.get('data').get('bus1'), line.get('data').get('bus2'), line.get('data').get('r'), line.get('data').get('x'), line.get('data').get('length')])
+        lines.append([line.get('bus1'), line.get('bus2'), line.get('r'), line.get('x'), line.get('length')])
     return(buses, lines)
 
 def calcul_total(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 500):
