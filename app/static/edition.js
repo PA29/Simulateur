@@ -122,7 +122,7 @@ function setupBuildZone(build_zone){
 	    
 	    
 	
-	drawImage(drag_position.element.name, position) 
+	drawImage(drag_position.element, position, imSize()) 
 	// ajouter les méthodes permettant de créer un nouvel élément 
 	
 	//var newElement = document.createElement("div"); // on crer un nouvel élément hors du DOM

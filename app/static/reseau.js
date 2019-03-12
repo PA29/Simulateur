@@ -269,14 +269,20 @@ function Picture(data) {
 		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
 	}
 	
-		picture.hover = function() {
+	picture.hover = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
-		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, SHADOW_COLOR);
-		canvasGrid.drawImage(data.type, data, imSize());
-		canvasGrid.drawImage('croix', data, imSize());
-		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, SHADOW_COLOR);
+		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
 		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
+		canvasGrid.drawImage('croix', data, IMAGE_WIDTH);
+	
 	}
+	
+/*	picture.del = function() {
+		if (picture.isHovered && picture.inside(?,?)) {
+			
+		}
+	}
+*/
 	
 	picture.draw = picture.default;
 
