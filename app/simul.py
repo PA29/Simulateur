@@ -5,7 +5,7 @@ Created on Thu Feb 28 15:14:38 2019
 @author: Loïc
 """
 
-from .database import *
+from .database import get_coeff
 from loadflow_NR_battery import total_lf
 from copy import deepcopy
 import numpy as np
@@ -64,8 +64,6 @@ def run_simul(grid, json):
     # debut et fin d'ilotage
     t1, t2 = convert_ilotage(season, ilotage)
     ###########################################
-    
-    #changement des coeffs en fonction de la saison ###############################
     if season == False :
         coeffs_conso = get_coeff('2018-08-09T08:30:00+02:00', '2018-08-10T08:30:00+02:00', 'RES1_BASE')
         coeffs_conso = sorted(coeffs_conso)
@@ -76,16 +74,13 @@ def run_simul(grid, json):
         coeffs_conso = sorted(coeffs_conso)
         coeffs_prod = get_coeff('2018-01-20T08:30:00+02:00', '2018-01-20T08:30:00+02:00', 'PRD3_BASE')
         coeffs_prod = sorted(coeffs_prod)
-    coeffs = [[coeffs_conso[i][0], coeffs_conso[i][1], coeffs_prod[i][1]]for i in range(len(coeffs_conso))]
+    coeffs = [[coeffs_conso[i][0], coeffs_conso[i][1], coeffs_prod[i][1]]for i in range(len(coeffs_conso))] #coeffs_conso[~][0] : heure , coeffs_conso[~][1] :coeff de consommateur type , coeffs_conso[~][2] :coeff de producteur type
     ###########################################################################
     buses, lines, liste_buses, P, Q, V, theta, I, Sl, S = [],[],[],[],[],[],[],[],[],[]
     times = []
     busest = []
     
-    
-    ########################################
     ##### Définition de P_seuil_batteries des batteries à partir de la puissance à t=0 du slack
-    
     
     buses0=deepcopy(B)
     for bus in buses0:
@@ -102,8 +97,8 @@ def run_simul(grid, json):
     busest, linest, liste_busest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.calcul_total(buses0, L)
     
     P_seuil_batteries=Pt[0]
-    ########################################
-    
+
+    #######Calcul de P, Q, V, theta pour tous les t 
     
     for coeff in coeffs :
         times.append(coeff[0])
@@ -120,6 +115,7 @@ def run_simul(grid, json):
                 for buz in busest:
                     if buz[0] == bus[0]:
                         bus[3] = buz[3]
+
         # si on est sur une heure d'ilotage, calcul iloté
         if coeff[0] > t1 and coeff[0] < t2:
             busest, linest, liste_busest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.lf_ilote(buses0, L)
@@ -127,4 +123,4 @@ def run_simul(grid, json):
         else:
             busest, linest, liste_busest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.calcul_total(buses0, L, Ps = P_seuil_batteries)
         buses, lines, liste_buses, P, Q, V, theta, I, Sl, S = buses+[busest], lines+[linest], liste_buses+[liste_busest], P+[Pt], Q+[Qt], V+[Vt], theta+[thetat], I+[It], Sl+[Slt], S+[St]
-    return({"param":json, "heures":times, "buses":buses, "lines":lines, "liste_bus":liste_buses, "P":P, "Q":Q, "V":V, "theta":theta, "abs(I)":[[[abs(xi) for xi in x] for x in i] for i in I], "abs(Sl)":[[[abs(xi) for xi in x] for x in sl] for sl in Sl], "abs(S)":[[[abs(xi) for xi in x] for x in s] for s in S]})
+    return({"heures":times, "buses":buses, "lines":lines, "liste_bus":liste_buses, "P":P, "Q":Q, "V":V, "theta":theta, "abs(I)":[[abs(xi) for xi in x] for x in I], "abs(Sl)":[[abs(xi) for xi in x] for x in Sl], "abs(S)":[[abs(xi) for xi in x] for x in S]})
