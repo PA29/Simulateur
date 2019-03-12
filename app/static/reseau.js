@@ -19,7 +19,8 @@ var tempPower = [true, false, true]; //TEMP// Variable pour tester l'affichage d
 
 //TEMPORAIRE// Chargement d'un réseau de base - Exécution dès le chargement du fichier
 var getGrid = new Promise(function(resolve, reject) {
-	$.get('unScenario', function(data) { //Requête GET pour obtenir la dernière sauvegarde du réseau
+	$.get('/unScenario', function(data) { //Requête GET pour obtenir la dernière sauvegarde du réseau
+		console.log(data);
 		grid = new Grid(data.grid); //Création de l'instance de la classe Grid avec les données récupérées
 		resolve(); //Cette ligne appelle la fonction passée en paramètre de getGrid.then() : permet d'attendre que le réseau soit chargé
 	});
@@ -27,7 +28,6 @@ var getGrid = new Promise(function(resolve, reject) {
 
 // Créer le réseau (interactions + affichage)
 function createGrid() {
-	console.log(canvasGrid);
 	canvasGrid = new Canvas('grid'); //Création de l'instance de la classe Canvas
 
 	getGrid.then(function() { //Quand le réseau est chargé (requête GET ligne 23)
@@ -162,7 +162,6 @@ function Grid(data) {
 		}
 	}
 }
-	
 
 // Classe définissant un bus
 function Bus(data) {

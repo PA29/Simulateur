@@ -47,7 +47,7 @@ function editionJS() {
 
 	// Retour vers l'accueil
 	$('#accueil').on('click', function() {
-		document.location.href = "accueil";
+		document.location.href = "/accueil";
 	});
 
 
