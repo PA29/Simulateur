@@ -98,11 +98,10 @@ div.jauge img.arrow {
     height: 100%;
 }
 
-#chart_0{
+#chart_0 {
     width: 100%;
-    height: 90%;
+    height: 100%;
 }
-
 
 .time {
     position: absolute;
