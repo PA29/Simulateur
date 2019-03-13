@@ -40,16 +40,19 @@ def listsfromdict(grid):
     return(buses, lines, pos_buses)
     
     
-def post_grid (nom_scenario,grid): #scenario en str, grid sous forme de dictionnaire
+def post_scenario (nom_scenario,grid): #scenario en str, grid sous forme de dictionnaire
     #Lancer cette fonction qu'une seule fois par scenario
     #A faire : une manière d'écraser un scenario 
     conn = sqlite3.connect('database_scenarios.db')
     cursor = conn.cursor()
     
     buses,lines,pos_buses=listsfromdict(grid)
-    cursor.execute("CREATE TABLE IF NOT EXISTS " +nom_scenario + "_buses"+ "(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE ,bus INTEGER, type TEXT ,x FLOAT, y FLOAT, Theta FLOAT, P FLOAT, Q FLOAT,  V FLOAT, SOC FLOAT, capacity FLOAT)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS " +nom_scenario + "_lines"+ "(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE ,bus1 INTEGER,bus2 INTEGER, r FLOAT, x FLOAT ,length FLOAT)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS " +nom_scenario + "_pos_buses"+ "(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,x FLOAT,y FLOAT)")
+    #un message d'erreur apparaîtra si la table existe déjà cela évite d'avoir deux tables avec le même nom 
+    #si on veut ajouter des éléments à postiori passer par l'interface SQLITE
+    #si on veut supprimmer un scenario voir fonction del_scenario
+    cursor.execute("CREATE TABLE  " +nom_scenario + "_buses"+ "(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE ,bus INTEGER, type TEXT ,x FLOAT, y FLOAT, Theta FLOAT, P FLOAT, Q FLOAT,  V FLOAT, SOC FLOAT, capacity FLOAT)")
+    cursor.execute("CREATE TABLE  " +nom_scenario + "_lines"+ "(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE ,bus1 INTEGER,bus2 INTEGER, r FLOAT, x FLOAT ,length FLOAT)")
+    cursor.execute("CREATE TABLE  " +nom_scenario + "_pos_buses"+ "(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,x FLOAT,y FLOAT)")
     
     for i in range (len(buses)):
         
@@ -66,9 +69,65 @@ def post_grid (nom_scenario,grid): #scenario en str, grid sous forme de dictionn
     
     conn.commit()
     conn.close()
+
+def del_scenario(nom_scenario):#nom_scenario en str
+    conn = sqlite3.connect('database_scenarios.db')
+    cursor = conn.cursor()
+    cursor.execute("DROP TABLE IF EXISTS " +nom_scenario + "_buses")
+    cursor.execute("DROP TABLE IF EXISTS " +nom_scenario + "_lines")
+    cursor.execute("DROP TABLE IF EXISTS " +nom_scenario + "_pos_buses")
+    conn.commit()
+    conn.close()
+
+def get_grid(nom_scenario): #nom_scenario en str
+    conn = sqlite3.connect('database_scenarios.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT ALL *  FROM  " +nom_scenario + "_buses")
+    buses=cursor.fetchall()
+    cursor.execute("SELECT ALL *  FROM  " +nom_scenario + "_lines")
+    lines=cursor.fetchall()
+    cursor.execute("SELECT ALL *  FROM  " +nom_scenario + "_pos_buses")
+    pos_buses=cursor.fetchall()
+    conn.commit()
+    conn.close()
+    
+    grid=dictfromlists(buses,lines,pos_buses)
+    return(grid)
+    
+def dictfromlists(buses,lines,pos_buses):
+    grid = {}
+    
+    Ldata_pos_buses=[]
+    for pos_bus in pos_buses:
+        data_pos_bus={}
+        data_pos_bus['data']={'x': pos_bus[1], 'y': pos_bus[2]} #indices des listes décallées de 1 à cause de laclé principale
+        Ldata_pos_buses.append(data_pos_bus)
+        
+    Ldata_lines=[]
+    for line in lines:
+        data_line={}
+        data_line['data']={"bus1": line[1], "bus2" : line[2], "r" : line[3], "x" : line[4], "length": line[5]} #indices des listes décallées de 1 à cause de laclé principale
+        Ldata_lines.append(data_line)
+        
+    Ldata_buses=[]
+    for bus in buses:
+        data_bus={}
+        data_bus['data']={"bus": bus[1], "type" : bus[2], "x" : bus[3], "y" : bus[4], "Theta": bus[5] , "P": bus[6], "Q": bus[7], "V": bus[8], "SOC": bus[9], "capacity": bus[10]} #indices des listes décallées de 1 à cause de laclé principale
+        Ldata_buses.append(data_bus)
+        
+        
+        
+    grid['bus']=Ldata_pos_buses
+    grid['lines']=Ldata_lines
+    grid['images']=Ldata_buses
+    
+    return(grid)
     
 
-        
+
+
+
+
 
 def affichage_courbe_puissance(season,type_conso='RES1_BASE'): #attention échelle des heures fausse"
     if season==False:
