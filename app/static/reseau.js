@@ -3,6 +3,7 @@ Ce fichier gère le réseau affiché dans les deux modes : edition / résultats
 */
 
 var grid; //Variable stockant les données du réseau
+var canvasGrid; //Variable stockant le canvas du réseau
 
 var canvasGrid; //Variable stockant le canvas du réseau
 
@@ -10,8 +11,7 @@ var canvasGrid; //Variable stockant le canvas du réseau
 var pointSize = 3; //Rayon d'un bus (point)
 var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection
 
-var IMAGE_WIDTH = 8; //Max en % de la taille par rapport à la largeur
-var IMAGE_HEIGHT = 14; //Max en % de la taille par rapport à la hauteur
+var IMAGE_WIDTH = 8; //% de la taille par rapport à la largeur
 
 var SHADOW_COLOR = 'lightgrey';
 
@@ -22,7 +22,8 @@ var tempPower = [true, false, true]; //TEMP// Variable pour tester l'affichage d
 
 //TEMPORAIRE// Chargement d'un réseau de base - Exécution dès le chargement du fichier
 var getGrid = new Promise(function(resolve, reject) {
-	$.get('unScenario', function(data) { //Requête GET pour obtenir la dernière sauvegarde du réseau
+	$.get('/unScenario', function(data) { //Requête GET pour obtenir la dernière sauvegarde du réseau
+		console.log(data);
 		grid = new Grid(data.grid); //Création de l'instance de la classe Grid avec les données récupérées
 		resolve(); //Cette ligne appelle la fonction passée en paramètre de getGrid.then() : permet d'attendre que le réseau soit chargé
 	});
@@ -92,6 +93,27 @@ function Grid(data) {
 		return param;
 	}
 
+	//Renvoie les données nécéssaires à la simulation
+	this.simulationParam = function() {
+		let param = {
+			bus: [],
+			lines: [],
+			images: []
+		}
+
+		for (let bus of grid.bus) {
+			param.bus.push(bus.data);
+		}
+		for (let line of grid.lines) {
+			param.lines.push(line.data);
+		}
+		for (let image of grid.images) {
+			param.images.push(image.data);
+		}
+
+		return param;
+	}
+
 	//Dessine le réseau en actualisant les dimensions du canvas
 	this.redraw = function() {
 		let centerArea = document.getElementById('centerArea');
@@ -109,13 +131,7 @@ function Grid(data) {
 		instance.forEach(function(elmt) { //Dessine chaque élément du réseau
 			elmt.draw();
 		});
-		
-//////////////////////////////////////////////////////////////////////////modification
-		if (instance.dropped.drop){
-			canvasGrid.drawImage(instance.dropped.position, instance.dropped.type)
-			
-		};
-//////////////////////////////////////////////////////////////////////////////////////
+
 		if (instance.statusPowerFlow) {
 			instance.lines.forEach(function(elmt) {
 				let intensity = (tempPower[grid.lines.indexOf(elmt)]) ? 1 : -1;
@@ -269,7 +285,7 @@ function Line(data) {
 			}, pointSize);
 		}
 	}
-
+	
 	line.inside = function(x, y) {
 		return false;
 	}
@@ -283,28 +299,33 @@ function Picture(data) {
 	let picture = new Element(data);
 	picture.parametersOpened = false;
 
+
 	let imSize = function() {
 		return Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
 	}
 
+
 	picture.default = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
-		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, 'white');
-		canvasGrid.drawImage(data.type, data, imSize());
+		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
+		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
 	}
 	picture.hover = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
-		canvasGrid.drawRoundedSquare(data, imSize(), imSize() / 10, SHADOW_COLOR);
-		canvasGrid.drawImage(data.type, data, imSize());
+		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'lightgrey');
+		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
 	}
+	
 	picture.draw = picture.default;
 
 	picture.inside = function(x, y) {
 		let absX = x - canvasGrid.absoluteX(picture.data.x), absY = y - canvasGrid.absoluteY(picture.data.y);
-		let imSize = Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT));
-		return ((Math.abs(absX) <= imSize / 2) && (Math.abs(absY) <= imSize / 2));
+		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
+		return ((Math.abs(absX) <= absSize / 2) && (Math.abs(absY) <= absSize / 2));
 	}
-	picture.onClick = function(x, y) { // permet d'afficher la fenêtre pour le choix des puissances 
+
+	picture.onClick = function(x, y) {
+
 		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
 			picture.showParameters();
 		}
