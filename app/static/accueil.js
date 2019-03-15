@@ -4,6 +4,10 @@ $(document).ready(function() {
     })
 
     $(".creer").on("click", function() {
-    	document.location.href = "main";
-    })
+    	document.location.href = '/creer';
+    });
+
+    $(".choix").on("click", function() {
+    	document.location.href = '/charger/' + $(this).attr('id');
+    });
 })
