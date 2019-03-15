@@ -265,7 +265,12 @@ function Picture(data) {
 	picture.default = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
 		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
-		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
+		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
+	}
+	picture.hover = function() {
+		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
+		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'lightgrey');
+		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
 	}
 	
 	picture.draw = picture.default;
