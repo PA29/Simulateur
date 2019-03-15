@@ -5,6 +5,9 @@ Ce fichier gère le réseau affiché dans les deux modes : edition / résultats
 var grid; //Variable stockant les données du réseau
 var canvasGrid; //Variable stockant le canvas du réseau
 
+var canvasGrid; //Variable stockant le canvas du réseau
+
+
 var pointSize = 3; //Rayon d'un bus (point)
 var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection
 
@@ -19,7 +22,8 @@ var tempPower = [true, false, true]; //TEMP// Variable pour tester l'affichage d
 
 //TEMPORAIRE// Chargement d'un réseau de base - Exécution dès le chargement du fichier
 var getGrid = new Promise(function(resolve, reject) {
-	$.get('unScenario', function(data) { //Requête GET pour obtenir la dernière sauvegarde du réseau
+	$.get('/unScenario', function(data) { //Requête GET pour obtenir la dernière sauvegarde du réseau
+		console.log(data);
 		grid = new Grid(data.grid); //Création de l'instance de la classe Grid avec les données récupérées
 		resolve(); //Cette ligne appelle la fonction passée en paramètre de getGrid.then() : permet d'attendre que le réseau soit chargé
 	});
@@ -57,7 +61,17 @@ function Grid(data) {
 	for (let image of data.images) {
 		instance.images.push(new Picture(image));
 	}
-
+	
+///////////////////////////////////////////////////////////modification 
+	this.dropped = {
+		drop : '' ,
+		type : '',
+		position : {'x': '',
+					'y':''
+		} 		
+	};
+////////////////////////////////////////////////////////////////////////
+	
 	//Renvoie les données nécéssaires à la simulation
 	this.simulationParam = function() {
 		let param = {
@@ -74,6 +88,27 @@ function Grid(data) {
 		}
 		for (let component of grid.images) {
 			param.components.push(component.data);
+		}
+
+		return param;
+	}
+
+	//Renvoie les données nécéssaires à la simulation
+	this.simulationParam = function() {
+		let param = {
+			bus: [],
+			lines: [],
+			images: []
+		}
+
+		for (let bus of grid.bus) {
+			param.bus.push(bus.data);
+		}
+		for (let line of grid.lines) {
+			param.lines.push(line.data);
+		}
+		for (let image of grid.images) {
+			param.images.push(image.data);
 		}
 
 		return param;
@@ -162,10 +197,10 @@ function Grid(data) {
 		}
 	}
 }
-	
 
 // Classe définissant un bus
 function Bus(data) {
+	console.log(data)
 	let bus = new Element(data);
 	bus.arrowPos = 0;
 
@@ -260,20 +295,34 @@ function Line(data) {
 
 // Classe définissant un élément du réseau
 function Picture(data) {
+
 	let picture = new Element(data);
 	picture.parametersOpened = false;
+
+
+	let imSize = function() {
+		return Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
+	}
+
 
 	picture.default = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
 		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
-		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
+		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
 	}
+<<<<<<< HEAD
 	
 	picture.hover = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
 		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
 		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
 		canvasGrid.drawImage('croix', {'x':data.x+IMAGE_WIDTH/2,'y':data.y-IMAGE_WIDTH/2}, IMAGE_WIDTH/2);
+=======
+	picture.hover = function() {
+		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
+		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'lightgrey');
+		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
+>>>>>>> b906a8bb724d1e5b1bd748a2a1ab7a6d5a784e49
 	}
 	
 /*	picture.del = function() {
@@ -330,6 +379,7 @@ function Picture(data) {
 		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
 		return ((Math.abs(absX) <= absSize / 2) && (Math.abs(absY) <= absSize / 2));
 	}
+<<<<<<< HEAD
 	
 /*	picture.on_cross = function(x,y) {
 		let absX = x - canvasGrid.absoluteX(picture.data.x), absY = y - canvasGrid.absoluteY(picture.data.y);
@@ -342,6 +392,11 @@ function Picture(data) {
 			picture.del();
 		}
 */
+=======
+
+	picture.onClick = function(x, y) {
+
+>>>>>>> b906a8bb724d1e5b1bd748a2a1ab7a6d5a784e49
 		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
 			picture.showParameters();
 		}
