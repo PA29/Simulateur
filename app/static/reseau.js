@@ -5,6 +5,9 @@ Ce fichier gère le réseau affiché dans les deux modes : edition / résultats
 var grid; //Variable stockant les données du réseau
 var canvasGrid; //Variable stockant le canvas du réseau
 
+var canvasGrid; //Variable stockant le canvas du réseau
+
+
 var pointSize = 3; //Rayon d'un bus (point)
 var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection
 
@@ -28,6 +31,7 @@ var getGrid = new Promise(function(resolve, reject) {
 
 // Créer le réseau (interactions + affichage)
 function createGrid() {
+	console.log(canvasGrid);
 	canvasGrid = new Canvas('grid'); //Création de l'instance de la classe Canvas
 
 	getGrid.then(function() { //Quand le réseau est chargé (requête GET ligne 20)
@@ -56,6 +60,37 @@ function Grid(data) {
 	this.images = [];
 	for (let image of data.images) {
 		instance.images.push(new Picture(image));
+	}
+	
+///////////////////////////////////////////////////////////modification 
+	this.dropped = {
+		drop : '' ,
+		type : '',
+		position : {'x': '',
+					'y':''
+		} 		
+	};
+////////////////////////////////////////////////////////////////////////
+	
+	//Renvoie les données nécéssaires à la simulation
+	this.simulationParam = function() {
+		let param = {
+			bus: [],
+			lines: [],
+			components: []
+		}
+
+		for (let bus of grid.bus) {
+			param.bus.push(bus.data);
+		}
+		for (let line of grid.lines) {
+			param.lines.push(line.data);
+		}
+		for (let component of grid.images) {
+			param.components.push(component.data);
+		}
+
+		return param;
 	}
 
 	//Renvoie les données nécéssaires à la simulation
@@ -165,6 +200,7 @@ function Grid(data) {
 
 // Classe définissant un bus
 function Bus(data) {
+	console.log(data)
 	let bus = new Element(data);
 	bus.arrowPos = 0;
 
@@ -259,8 +295,15 @@ function Line(data) {
 
 // Classe définissant un élément du réseau
 function Picture(data) {
+
 	let picture = new Element(data);
 	picture.parametersOpened = false;
+
+
+	let imSize = function() {
+		return Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
+	}
+
 
 	picture.default = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
@@ -280,7 +323,9 @@ function Picture(data) {
 		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
 		return ((Math.abs(absX) <= absSize / 2) && (Math.abs(absY) <= absSize / 2));
 	}
+
 	picture.onClick = function(x, y) {
+
 		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
 			picture.showParameters();
 		}

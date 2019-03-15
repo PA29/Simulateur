@@ -1,8 +1,19 @@
+
+var ctx;
+var background;
+var canvas = document.querySelector('#chart')
+var imgName = "back_chart";
+var chart;
+
+var pointSizeBis = 2;
+var selectionSizeBis = 1;
+var images = {};
 var imgName = "back_chart";
 var pointSizeChart = 4;
 var x_axis = [2,5,8,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59,62,65,68,71];
 var y_axis = [];
 var rawdata = [5.2,3,7,5,9,2.6,7,8,5,4,2,8,6,5]
+
 
 
 
@@ -60,6 +71,38 @@ function y_axis(rawdata){
 	}
 }
 
+<<<<<<< HEAD
+function drawPointChart(position, size) {
+	ctx.beginPath();
+	ctx.arc(absoluteX(position.x), absoluteY(position.y), size, 0, 2 * Math.PI);
+	ctx.fill();
+}
+
+function drawStrokeChart(position1, position2) {
+	ctx.beginPath();
+	ctx.moveTo(absoluteX(position1.x), absoluteY(position1.y));
+	ctx.lineTo(absoluteX(position2.x), absoluteY(position2.y));
+	ctx.stroke();
+}
+
+function drawImageChart(imageName) {
+	console.log(images)
+	console.log(imageName)
+	if (!images.hasOwnProperty(imageName)) {
+		let im = new Image();
+		
+		im.onload = function() {
+			pre = document.createElement('canvas');
+			pre.width = im.width;
+			pre.height = im.height;
+			preCtx = pre.getContext('2d');
+			preCtx.drawImage(im, 0, 0);
+			console.log("helloif")
+			imageName = pre;
+			console.log(imageName)
+
+			ctx.drawImage(pre, 0, 0, 1000, 2000);
+=======
 //Classe définissant un point
 function Point(data) {
 	let point = new Element(data);
@@ -93,8 +136,27 @@ function Elementbis(data) {
 				x: e.offsetX - canvasGrid.absoluteX(instance.data.x),
 				y: e.offsetY - canvasGrid.absoluteY(instance.data.y)
 			};
+>>>>>>> 144de1890243b2322f0154c935115c6a7cc16bc0
 		}
 	}
+<<<<<<< HEAD
+	else {
+		console.log("Helloelse");
+		let pre = images[imageName];
+		ctx.drawImage(pre, absoluteX(position.x) - IMAGE_WIDTH / 2, absoluteY(position.y) - IMAGE_HEIGHT / 2, IMAGE_WIDTH, IMAGE_HEIGHT);
+	}
+}
+
+function background_chart() {
+	let picture = new Element();
+	console.log("hello");
+	console.log(imgName)
+  picture.draw = function() {
+		canvas.drawImageChart(imgName);
+		console.log("draw");
+    }
+}
+
 	instance.onMouseMove = function(e) {
 		if (instance.inside(e.offsetX, e.offsetY) && !instance.hasOwnProperty('mousedown') && !instance.isHovered) {
 			instance.isHovered = true;
@@ -125,3 +187,4 @@ function Elementbis(data) {
 		instance.isDragged = false;
 	}
 }
+
