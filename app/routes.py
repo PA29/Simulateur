@@ -6,13 +6,6 @@ Created on Tue Nov 20 17:31:24 2018
 """
 
 from app import app
-<<<<<<< HEAD
-from .database import cursor
-from flask import jsonify, request, session, redirect
-from tkinter import filedialog
-from tkinter import *
-=======
-
 from .functions import render_template
 from .database import *
 from flask import jsonify, request, session, redirect
@@ -20,7 +13,7 @@ from tkinter import filedialog
 from tkinter import *
 from .simul import *
 from json import dumps
->>>>>>> b906a8bb724d1e5b1bd748a2a1ab7a6d5a784e49
+
 
 grid = {
 	'bus': [{'x': 50, 'y': 30}, {'x': 50, 'y': 50}, {'x': 25, 'y': 75}, {'x': 75, 'y': 75}],
