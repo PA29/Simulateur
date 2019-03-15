@@ -19,7 +19,7 @@ function appendContent() {
 
 	// Chargement du contenu du mode resultats
 	var resultsLoaded = new Promise(function(resolve, reject) {
-		$.get('resultats', function(data) {
+		$.get('/resultats', function(data) {
 			$('#leftArea').append(data.leftPanel);
 			$('#centerArea').append(data.centerPanel);
 			$('#rightArea').append(data.rightPanel);
@@ -30,7 +30,7 @@ function appendContent() {
 	});
 
 	// Chargement du contenu du mode edition
-	$.get('edition', function(data) {
+	$.get('/edition', function(data) {
 		$('#leftArea').append(data.leftPanel);
 		$('#centerArea').append(data.centerPanel);
 		$('#rightArea').append(data.rightPanel);

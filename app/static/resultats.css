@@ -93,6 +93,16 @@ div.jauge img.arrow {
     background-color: white;
 }
 
+.chart_area {
+    width: 100%;
+    height: 100%;
+}
+
+#chart_0 {
+    width: 100%;
+    height: 100%;
+}
+
 .time {
     position: absolute;
     bottom: 0;
