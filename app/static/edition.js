@@ -109,22 +109,19 @@ function setupBuildZone(build_zone){
 	
 	//méthode liée à l'événement drop appelée lorsque l'objet est libéré
 	build_zone.addEventListener('drop', function(event) {
-    event.preventDefault(); // Cette méthode est toujours nécessaire pour éviter une éventuelle redirection inattendue
-    //alert('Vous avez bien déposé votre élément !');	
-	
-	drag_position = JSON.parse(event.dataTransfer.getData('text/plain')); //position de la souris par rapport à l'élément attrapé
-	
-	drop_position = {"x": event.layerX, "y": event.layerY}; //position de la souris au drop
+	    event.preventDefault(); // Cette méthode est toujours nécessaire pour éviter une éventuelle redirection inattendue
+	    //alert('Vous avez bien déposé votre élément !');	
+		
+		drag_position = JSON.parse(event.dataTransfer.getData('text/plain')); //position de la souris par rapport à l'élément attrapé
+		
+		drop_position = {"x": event.layerX, "y": event.layerY}; //position de la souris au drop
 	
 
 	
-<<<<<<< HEAD
-	drawImage(drag_position.element, position, imSize()) 
-	// ajouter les méthodes permettant de créer un nouvel élément 
-=======
-	var canvas_width = canvasGrid.canvas.width
-	var canvas_height = canvasGrid.canvas.height
->>>>>>> b906a8bb724d1e5b1bd748a2a1ab7a6d5a784e49
+		canvasGrid.drawImage(drag_position.element, drop_position, 100) 
+		// ajouter les méthodes permettant de créer un nouvel élément 
+		var canvas_width = canvasGrid.canvas.width
+		var canvas_height = canvasGrid.canvas.height
 	
 	
 	

@@ -5,8 +5,6 @@ Ce fichier gère le réseau affiché dans les deux modes : edition / résultats
 var grid; //Variable stockant les données du réseau
 var canvasGrid; //Variable stockant le canvas du réseau
 
-var canvasGrid; //Variable stockant le canvas du réseau
-
 
 var pointSize = 3; //Rayon d'un bus (point)
 var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection
@@ -310,19 +308,11 @@ function Picture(data) {
 		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
 		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
 	}
-<<<<<<< HEAD
-	
-	picture.hover = function() {
-		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
-		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
-		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
-		canvasGrid.drawImage('croix', {'x':data.x+IMAGE_WIDTH/2,'y':data.y-IMAGE_WIDTH/2}, IMAGE_WIDTH/2);
-=======
 	picture.hover = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
 		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'lightgrey');
 		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
->>>>>>> b906a8bb724d1e5b1bd748a2a1ab7a6d5a784e49
+		canvasGrid.drawImage('croix', {'x':data.x+IMAGE_WIDTH/2,'y':data.y-IMAGE_WIDTH/2}, IMAGE_WIDTH/2);
 	}
 	
 /*	picture.del = function() {
@@ -379,8 +369,7 @@ function Picture(data) {
 		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
 		return ((Math.abs(absX) <= absSize / 2) && (Math.abs(absY) <= absSize / 2));
 	}
-<<<<<<< HEAD
-	
+
 /*	picture.on_cross = function(x,y) {
 		let absX = x - canvasGrid.absoluteX(picture.data.x), absY = y - canvasGrid.absoluteY(picture.data.y);
 		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
@@ -392,11 +381,6 @@ function Picture(data) {
 			picture.del();
 		}
 */
-=======
-
-	picture.onClick = function(x, y) {
-
->>>>>>> b906a8bb724d1e5b1bd748a2a1ab7a6d5a784e49
 		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
 			picture.showParameters();
 		}
