@@ -13,7 +13,7 @@ function editionJS() {
 
 				animationSimulation(data.duree); // Lancement de l'animation
 
-				let simulationParam = {grid : grid};
+				let simulationParam = {grid : grid.simulationParam()};
 				simulationParam.season = false;
 				if ($('#ilotage input')[0].checked) {
 					if ($('#ilotagePermanent input')[0].checked) {
@@ -34,10 +34,10 @@ function editionJS() {
 					data: JSON.stringify(simulationParam),
 					contentType: 'application/json',
 					success: function(data) {
-
 						grid.simulation = data; // Ajout des résultats à la variable stockant le réseau
 						direct('resultats'); // Redirection vers le mode resultats
 						grid.startPowerFlow();
+						background_chart()
 						console.log("après");
 					}
 				});
@@ -112,7 +112,7 @@ function setupBuildZone(build_zone){
 	
 	drop_position = {"x": event.layerX, "y": event.layerY}; //position de la souris au drop
 	
-	
+
 	
 	var canvas_width = canvasGrid.canvas.width
 	var canvas_height = canvasGrid.canvas.height
@@ -127,36 +127,28 @@ function setupBuildZone(build_zone){
 	
 	    if(position.x < 0) position.x = 0; // évite le drop hors zone
 	    if(position.y < 0) position.y = 0; // évite le drop hors zone
-	    
-	    
-	position2 = {
-			"x": 30, 
-	    	"y": 70
-	};
 		
-	canvasGrid.drawImage(drag_position.element.name, position);
-	
-	
-	// ajouter les méthodes permettant de créer un nouvel élément 
-	
-	//var newElement = document.createElement("div"); // on crer un nouvel élément hors du DOM
-	    //newElement.className = "activeElementReseau"; //on définit sa classe (pour le style)
-		//newElement.style.left = position.x.toString() + "px";
-		//newElement.style.top = position.y.toString() + "px";
 		
-	//var newPart = document.createElement("img");
-		//newPart.className = "active_build_element";
-		//newPart.src = drag_position.element.image
+	//canvasGrid.drawImage(drag_position.element.name, position);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////modification	
+	//canvasGrid.dropped = {'drop' : true, 'type' : drag_position.element.name, 'position' : position};
 	
-	//newPart.setAttribute("src", drag_position.element.image);
-	
-	//newElement.appendChild(newPart);
-	
-	//build_zone.insertAdjacentElement("beforeend", newElement); //on insere l'élémént 
-	
-		
+	//canvasGrid.draw();
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+	grid.images.push(new Picture({ bus: 2, type: drag_position.element.name, x: position.x , y: position.y }))	
 	}); 
 	
+	//build_zone.addEventListener({'mousemove', function(event){
+		
+		//mouse_position = {
+			//'x': event.clientX,
+			//'y': event.clientY
+		//};
+		
+		// grid.bus.push(new Bus( x: mouse_position.x, y: mouse_position.y))
+	// };	
+	 //});	
 }
 
 function setupBuildElement(build_element){
@@ -182,14 +174,17 @@ function setupBuildElement(build_element){
 	    		"image": event.target.getAttribute("src"),
 	    	} // on copie les propriétés 
 	    }); 
-	console.log(event.clientX)   
+		
 	    // event.datatransfer est un stockage lié à l'event
 	event.dataTransfer.setData('text/plain', drag_position); // event.datatransfer est un stockage lié à l'event    
  	}, false);
 	
 }
 
+
+
 init();
+
 
 
 }

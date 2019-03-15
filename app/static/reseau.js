@@ -3,7 +3,9 @@ Ce fichier gère le réseau affiché dans les deux modes : edition / résultats
 */
 
 var grid; //Variable stockant les données du réseau
-var canvasGrid;
+
+var canvasGrid; //Variable stockant le canvas du réseau
+
 
 var pointSize = 3; //Rayon d'un bus (point)
 var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection
@@ -16,7 +18,7 @@ var SHADOW_COLOR = 'lightgrey';
 var ANIMATION_DISTANCE = 4;
 var ANIMATION_DURATION = 2000;
 
-var tempPower = [true, true, true]; //TEMP// Variable pour tester l'affichage des flux de puissance
+var tempPower = [true, false, true]; //TEMP// Variable pour tester l'affichage des flux de puissance
 
 //TEMPORAIRE// Chargement d'un réseau de base - Exécution dès le chargement du fichier
 var getGrid = new Promise(function(resolve, reject) {
@@ -28,6 +30,7 @@ var getGrid = new Promise(function(resolve, reject) {
 
 // Créer le réseau (interactions + affichage)
 function createGrid() {
+	console.log(canvasGrid);
 	canvasGrid = new Canvas('grid'); //Création de l'instance de la classe Canvas
 
 	getGrid.then(function() { //Quand le réseau est chargé (requête GET ligne 20)
@@ -42,6 +45,8 @@ function createGrid() {
 function Grid(data) {
 	var instance = this;
 
+	this.statusPowerFlow = false;
+
 	//Création de l'instance avec création des attributs bus, lines et images
 	this.bus = [];
 	for (let bus of data.bus) {
@@ -54,6 +59,37 @@ function Grid(data) {
 	this.images = [];
 	for (let image of data.images) {
 		instance.images.push(new Picture(image));
+	}
+	
+///////////////////////////////////////////////////////////modification 
+	this.dropped = {
+		drop : '' ,
+		type : '',
+		position : {'x': '',
+					'y':''
+		} 		
+	};
+////////////////////////////////////////////////////////////////////////
+	
+	//Renvoie les données nécéssaires à la simulation
+	this.simulationParam = function() {
+		let param = {
+			bus: [],
+			lines: [],
+			components: []
+		}
+
+		for (let bus of grid.bus) {
+			param.bus.push(bus.data);
+		}
+		for (let line of grid.lines) {
+			param.lines.push(line.data);
+		}
+		for (let component of grid.images) {
+			param.components.push(component.data);
+		}
+
+		return param;
 	}
 
 	//Dessine le réseau en actualisant les dimensions du canvas
@@ -73,8 +109,14 @@ function Grid(data) {
 		instance.forEach(function(elmt) { //Dessine chaque élément du réseau
 			elmt.draw();
 		});
-
-		if ($('body').attr('id') == 'resultats') {
+		
+//////////////////////////////////////////////////////////////////////////modification
+		if (instance.dropped.drop){
+			canvasGrid.drawImage(instance.dropped.position, instance.dropped.type)
+			
+		};
+//////////////////////////////////////////////////////////////////////////////////////
+		if (instance.statusPowerFlow) {
 			instance.lines.forEach(function(elmt) {
 				let intensity = (tempPower[grid.lines.indexOf(elmt)]) ? 1 : -1;
 				elmt.drawFlow(intensity);
@@ -103,6 +145,7 @@ function Grid(data) {
 
 	//Démarre la boucle permettant d'animer le canvas autour de 60FPS
 	this.startPowerFlow = function() {
+		instance.statusPowerFlow = true;
 		let t0 = (new Date()).getTime(), dt = 0;
 
 		function refresh() {
@@ -120,7 +163,9 @@ function Grid(data) {
 
 	//Arrête la boucle
 	this.stopPowerFlow = function() {
+		instance.statusPowerFlow = false;
 		cancelAnimationFrame(instance.request);
+		instance.draw();
 	}
 
 	//Appelle la fonction f pour chaque élément du réseau
@@ -139,6 +184,7 @@ function Grid(data) {
 
 // Classe définissant un bus
 function Bus(data) {
+	console.log(data)
 	let bus = new Element(data);
 	bus.arrowPos = 0;
 
@@ -148,7 +194,6 @@ function Bus(data) {
 	}
 	// Affichage lors du survol
 	bus.hover = function() {
-		console.log("Test");
 		canvasGrid.drawPoint(data, pointSize + selectionSize);
 	}
 	bus.draw = bus.default; // Variable stockant le type d'affichage
@@ -234,7 +279,10 @@ function Line(data) {
 
 // Classe définissant un élément du réseau
 function Picture(data) {
+
 	let picture = new Element(data);
+	picture.parametersOpened = false;
+
 	let imSize = function() {
 		return Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
 	}
@@ -256,8 +304,8 @@ function Picture(data) {
 		let imSize = Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT));
 		return ((Math.abs(absX) <= imSize / 2) && (Math.abs(absY) <= imSize / 2));
 	}
-	picture.onClick = function(x, y) {
-		if ($('body').attr('id') == 'edition') {
+	picture.onClick = function(x, y) { // permet d'afficher la fenêtre pour le choix des puissances 
+		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
 			picture.showParameters();
 		}
 	}
@@ -271,21 +319,26 @@ function Picture(data) {
 
 	// Affiche la fenêtre des paramètres de l'élément
 	picture.showParameters = function() {
+		let imageID = grid.images.indexOf(picture);
+		picture.parametersOpened = true;
+
 		$.ajax({
 			url: 'parametres',
 			type: 'POST',
 			data: JSON.stringify({
 				x: data.x + 5,
 				y: data.y - 3,
-				imageID: grid.images.indexOf(this),
-				data: this.data
+				imageID: imageID,
+				data: picture.data
 			}),
 			contentType: 'application/json',
 			success: function(data) {
 				$('#centerArea .panel.edition').append(data);
 
-				$('.window .close').on('click', function() {
-					$(this).parents('.window').remove();
+				let window = $('.parametres[imageID="' + imageID + '"]').parents('.window');
+				window.find('.close').on('click', function() {
+					window.remove();
+					picture.parametersOpened = false;
 				});
 			}
 		});
@@ -310,7 +363,6 @@ function Element(data) {
 		}
 	}
 	instance.onMouseMove = function(e) {
-
 		if (instance.inside(e.offsetX, e.offsetY) && !instance.hasOwnProperty('mousedown') && !instance.isHovered) {
 			instance.isHovered = true;
 
