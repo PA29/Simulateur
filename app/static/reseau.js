@@ -277,30 +277,49 @@ function Picture(data) {
 	}
 	
 /*	picture.del = function() {
-		for (let image in grid.images) {
-			if (picture===image){delete(images[image]);}
-		}
-		for (let bus in grid.bus) {
-			if (bus.id===picture.bus){delete(grid.bus[bus]);}
-		}
 		let id_line_before=None;
 		let deja_trouve=False;
 		let uncite=True
 		for (let i=0;i<grid.lines.lenght;i++) {
-			if (line_before===line.bus2 && !deja_trouve) {
+			if (id_line_before===line.bus1 && !deja_trouve) {
 				deja_trouve=True;
 				id_line_before=i;
 			}
-			if (line_before===line.bus2 && deja_trouve) {
+			if (id_line_before===line.bus1 && deja_trouve) {
 				unicite=False;
 			}
-		if (unicite) {
-			
 		}
+		let id_line_after=None;
+		deja_trouve=False;
+		uncite=True
+		for (let i=0;i<grid.lines.lenght;i++) {
+			if (id_line_after===line.bus2 && !deja_trouve) {
+				deja_trouve=True;
+				id_line_after=i;
+			}
+			if (id_line_after===line.bus2 && deja_trouve) {
+				unicite=False;
+			}
 		if (!unicite) {
-			
+			grid.bus[grid.lines[id_line_after].bus1.id].P=0;
+			grid.bus[grid.lines[id_line_after].bus1.id].Q=0;
 		}		
+		if (unicite) {
+			let new_line=new(Line);
+			new_line.bus1=grid.lines[id_line_before].bus1;
+			new_line.bus2=grid.lines[id_line_after].bus2;
+			new_line.length=grid.lines[id_line_before].length+grid.lines[id_line_after].length;
+			delete[grid.lines[id_line_before]];
+			delete[grid.lines[id_line_after]];
+			grid.lines.push(new_line);
+			for (let bus in grid.bus) {
+				if (bus.id===picture.bus){delete(grid.bus[bus]);}
+		}
+		for (let image in grid.images) {
+			if (picture===image){delete(images[image]);}
+		}
 		grid.draw();
+		}
 	}
 */
 	
