@@ -310,11 +310,67 @@ function Picture(data) {
 		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
 		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
 	}
+<<<<<<< HEAD
+	
+	picture.hover = function() {
+		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
+		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
+		canvasGrid.drawImage(data.type, data, IMAGE_WIDTH);
+		canvasGrid.drawImage('croix', {'x':data.x+IMAGE_WIDTH/2,'y':data.y-IMAGE_WIDTH/2}, IMAGE_WIDTH/2);
+=======
 	picture.hover = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
 		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'lightgrey');
 		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
+>>>>>>> b906a8bb724d1e5b1bd748a2a1ab7a6d5a784e49
 	}
+	
+/*	picture.del = function() {
+		let id_line_before=None;
+		let deja_trouve=False;
+		let uncite=True
+		for (let i=0;i<grid.lines.lenght;i++) {
+			if (id_line_before===line.bus1 && !deja_trouve) {
+				deja_trouve=True;
+				id_line_before=i;
+			}
+			if (id_line_before===line.bus1 && deja_trouve) {
+				unicite=False;
+			}
+		}
+		let id_line_after=None;
+		deja_trouve=False;
+		uncite=True
+		for (let i=0;i<grid.lines.lenght;i++) {
+			if (id_line_after===line.bus2 && !deja_trouve) {
+				deja_trouve=True;
+				id_line_after=i;
+			}
+			if (id_line_after===line.bus2 && deja_trouve) {
+				unicite=False;
+			}
+		if (!unicite) {
+			grid.bus[grid.lines[id_line_after].bus1.id].P=0;
+			grid.bus[grid.lines[id_line_after].bus1.id].Q=0;
+		}		
+		if (unicite) {
+			let new_line=new(Line);
+			new_line.bus1=grid.lines[id_line_before].bus1;
+			new_line.bus2=grid.lines[id_line_after].bus2;
+			new_line.length=grid.lines[id_line_before].length+grid.lines[id_line_after].length;
+			delete[grid.lines[id_line_before]];
+			delete[grid.lines[id_line_after]];
+			grid.lines.push(new_line);
+			for (let bus in grid.bus) {
+				if (bus.id===picture.bus){delete(grid.bus[bus]);}
+		}
+		for (let image in grid.images) {
+			if (picture===image){delete(images[image]);}
+		}
+		grid.draw();
+		}
+	}
+*/
 	
 	picture.draw = picture.default;
 
@@ -323,13 +379,30 @@ function Picture(data) {
 		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
 		return ((Math.abs(absX) <= absSize / 2) && (Math.abs(absY) <= absSize / 2));
 	}
+<<<<<<< HEAD
+	
+/*	picture.on_cross = function(x,y) {
+		let absX = x - canvasGrid.absoluteX(picture.data.x), absY = y - canvasGrid.absoluteY(picture.data.y);
+		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
+		(absX >= absSize/2 && absX <= 3*absSize/2) && (absY >= -3*absSize/2 && absY <= -absSize/2);
+	}
+*/
+	picture.onClick = function(x, y) {
+/*		if (picture.inside(x,y)){
+			picture.del();
+		}
+*/
+=======
 
 	picture.onClick = function(x, y) {
 
+>>>>>>> b906a8bb724d1e5b1bd748a2a1ab7a6d5a784e49
 		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
 			picture.showParameters();
 		}
+
 	}
+
 	picture.dragEdit = function(x, y) {
 		if ($('body').attr('id') == 'edition') {
 			this.data.x = (x - this.mousedown.x) / canvasGrid.canvas.width * 100;
