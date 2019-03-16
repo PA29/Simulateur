@@ -118,13 +118,13 @@ function setupBuildZone(build_zone){
 	
 
 	
-<<<<<<< HEAD
+
 	drawImage(drag_position.element, position, imSize()) 
 	// ajouter les méthodes permettant de créer un nouvel élément 
-=======
+
 	var canvas_width = canvasGrid.canvas.width
 	var canvas_height = canvasGrid.canvas.height
->>>>>>> b906a8bb724d1e5b1bd748a2a1ab7a6d5a784e49
+
 	
 	
 	
