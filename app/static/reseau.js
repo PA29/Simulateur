@@ -18,19 +18,26 @@ var ANIMATION_DURATION = 2000;
 
 var tempPower = [true, false, true]; //TEMP// Variable pour tester l'affichage des flux de puissance
 
-//TEMPORAIRE// Chargement d'un réseau de base - Exécution dès le chargement du fichier
-var getGrid = new Promise(function(resolve, reject) {
-	$.get('/unScenario', function(data) { //Requête GET pour obtenir la dernière sauvegarde du réseau
-		console.log(data);
-		grid = new Grid(data.grid); //Création de l'instance de la classe Grid avec les données récupérées
-		resolve(); //Cette ligne appelle la fonction passée en paramètre de getGrid.then() : permet d'attendre que le réseau soit chargé
-	});
-});
-
 // Créer le réseau (interactions + affichage)
 function createGrid() {
-	console.log(canvasGrid);
 	canvasGrid = new Canvas('grid'); //Création de l'instance de la classe Canvas
+
+	let getGrid = new Promise(function(resolve, reject) {
+		let applyGrid = function(data) {
+			grid = new Grid(data.grid); //Création de l'instance de la classe Grid avec les données récupérées
+			resolve(); //Cette ligne appelle la fonction passée en paramètre de getGrid.then() : permet d'attendre que le réseau soit chargé
+		}
+		
+		if ($('#grid').attr('model') != undefined) {
+			$.get('/reseau/model/' + $('#grid').attr('model'), applyGrid);
+		}
+		else if ($('#grid').attr('filename') != undefined) {
+			$.get('/reseau/file/' + $('#grid').attr('filename'), applyGrid);
+		}
+		else {
+			$.get('/reseau/nouveau', applyGrid);
+		}
+	});
 
 	getGrid.then(function() { //Quand le réseau est chargé (requête GET ligne 20)
 		grid.setInteractions(); //Créer les interactions du réseau avec l'utilisateur (click, survol, etc.)
