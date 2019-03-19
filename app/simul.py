@@ -55,7 +55,38 @@ def convert_ilotage(season, ilotage):
         
     
 def run_simul(grid, json):   
+    #####################################
+    #Ajout de consommateurs nuls lorsque les noeuds ne sont pas reliés à un quelconque élément
+
+
+    list_bus=grid.get('bus')
+    nb_bus=len(list_bus)
+    list_images=grid.get('images')
+    list_bus_connectes=[]
+    for image in list_images: 
+            list_bus_connectes.append(image.get('bus'))
+    list(set(list_bus_connectes))
+
+    list_bus_non_connectes=[]
+    for bus in range (len(list_bus)) : 
+        if bus not in list_bus_connectes:
+            list_bus_non_connectes.append(bus)
+
+    for bus_a_connecter in list_bus_non_connectes:
+        list_images.append({"type": "consommateur", "x": 0, "y": 0, "bus": bus_a_connecter, "P": 0, "Q": 0})
+    update_grid={'images': list_images}
+    grid.update(grid)
+
+    update_json={'grid': grid}
+    json.update(update_json)
+
+
+    #####################################""
     B, L = total_lf.listsfromdict(grid)
+
+
+
+
     
     ###########################################
     # obtention des paramètres de calcul
