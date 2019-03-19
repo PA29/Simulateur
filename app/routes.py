@@ -82,7 +82,8 @@ def getGridFile(filename):
 
 @app.route('/reseau/nouveau')
 def getGridNew():
-	return jsonify({'grid' : loadFile(PATH_MODEL + 'new' + EXTENSION)})
+	#return jsonify({'grid' : loadFile(PATH_MODEL + 'new' + EXTENSION)})
+	return jsonify({'grid': grid})
 
 def loadFile(path):
 	file = open(path, 'r')
@@ -103,8 +104,8 @@ def getResultatsSimulation():
 	jsonParam = request.get_json()
 	grid = jsonParam.get('grid')
 	print(grid)
-	results = run_simul(grid, json) #run la simulation, fichier simul.py
-	return jsonify(results)
+	results = run_simul(grid, jsonParam) #run la simulation, fichier simul.py
+	return json.dumps(results, cls=NumpyEncoder)
 
 
 @app.route('/resultats')

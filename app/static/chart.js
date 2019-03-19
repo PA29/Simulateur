@@ -4,7 +4,7 @@ var abscisses = [];
 
 function createChart (data) {
 	//Création des abscisses
-	for (var k=0; k<49; k++){
+	for (var k=1; k<48; k++){
 		abscisses.push(k/2)
 	}
 
@@ -14,14 +14,14 @@ function createChart (data) {
 		raw_data.push([property])
 	console.log(raw_data)
 	}*/
-	data = new Object(data)
-	console.log(Object.keys(data));
+
+	data = JSON.parse(data);
+
 	//Création des ordonnées
 	var n = 4;
-	for (var j=0; j<49; j++){
-		y_axis.push(data["results"]["P"][j][0])
+	for (var j=0; j<47; j++){
+		y_axis.push(data["P"][j][0]);
 	}
-
 
 	//Création du graphe
 	for (var i=0; i<4; i++){
@@ -48,18 +48,20 @@ function createChart (data) {
 					min: "",
 					max: "",
 					step: "",
-					textDisplayEvery: "2",
+					textDisplayEvery: "",
 					textSize: "",
 					textColor: ""
 				}
 			});
 		// 2) Ajout des données
-		donnees = [];
-		for(var l=0; l<49; l++){
+		donnees = new Array();
+		for(var l=0; l<47; l++){
 			donnees.push([abscisses[l], y_axis[l]]);
+			console.log(donnees)
 		};
+
 		graph.DataAdd({
-			data: donnees		
+			data: donnees	
 		});
 
 		// 3) Affichage du résultat

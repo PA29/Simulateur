@@ -54,13 +54,14 @@ def convert_ilotage(season, ilotage):
     return(t1, t2)
         
     
-def run_simul(grid, json):   
+def run_simul(grid, jsonParam):   
     B, L = total_lf.listsfromdict(grid)
     
     ###########################################
     # obtention des paramètres de calcul
-    ilotage = json.get('ilotage')
-    season = json.get('season')
+    print(type(jsonParam))
+    ilotage = jsonParam.get('ilotage')
+    season = jsonParam.get('season')
     # debut et fin d'ilotage
     t1, t2 = convert_ilotage(season, ilotage)
     ###########################################
