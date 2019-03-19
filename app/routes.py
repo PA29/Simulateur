@@ -26,6 +26,8 @@ grid = {
 	"images": [{"type": "transfo", "x": 50, "y": 20, "bus": 0, "Theta": 0.0, "V": 400}, {"type": "consommateur", "x": 50, "y": 60, "bus": 1, "P": -3.0, "Q": -1.8}, {"type": "stockage", "x": 20, "y": 90, "bus": 2, "P": 6.0, "SOC": 0.8, "capacity": 13000}, {"type": "producteur", "x": 80, "y": 50, "bus": 3, "P": 3, "V": 400}]
 }
 
+
+
 #################
 #### ACCUEIL ####
 #################
@@ -83,6 +85,8 @@ def getGridFile(filename):
 @app.route('/reseau/nouveau')
 def getGridNew():
 	return jsonify({'grid' : loadFile(PATH_MODEL + 'new' + EXTENSION)})
+	
+
 
 def loadFile(path):
 	file = open(path, 'r')
@@ -102,7 +106,6 @@ def getResultatsSimulation():
 	#les parametres de simulation (saison, ilotage, grid)
 	jsonParam = request.get_json()
 	grid = jsonParam.get('grid')
-	print(grid)
 	results = run_simul(grid, jsonParam) #run la simulation, fichier simul.py
 	return json.dumps({"results":results}, cls=NumpyEncoder)
 
