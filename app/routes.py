@@ -12,7 +12,7 @@ from flask import jsonify, request, session, redirect
 from tkinter import filedialog
 from tkinter import *
 from .simul import *
-import json
+import json as js
 from datetime import datetime
 import os
 
@@ -86,7 +86,7 @@ def getGridNew():
 
 def loadFile(path):
 	file = open(path, 'r')
-	data = json.loads(file.read())
+	data = js.loads(file.read())
 	file.close()
 	return data
 
@@ -100,11 +100,10 @@ def getDureeSimulation():
 @app.route('/simulation', methods = ['POST'])
 def getResultatsSimulation():
 	#les parametres de simulation (saison, ilotage, grid)
-	jsonParam = request.get_json()
-	grid = jsonParam.get('grid')
-	print(grid)
-	results = run_simul(grid, jsonParam) #run la simulation, fichier simul.py
-	return json.dumps({"results":results}, cls=NumpyEncoder)
+	json = request.get_json()
+	grid = json.get('grid')
+	results = run_simul(grid, json) #run la simulation, fichier simul.py
+	return js.dumps({"results":results}, cls=NumpyEncoder)
 
 @app.route('/resultats')
 def resultats():
