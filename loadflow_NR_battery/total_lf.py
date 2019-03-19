@@ -107,8 +107,6 @@ def calcul_total(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 500):
         I1 = lf.lines_values.currents(theta1, V1, Y1)
         S1, Sl1 = lf.lines_values.losses(theta1, V1, Y1)
     else:
-        print(L1)
-        print('la')
         return(buses, lines, [bus[0] for bus in buses], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
     ######### retour valeurs réelles #############################################
     P_r1 = Pf1*Pb
@@ -124,7 +122,21 @@ def calcul_total(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 500):
     buses2 = deepcopy(buses)
     buses2 = maj_batteries(buses2, liste_buses1, P_r1)
     ##############################################################################
-    return(buses2, lines, liste_buses1, P_r1, Q_r1, V_r1, theta_r1, I_r1, Sl_r1, S_r1)
+    #tri des buses##
+    P_f, Q_f, V_f, theta_f, I_f, Sl_f, S_f = [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))]
+    for i in range(len(liste_buses1)):
+        P_f[int(liste_buses1[i])] = P_r1[i]
+        Q_f[int(liste_buses1[i])] = Q_r1[i]
+        V_f[int(liste_buses1[i])] = V_r1[i]
+        theta_f[int(liste_buses1[i])] = theta_r1[i]
+        I_f[int(liste_buses1[i])] = I_r1[i]
+        Sl_f[int(liste_buses1[i])] = Sl_r1[i]
+        S_f[int(liste_buses1[i])] = S_r1[i]
+        for j in range(len(liste_buses1)):
+            I_f[i][int(liste_buses1[j])] = I_r1[i][j]
+            Sl_f[i][int(liste_buses1[j])] = Sl_r1[i][j]
+            S_f[i][int(liste_buses1[j])] = S_r1[i][j]
+    return(buses2, lines, P_f, Q_f, V_f, theta_f, I_f, Sl_f, S_f)
 
 def maj_batteries(buses, liste_buses, P):
     # met à jour les charges de batterie d'après la puissance débitée calculée
@@ -137,69 +149,109 @@ def maj_batteries(buses, liste_buses, P):
             id_bus = bus[0]
             for i in range(len(liste_buses)) :
                 if liste_buses[i] == id_bus :
-                    C = Cmax*SOC
-                    # calcul de l'énergie perdue
-                    Elost = P[i]*pas_temps
-                    C = C - Elost
-                    SOC1 = C/Cmax
-                    if SOC1 < 0:
-                        SOC1 = 0
-                    elif SOC1 > 1:
-                        SOC1 = 1
-                    bus[3] = SOC1
+                    if bus[1] == 'stockage':
+                        C = Cmax*SOC
+                        # calcul de l'énergie perdue
+                        Elost = P[i]*pas_temps
+                        C = C - Elost
+                        SOC1 = C/Cmax
+                        if SOC1 < 0:
+                            SOC1 = 0
+                        elif SOC1 > 1:
+                            SOC1 = 1
+                        bus[3] = SOC1
     return(buses)
 
-def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1):
-    #réalise le calcul lf en prenant en compte l'ilotage
-    maxPbat = 0
-    id_slack = 0
-    # nombre batteries, pleines, déchargées
-    n_bat, n_full, n_disc = 0, 0, 0
+
+def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
+    therearebatteries = False
+    battery_chosen = False
     buses_init = deepcopy(buses)
     for bus in buses_init :
-        if bus[1] == 'transfo':
-            bus[1] = 'consommateur'
-            bus[2] = 0
-            bus[3] = 0
         if bus[1] == 'stockage':
-            n_bat += 1
-            if bus[3] < Cs:
-                n_disc +=1
-            if bus[3] > 0.95:
-                n_full += 1
-    # s'il existe au moins une batterie non déchargée
-    # et au moins une batterie non pleine
-    if n_disc < n_bat and n_full < n_bat:
+            therearebatteries = True
+    if therearebatteries == False:
+        return(buses, lines, [bus[0] for bus in buses], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
+    buses_iter = deepcopy(buses_init)
+    while battery_chosen == False:
+        for bus in buses_iter :
+            if bus[1] == 'transfo':
+                bus[1] = 'consommateur'
+                bus[2] = 0
+                bus[3] = 0
+        ##### on regarde si toutes les batteries sont pleines, auquel cas on déconnecte le plus petit producteur #####
+        n_batt, n_full = 0, 0
+        for bus in buses_init :
+            if bus[1] == 'stockage':
+                n_batt+=1
+                if bus[4] > 0.95:
+                    n_full+=1
+        if n_batt == n_full:
+            P_min = float('inf')
+            for bus in buses_init :
+                if bus[1] == 'producteur':
+                    if bus[2] < P_min:
+                        P_max = bus[2]
+                        id_deco = bus[0]
+            #si il n'y a pas de producteurs, réseau peut pas être résolu
+            if P_min == float('inf'):
+                return(buses, lines, [bus[0] for bus in buses], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
+            for bus in buses_init:
+                if bus[0] == id_deco:
+                    if bus[1] == 'producteur':
+                        bus[2] = 0.0
+                        bus[3] = 400
+        ##########################################################################################################
+        # a chaque nouvelle itération, les batteries qui n'ont pas marché sont soit full soit empty, c'est donc (j'explique pas tout) des consommateurs nuls
+        P_max = 0
         for bus in buses_init:
             if bus[1] == 'stockage':
-                # si la batterie n'est pas déchargée, elle peut être slack (il en existe au moins une)
-                if bus[3] > Cs:
-                    if bus[2] > maxPbat:
-                        maxPbat = bus[2]
-                        id_slack = bus[0]
-    #si aucune batterie ne peut délivrer ou absorber de puissance, impossible
-    if maxPbat == 0:    
-        return(buses, lines, [bus[0] for bus in buses], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
-    for bus in buses_init:
-        if bus[0] == id_slack:
-            bus[1] = 'transfo'
-            bus[2] = 0.0
-            bus[3] = 400
-    # on fait un calcul de loadflow en déclenchant les petites batteries dès que la batterie-slack débite (Ps = 0)
-    buses2, lines2, liste_buses, P_r, Q_r, V_r, theta_r, I_r, Sl_r, S_r = calcul_total(buses_init, lines, Ps = 0)
-    # on regarde quelle puissance (indice de P_r) correspond à la batterie slack
-    id_P = id_slack
-    for i in range(len(liste_buses)):
-        if liste_buses[i] == id_slack:
-            id_P = i
-    #si la puissance demandée à la batterie slack est supérieure à la puissance qu'elle peut délivrer, impossible
-    if P_r[id_P] > Sb*maxPbat: 
-        return(buses, lines, [bus[0] for bus in buses], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
-    #si la batterie slack doit absorber de la puissance mais qu'elle est deja pleine, impossible
-    if P_r[id_P] < 0: 
-        if buses2[id_P][3] > 0.95:
-            return(buses, lines, [bus[0] for bus in buses], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
-    # on met à jour la charge des batteries
+                if bus[2] > P_max:
+                    P_max = bus[2]
+                    id_slack = bus[0]
+        for bus in buses_init:
+            if bus[0] == id_slack:
+                if bus[1] == 'stockage':
+                    bus[1] = 'transfo'
+                    bus[2] = 0.0
+                    bus[3] = 400
+        # on fait un calcul de loadflow en déclenchant les petites batteries dès que la batterie-slack débite (Ps = 0)
+        buses2, lines2, liste_buses, P_r, Q_r, V_r, theta_r, I_r, Sl_r, S_r = calcul_total(buses_init, lines, Ps = 0)
+        # on regarde quelle puissance (indice de P_r) correspond à la batterie slack
+        id_P = id_slack
+        for i in range(len(liste_buses)):
+            if liste_buses[i] == id_slack:
+                id_P = i
+        #si la puissance demandée à la batterie slack est supérieure à la puissance qu'elle peut délivrer, impossible
+        if P_r[id_P] > 0: 
+            if P_r[id_P] < P_max:
+                for bus in buses_init:
+                    if bus[0] == id_slack:
+                        SOC = bus[4]
+                if SOC > 0:
+                    battery_chosen = True
+            else:
+                return(buses, lines, [bus[0] for bus in buses], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
+        else:
+            for bus in buses_init:
+                if bus[0] == id_slack:
+                    SOC = bus[4]
+            if SOC < 1:
+                battery_chosen = True
     buses3 = deepcopy(buses)
     buses3 = maj_batteries(buses3, liste_buses, P_r)
-    return(buses3, lines2, liste_buses, P_r, Q_r, V_r, theta_r, I_r, Sl_r, S_r)
+    P_f, Q_f, V_f, theta_f, I_f, Sl_f, S_f = [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))]
+    for i in range(len(liste_buses)):
+        P_f[int(liste_buses[i])] = P_r[i]
+        Q_f[int(liste_buses[i])] = Q_r[i]
+        V_f[int(liste_buses[i])] = V_r[i]
+        theta_f[int(liste_buses[i])] = theta_r[i]
+        I_f[int(liste_buses[i])] = I_r[i]
+        Sl_f[int(liste_buses[i])] = Sl_r[i]
+        S_f[int(liste_buses[i])] = S_r[i]
+        for j in range(len(liste_buses)):
+            I_f[i][int(liste_buses[j])] = I_r[i][j]
+            Sl_f[i][int(liste_buses[j])] = Sl_r[i][j]
+            S_f[i][int(liste_buses[j])] = S_r[i][j]
+    return(buses3, lines2, P_f, Q_f, V_f, theta_f, I_f, Sl_f, S_f)
+   

@@ -76,7 +76,7 @@ def run_simul(grid, json):
         coeffs_prod = sorted(coeffs_prod)
     coeffs = [[coeffs_conso[i][0], coeffs_conso[i][1], coeffs_prod[i][1]]for i in range(len(coeffs_conso))] #coeffs_conso[~][0] : heure , coeffs_conso[~][1] :coeff de consommateur type , coeffs_conso[~][2] :coeff de producteur type
     ###########################################################################
-    buses, lines, liste_buses, P, Q, V, theta, I, Sl, S = [],[],[],[],[],[],[],[],[],[]
+    buses, lines, P, Q, V, theta, I, Sl, S = [],[],[],[],[],[],[],[],[]
     times = []
     busest = []
     
@@ -95,7 +95,7 @@ def run_simul(grid, json):
             bus[1]='consommateur'
             bus[2]=0  
             bus[3]=0
-    busesp, linesp, liste_busesp, Pp, Qp, Vp, thetap, Ip, Slp, Sp = total_lf.calcul_total(busesp, L)
+    busesp, linesp, Pp, Qp, Vp, thetap, Ip, Slp, Sp = total_lf.calcul_total(busesp, L)
     
     P_seuil_batteries=Pp[0]
 
@@ -119,9 +119,9 @@ def run_simul(grid, json):
 
         # si on est sur une heure d'ilotage, calcul iloté
         if coeff[0] > t1 and coeff[0] < t2:
-            busest, linest, liste_busest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.lf_ilote(buses0, L)
+            busest, linest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.lf_ilote(buses0, L)
         # sinon, calcul classique
         else:
-            busest, linest, liste_busest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.calcul_total(buses0, L, Ps = P_seuil_batteries)
-        buses, lines, liste_buses, P, Q, V, theta, I, Sl, S = buses+[busest], lines+[linest], liste_buses+[liste_busest], P+[Pt], Q+[Qt], V+[Vt], theta+[thetat], I+[It], Sl+[Slt], S+[St]
-    return({"heures":times, "buses":buses, "lines":lines, "liste_bus":liste_buses, "P":P, "Q":Q, "V":V, "theta":theta, "abs(I)":[[[abs(xi) for xi in x] for x in i] for i in I], "abs(Sl)":[[[abs(xi) for xi in x] for x in sl] for sl in Sl], "abs(S)":[[[abs(xi) for xi in x] for x in s] for s in S]})
+            busest, linest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.calcul_total(buses0, L, Ps = P_seuil_batteries)
+        buses, lines, P, Q, V, theta, I, Sl, S = buses+[busest], lines+[linest], P+[Pt], Q+[Qt], V+[Vt], theta+[thetat], I+[It], Sl+[Slt], S+[St]
+    return({"heures":times, "buses":buses, "lines":lines, "P":P, "Q":Q, "V":V, "theta":theta, "abs(I)":[[[abs(xi) for xi in x] for x in i] for i in I], "abs(Sl)":[[[abs(xi) for xi in x] for x in sl] for sl in Sl], "abs(S)":[[[abs(xi) for xi in x] for x in s] for s in S]})
