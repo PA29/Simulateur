@@ -272,7 +272,12 @@ function Line(data) {
 	let line = new Element(data);
 
 	line.default = function() {
-		canvasGrid.drawStroke(grid.bus[data.bus1].data, grid.bus[data.bus2].data);
+		if (line.data.aerien) {
+			canvasGrid.drawStroke(grid.bus[data.bus1].data, grid.bus[data.bus2].data, 'blue');
+		}
+		else {
+			canvasGrid.drawStroke(grid.bus[data.bus1].data, grid.bus[data.bus2].data, 'green');
+		}
 	}
 	line.draw = line.default;
 
@@ -311,12 +316,12 @@ function Picture(data) {
 
 
 	picture.default = function() {
-		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
+		canvasGrid.drawStroke(data, grid.bus[data.bus].data, 'black');
 		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
 		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
 	}
 	picture.hover = function() {
-		canvasGrid.drawStroke(data, grid.bus[data.bus].data);
+		canvasGrid.drawStroke(data, grid.bus[data.bus].data, 'black');
 		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'lightgrey');
 		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
 		canvasGrid.drawImage('croix', {'x':data.x+IMAGE_WIDTH/2,'y':data.y-IMAGE_WIDTH/2}, IMAGE_WIDTH/2);
@@ -376,18 +381,17 @@ function Picture(data) {
 		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
 		return ((Math.abs(absX) <= absSize / 2) && (Math.abs(absY) <= absSize / 2));
 	}
-
-/*	picture.on_cross = function(x,y) {
+	picture.on_cross = function(x,y) {
 		let absX = x - canvasGrid.absoluteX(picture.data.x), absY = y - canvasGrid.absoluteY(picture.data.y);
 		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
 		(absX >= absSize/2 && absX <= 3*absSize/2) && (absY >= -3*absSize/2 && absY <= -absSize/2);
 	}
-*/
+
 	picture.onClick = function(x, y) {
-/*		if (picture.inside(x,y)){
-			picture.del();
+		if (picture.on_cross(x,y)){
+			//picture.del();
 		}
-*/
+
 		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
 			picture.showParameters();
 		}
@@ -408,7 +412,7 @@ function Picture(data) {
 		picture.parametersOpened = true;
 
 		$.ajax({
-			url: 'parametres',
+			url: '/parametres',
 			type: 'POST',
 			data: JSON.stringify({
 				x: data.x + 5,

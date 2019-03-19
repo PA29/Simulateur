@@ -40,6 +40,10 @@ function editionJS() {
 		document.location.href = "/accueil";
 	});
 
+	$('#saveas').on('click', function() {
+		
+	})
+
 
 	$('#ilotage input').on('change', function() {
 		if (this.checked) {

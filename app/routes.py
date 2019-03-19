@@ -12,7 +12,7 @@ from flask import jsonify, request, session, redirect
 from tkinter import filedialog
 from tkinter import *
 from .simul import *
-import json
+import json as js
 from datetime import datetime
 import os
 
@@ -25,6 +25,8 @@ grid = {
 	"lines": [{"bus1": 0, "bus2": 1, "r": 0.44, "x": 0.35, "length": 10}, {"bus1": 1, "bus2": 2, "r": 0.44, "x": 0.35, "length": 10}, {"bus1": 1, "bus2": 3, "r": 0.44, "x": 0.35, "length": 10}, {"bus1": 2, "bus2": 3, "r": 0.44, "x": 0.35, "length": 10}],
 	"images": [{"type": "transfo", "x": 50, "y": 20, "bus": 0, "Theta": 0.0, "V": 400}, {"type": "consommateur", "x": 50, "y": 60, "bus": 1, "P": -3.0, "Q": -1.8}, {"type": "stockage", "x": 20, "y": 90, "bus": 2, "P": 6.0, "SOC": 0.8, "capacity": 13000}, {"type": "producteur", "x": 80, "y": 50, "bus": 3, "P": 3, "V": 400}]
 }
+
+
 
 #################
 #### ACCUEIL ####
@@ -82,12 +84,11 @@ def getGridFile(filename):
 
 @app.route('/reseau/nouveau')
 def getGridNew():
-	#return jsonify({'grid' : loadFile(PATH_MODEL + 'new' + EXTENSION)})
-	return jsonify({'grid': grid})
+	return jsonify({'grid' : loadFile(PATH_MODEL + 'new' + EXTENSION)})
 
 def loadFile(path):
 	file = open(path, 'r')
-	data = json.loads(file.read())
+	data = js.loads(file.read())
 	file.close()
 	return data
 
@@ -101,12 +102,10 @@ def getDureeSimulation():
 @app.route('/simulation', methods = ['POST'])
 def getResultatsSimulation():
 	#les parametres de simulation (saison, ilotage, grid)
-	jsonParam = request.get_json()
-	grid = jsonParam.get('grid')
-	print(grid)
-	results = run_simul(grid, jsonParam) #run la simulation, fichier simul.py
-	return json.dumps(results, cls=NumpyEncoder)
-
+	json = request.get_json()
+	grid = json.get('grid')
+	results = run_simul(grid, json) #run la simulation, fichier simul.py
+	return js.dumps({"results":results}, cls=NumpyEncoder)
 
 @app.route('/resultats')
 def resultats():
