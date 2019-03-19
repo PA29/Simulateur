@@ -25,32 +25,32 @@ def convert_ilotage(season, ilotage):
     #ilotage est sous forme de 2 chiffres, on convertit en heures de debut et fin
     if ilotage.get('ilotagePermanent') == True:
         if season == False:
-            t1 = '2018-08-09T08:30:00+02:00'
-            t2 = '2018-08-10T08:30:00+02:00'
+            t1 = '2018-08-09T00:00:00+02:00'
+            t2 = '2018-08-10T00:00:00+02:00'
         if season == True:
-            t1 = '2018-01-20T08:30:00+02:00'
-            t2 = '2018-01-21T08:30:00+02:00'
+            t1 = '2018-01-20T00:00:00+02:00'
+            t2 = '2018-01-21T00:00:00+02:00'
         return (t1, t2)
     debut = ilotage.get('beg')
     fin = ilotage.get('end')
     if season == False:
         if len(str(debut))==1:
-            t1 = '2018-08-09T0'+str(debut)+':30:00+02:00'
+            t1 = '2018-08-09T0'+str(debut)+':00:00+02:00'
         else :
-            t1 = '2018-08-09T'+str(debut)+':30:00+02:00'
+            t1 = '2018-08-09T'+str(debut)+':00:00+02:00'
         if len(str(fin))==1:
-            t2 = '2018-08-09T0'+str(fin)+':30:00+02:00'
+            t2 = '2018-08-10T0'+str(fin)+':00:00+02:00'
         else :
-            t2 = '2018-08-09T'+str(fin)+':30:00+02:00'
+            t2 = '2018-08-10T'+str(fin)+':00:00+02:00'
     else :
         if len(str(debut))==1:
-            t1 = '2018-01-20T0'+str(debut)+':30:00+02:00'
+            t1 = '2018-01-20T0'+str(debut)+':00:00+02:00'
         else :
-            t1 = '2018-01-20T'+str(debut)+':30:00+02:00'
+            t1 = '2018-01-20T'+str(debut)+':00:00+02:00'
         if len(str(fin))==1:
-            t2 = '2018-01-20T0'+str(fin)+':30:00+02:00'
+            t2 = '2018-01-21T0'+str(fin)+':00:00+02:00'
         else :
-            t2 = '2018-01-20T'+str(fin)+':30:00+02:00'
+            t2 = '2018-01-21T'+str(fin)+':00:00+02:00'
     return(t1, t2)
         
     
@@ -107,7 +107,7 @@ def run_simul(grid, json):
         coeffs_prod = sorted(coeffs_prod)
     coeffs = [[coeffs_conso[i][0], coeffs_conso[i][1], coeffs_prod[i][1]]for i in range(len(coeffs_conso))] #coeffs_conso[~][0] : heure , coeffs_conso[~][1] :coeff de consommateur type , coeffs_conso[~][2] :coeff de producteur type
     ###########################################################################
-    buses, lines, liste_buses, P, Q, V, theta, I, Sl, S = [],[],[],[],[],[],[],[],[],[]
+    buses, lines, P, Q, V, theta, I, Sl, S = [],[],[],[],[],[],[],[],[]
     times = []
     busest = []
     
@@ -125,7 +125,7 @@ def run_simul(grid, json):
             bus[1]='consommateur'
             bus[2]=0  
             bus[3]=0
-    busesp, linesp, liste_busesp, Pp, Qp, Vp, thetap, Ip, Slp, Sp = total_lf.calcul_total(busesp, L)
+    busesp, linesp, Pp, Qp, Vp, thetap, Ip, Slp, Sp = total_lf.calcul_total(busesp, L)
     
     P_seuil_batteries=Pp[0]
 
@@ -149,9 +149,9 @@ def run_simul(grid, json):
 
         # si on est sur une heure d'ilotage, calcul iloté
         if coeff[0] > t1 and coeff[0] < t2:
-            busest, linest, liste_busest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.lf_ilote(buses0, L)
+            busest, linest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.lf_ilote(buses0, L)
         # sinon, calcul classique
         else:
-            busest, linest, liste_busest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.calcul_total(buses0, L, Ps = P_seuil_batteries)
-        buses, lines, liste_buses, P, Q, V, theta, I, Sl, S = buses+[busest], lines+[linest], liste_buses+[liste_busest], P+[Pt], Q+[Qt], V+[Vt], theta+[thetat], I+[It], Sl+[Slt], S+[St]
-    return({"heures":times, "buses":buses, "lines":lines, "liste_bus":liste_buses, "P":P, "Q":Q, "V":V, "theta":theta, "abs(I)":[[[abs(xi) for xi in x] for x in i] for i in I], "abs(Sl)":[[[abs(xi) for xi in x] for x in sl] for sl in Sl], "abs(S)":[[[abs(xi) for xi in x] for x in s] for s in S]})
+            busest, linest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.calcul_total(buses0, L, Ps = P_seuil_batteries)
+        buses, lines, P, Q, V, theta, I, Sl, S = buses+[busest], lines+[linest], P+[Pt], Q+[Qt], V+[Vt], theta+[thetat], I+[It], Sl+[Slt], S+[St]
+    return({"heures":times, "buses":buses, "lines":lines, "P":P, "Q":Q, "V":V, "theta":theta, "abs(I)":[[[abs(xi) for xi in x] for x in i] for i in I], "abs(Sl)":[[[abs(xi) for xi in x] for x in sl] for sl in Sl], "abs(S)":[[[abs(xi) for xi in x] for x in s] for s in S]})
