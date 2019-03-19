@@ -52,7 +52,7 @@ function Canvas(id) {
 		this.ctx.fill();
 	}
 
-	this.drawImage = function(imageName, position, size) {
+	this.drawImage = function(imageName, position, size = 50) {
 		/*Dessine l'image de nom 'imageName' centrée en une certaine position (en %)
 		La fonction utilise la variable 'images' pour stocker les images chargées.
 		Lorsqu'une image a déjà été utilisée, elle est récupérée à partir de la variable 'images'

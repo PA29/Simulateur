@@ -1,6 +1,7 @@
 var y_axis = [];
 var abscisses = [];
 
+
 function createChart (data) {
 	//Création des abscisses
 	for (var k=0; k<49; k++){
@@ -20,6 +21,7 @@ function createChart (data) {
 	for (var j=0; j<49; j++){
 		y_axis.push(data["results"]["P"][j][0])
 	}
+
 
 	//Création du graphe
 	for (var i=0; i<4; i++){

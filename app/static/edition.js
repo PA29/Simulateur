@@ -1,31 +1,40 @@
 function editionJS() {
 
+	initDragDrop();
+
 	// Click sur le bouton de simulation
 	$('#simulate').on('click', function() {
 
-		// Requête pour récupérer le temps estimé du calcul de la simulation
+		let simulationParam = {grid : grid.simulationParam()};
+		simulationParam.season = false;
+
+		if ($('#ilotage input')[0].checked) {
+			if ($('#ilotagePermanent input')[0].checked) {
+				simulationParam.ilotage = {ilotagePermanent: true};
+			}
+			else {
+				simulationParam.ilotage = {
+					beg: $('#ilotageDebut input').val(),
+					end: $('#ilotageFin input').val()
+				}
+			}
+		}
+
+		// Requête pour récupérer les résultats de la simulation
 		$.ajax({
-			url: 'dureeSimulation',
+			url: '/simulation',
 			type: 'POST',
-			data: JSON.stringify(grid),
+			data: JSON.stringify(simulationParam),
 			contentType: 'application/json',
 			success: function(data) {
+				grid.simulation = data; // Ajout des résultats à la variable stockant le réseau
+				direct('resultats'); // Redirection vers le mode resultats
+				grid.startPowerFlow();
 
-				animationSimulation(data.duree); // Lancement de l'animation
+				background_chart()
 
-				let simulationParam = {grid : grid.simulationParam()};
-				simulationParam.season = false;
-				if ($('#ilotage input')[0].checked) {
-					if ($('#ilotagePermanent input')[0].checked) {
-						simulationParam.ilotage = {ilotagePermanent: true};
-					}
-					else {
-						simulationParam.ilotage = {
-							beg: $('#ilotageDebut input').val(),
-							end: $('#ilotageFin input').val()
-						}
-					}
-				}
+				createChart();
+
 
 				// Requête pour récupérer les résultats de la simulation
 				$.ajax({
@@ -67,9 +76,9 @@ function editionJS() {
 			$('#periodeIlotage').show();
 		}
 	})
-
+}
 	
-function init(){
+function initDragDrop(){
 	 
 	//écriture de la fonction de gestion du drag and drop
 
@@ -89,11 +98,10 @@ function init(){
 
 function setupBuildZone(build_zone){
 	
-	
 	//méthode liée à l'événement dragover appelée constament lorsque l'objet est dans la zone de drop  
 	build_zone.addEventListener('dragover', function(event) {
-    event.preventDefault(); // Annule l'interdiction de drop
-	build_zone.setAttribute("dragover", "true"); // change attribut pour activer du style css si besoin  
+	    event.preventDefault(); // Annule l'interdiction de drop
+		build_zone.setAttribute("dragover", "true"); // change attribut pour activer du style css si besoin  
 	});
 
 	
@@ -104,44 +112,42 @@ function setupBuildZone(build_zone){
 	
 	//méthode liée à l'événement drop appelée lorsque l'objet est libéré
 	build_zone.addEventListener('drop', function(event) {
-    event.preventDefault(); // Cette méthode est toujours nécessaire pour éviter une éventuelle redirection inattendue
-    //alert('Vous avez bien déposé votre élément !');	
+	    event.preventDefault(); // Cette méthode est toujours nécessaire pour éviter une éventuelle redirection inattendue
+	    //alert('Vous avez bien déposé votre élément !');	
+		
+		drag_position = JSON.parse(event.dataTransfer.getData('text/plain')); //position de la souris par rapport à l'élément attrapé
+		drop_position = {"x": event.layerX, "y": event.layerY}; //position de la souris au drop
+
+		// ajouter les méthodes permettant de créer un nouvel élément 
+		var canvas_width = canvasGrid.canvas.width;
+		var canvas_height = canvasGrid.canvas.height;
 	
-	drag_position = JSON.parse(event.dataTransfer.getData('text/plain')); //position de la souris par rapport à l'élément attrapé
-	
-	drop_position = {"x": event.layerX, "y": event.layerY}; //position de la souris au drop
-	
-	position = {
-	    	"x": (drop_position.x - drag_position.x), 
-	    	"y": (drop_position.y - drag_position.y) 
-	    }; // position de drop calculée (aimanté au quandrillage)
+		position = {
+			"x": (drop_position.x - drag_position.x )*100/canvas_width, 
+			"y": (drop_position.y - drag_position.y )*100/canvas_height
+		}; 
 
 	    if(position.x < 0) position.x = 0; // évite le drop hors zone
 	    if(position.y < 0) position.y = 0; // évite le drop hors zone
-	    
-	    
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////modification	
+		//canvasGrid.dropped = {'drop' : true, 'type' : drag_position.element.name, 'position' : position};
 	
-	drawImage(drag_position.element.name, position) 
-	// ajouter les méthodes permettant de créer un nouvel élément 
-	
-	//var newElement = document.createElement("div"); // on crer un nouvel élément hors du DOM
-	    //newElement.className = "activeElementReseau"; //on définit sa classe (pour le style)
-		//newElement.style.left = position.x.toString() + "px";
-		//newElement.style.top = position.y.toString() + "px";
-		
-	//var newPart = document.createElement("img");
-		//newPart.className = "active_build_element";
-		//newPart.src = drag_position.element.image
-	
-	//newPart.setAttribute("src", drag_position.element.image);
-	
-	//newElement.appendChild(newPart);
-	
-	//build_zone.insertAdjacentElement("beforeend", newElement); //on insere l'élémént 
-	
-		
+		//canvasGrid.draw();
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+		grid.images.push(new Picture({bus: 2, type: drag_position.element.name, x: position.x , y: position.y}))	
 	}); 
 	
+	/*build_zone.addEventListener({'mousemove', function(event){
+		
+		mouse_position = {
+			'x': event.clientX,
+			'y': event.clientY
+		};
+		
+		grid.bus.push(new Bus( x: mouse_position.x, y: mouse_position.y));
+	};
+	});*/
 }
 
 function setupBuildElement(build_element){
@@ -150,36 +156,19 @@ function setupBuildElement(build_element){
 	
 	//méthode de l'événement dragstart
 	build_element.addEventListener('dragstart', function(event) {
+	
+		var build_element_position = build_element.getBoundingClientRect(); // on recupere la position de l'element 
 		
-	//drag_position = JSON.stringify({
-			//"image": event.target.getAttribute("src"),
-	//}); 
-	
-	var build_element_position = build_element.getBoundingClientRect(); // on recupere la position de l'element 
+		drag_position = JSON.stringify({
+			"x": event.clientX - build_element_position.x - build_element_position.width/2, //on calcule la position de la souris par rapport au milieu l'élément attrapé
+			"y": event.clientY - build_element_position.y - build_element_position.height/2, 
+			"element": {
+				"name": event.target.getAttribute("id"),
+				"image": event.target.getAttribute("src"),
+			} // on copie les propriétés
+		});
 
-	    drag_position = JSON.stringify({
-	    	"x": event.clientX - build_element_position.x, //on calcule la position de la souris par rapport à l'élément attrapé
-	    	"y": event.clientY - build_element_position.y, 
-	    	"element": {
-	    		"name": event.target.getAttribute("id"),
-	    		"image": event.target.getAttribute("src"),
-	    	} // on copie les propriétés 
-	    }); 
-	   
-	    
-	    // event.datatransfer est un stockage lié à l'event
-	event.dataTransfer.setData('text/plain', drag_position); // event.datatransfer est un stockage lié à l'event    
- 	}, false);
-	
+		// event.datatransfer est un stockage lié à l'event
+		event.dataTransfer.setData('text/plain', drag_position); // event.datatransfer est un stockage lié à l'event
+	}, false);	
 }
-
-init();
-
-
-}
-
-// Animation pendant le calcul de la simulation
-function animationSimulation(duree) {
-	console.log("Animation to be developped (duree : " + duree + ")");
-}
-
