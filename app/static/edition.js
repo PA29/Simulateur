@@ -34,8 +34,6 @@ function editionJS() {
 				background_chart()
 
 				createChart();
-
-				console.log("après");
 			}
 		});
 	});
@@ -45,9 +43,13 @@ function editionJS() {
 		document.location.href = "/accueil";
 	});
 
-	$('#saveas').on('click', function() {
-		
+	$('#save').on('click', function() {
+		console.log("Sauvegarde sous à implémenter : Edition.js ligne 49")
 	})
+
+	$('#saveAs').on('click', function() {
+		console.log("Sauvegarde sous à implémenter : Edition.js ligne 53");
+	});
 
 
 	$('#ilotage input').on('change', function() {
