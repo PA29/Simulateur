@@ -114,6 +114,8 @@ def run_simul(grid, json):
     ##### Définition de P_seuil_batteries des batteries à partir de la puissance à t=0 du slack
     
     busesp=deepcopy(B)
+    print("BUSp")
+    print(busesp)
     for bus in busesp:
         if bus[1]=='consommateur':
             bus[2]=bus[2]*coeffs[0][1]
