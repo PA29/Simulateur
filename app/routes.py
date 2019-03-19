@@ -12,7 +12,7 @@ from flask import jsonify, request
 from .simul import *
 from json import dumps
 
-
+#problème d'initialisation on ne peut pas le mettre  sous le format avec data, pourquoi?
 grid = {
 	'bus': [{'x': 50, 'y': 30}, {'x': 60, 'y': 60}, {'x': 25, 'y': 90}, {'x': 75, 'y': 75}, {'x': 25, 'y': 25}, {'x': 60, 'y': 25}],
 	'lines': [{'bus1': 0, 'bus2': 1, 'r':0.44, 'x':0.35, 'length': 10}, {'bus1': 1, 'bus2': 2, 'r':0.44, 'x':0.35, 'length': 10}, {'bus1': 1, 'bus2': 3, 'r':0.44, 'x':0.35,  'length': 10}, {'bus1': 2, 'bus2': 3, 'r':0.44, 'x':0.35,  'length': 10}, {'bus1': 2, 'bus2': 5, 'r':0.44, 'x':0.35,  'length': 20}, {'bus1': 3, 'bus2': 4, 'r':0.44, 'x':0.35,  'length': 5}],
