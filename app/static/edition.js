@@ -37,8 +37,7 @@ function editionJS() {
 						grid.simulation = data; // Ajout des résultats à la variable stockant le réseau
 						direct('resultats'); // Redirection vers le mode resultats
 						grid.startPowerFlow();
-						createChart();
-						console.log("après");
+						createChart(data);
 					}
 				});
 			}

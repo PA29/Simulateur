@@ -210,7 +210,7 @@ me.Draw = function(aId, aDataTitle){
 	}
 	// calcul les limites de dessin
 	lineH = 5;
-	limitL = me.margin.left + (me.axe.y.title ? (me.axe.y.textSize + lineH) : 0) + (!me.axe.y.textDisplayEvery ? 0 : (me.axe.y.max.toString().length * me.axe.y.textSize * 0.7 + lineH));
+	limitL = me.margin.left + (me.axe.y.title ? (me.axe.y.textSize + lineH) : 0) + (!me.axe.y.textDisplayEvery ? 0 : (me.axe.y.max/*.toString()*/.length * me.axe.y.textSize * 0.7 + lineH));
 	limitR = el.width - me.margin.right - lineH;
 	limitT = me.margin.top + lineH ;
 	limitB = el.height - me.margin.bottom - (me.axe.x.title ? (me.axe.x.textSize + lineH) : 0) - (!me.axe.x.textDisplayEvery ? 0 : (me.axe.x.textSize + lineH));
