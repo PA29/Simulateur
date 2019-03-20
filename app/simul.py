@@ -57,7 +57,7 @@ def convert_ilotage(season, ilotage):
 def run_simul(grid, json):   
     #####################################
     #Ajout de consommateurs nuls lorsque les noeuds ne sont pas reliés à un quelconque élément
-
+    
 
     list_bus=grid.get('bus')
     nb_bus=len(list_bus)
@@ -114,8 +114,6 @@ def run_simul(grid, json):
     ##### Définition de P_seuil_batteries des batteries à partir de la puissance à t=0 du slack
     
     busesp=deepcopy(B)
-    print("BUSp")
-    print(busesp)
     for bus in busesp:
         if bus[1]=='consommateur':
             bus[2]=bus[2]*coeffs[0][1]
