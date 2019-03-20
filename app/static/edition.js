@@ -22,7 +22,9 @@ function editionJS() {
 
 		// Requête pour récupérer les résultats de la simulation
 		$.ajax({
-			url: 'simulation',
+
+			url: '/simulation',
+
 			type: 'POST',
 			data: JSON.stringify(simulationParam),
 			contentType: 'application/json',
@@ -34,8 +36,6 @@ function editionJS() {
 				background_chart()
 
 				createChart();
-
-				console.log("après");
 			}
 		});
 	});
@@ -43,6 +43,14 @@ function editionJS() {
 	// Retour vers l'accueil
 	$('#accueil').on('click', function() {
 		document.location.href = "/accueil";
+	});
+
+	$('#save').on('click', function() {
+		console.log("Sauvegarde sous à implémenter : Edition.js ligne 49")
+	})
+
+	$('#saveAs').on('click', function() {
+		console.log("Sauvegarde sous à implémenter : Edition.js ligne 53");
 	});
 
 
@@ -151,6 +159,7 @@ function setupBuildZone(build_zone){
 		//grid.draganddrop = false;
 
 	}); 
+
 
 }
 

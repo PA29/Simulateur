@@ -1,32 +1,6 @@
-@font-face{
-	font-family: 'Ubuntu';
-	src: url('\static\Ubuntu-M.ttf')
-}
-
-@font-face{
-	font-family: 'Ubuntu Light';
-	src: url('\static\Ubuntu-L.ttf')
-}
-
-.titrespanneauxlateraux
-{
-	color: rgb(57, 178, 75);
-	font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
-	text-align: center;
-	font-size: 24px;
-}
-
-#choixsaison
-{
-	display: flex;
-	justify-content: space-around;
-}
-
-.saison
-{
-	display: flex;
-	justify-content: flex-start;
-}
+/****************************/
+/* Styles communs à la page */
+/****************************/
 .container
 {
 	width : 80%;
@@ -38,81 +12,19 @@
 	border: 1px rgba(0,113,187,0.7) solid;
 	border-radius: 10px;
 	color: white;
-	font-family: 'Ubuntu Light', 'Trebuchet MS', Helvetica, sans-serif;
 }
 
-#controlbox
+.titrespanneauxlateraux
 {
-	margin : 5px 0px;
-}
-.titrecentral
-{
-    color: rgb(0, 113, 187);
-	font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
-	width: 100%;
+	color: rgb(57, 178, 75);
 	text-align: center;
-    top:10px;
 	font-size: 24px;
 }
-#enregistrement 
-{
-	display: flex;
-	justify-content: flex-start;
-	text-align: left;
-	top : 5px;
-	left: 5px;
-	width : 25%;
-}
 
 
-#simulate
-{
-	border: 0;
-	padding: 3px 10px;
-	bottom: 30px;
-	right: 10px;
-	width: 25%; 
-    font-size: 1rem;
-    text-align: center;
-    color: #fff;
-    border-radius: 5px;
-	background-color: rgba(0,113,187, 0.9);
-	
-}
-
-.bouton_enregistrement, #accueil
-{
-	padding: 3px 10px;
-	margin: 5px 0px;
-	width: 35px;
-	height: 35px;
-	border-radius: 10px;
-    /*background-image: linear-gradient(to top left,
-                                      rgba(0, 0, 0, .2),
-                                      rgba(0, 0, 0, .2) 30%,
-                                      rgba(0, 0, 0, 0));
-    box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
-                inset -2px -2px 3px rgba(0, 0, 0, .6);*/
-}
-
-#simulate:hover
-{
-	background-color: rgba(0,113,187, 0.6);
-	background-image: linear-gradient(to top left,
-                                      rgba(0, 0, 0, .2),
-                                      rgba(0, 0, 0, .2) 30%,
-                                      rgba(0, 0, 0, 0));
-}
-
-.bouton_enregistrement:hover, #accueil:hover
-{
-	background-color: rgba(141,160,171, 0.25);
-}									  
-
-#elementsReseau
-{
-	margin: 5% 0;
-}
+/*********************/
+/* Panneau de gauche */
+/*********************/
 
 .elementReseau
 {
@@ -121,6 +33,11 @@
 	justify-content:space-around;
 	align-items: center;
 	margin: 3% 0;
+}
+
+#elementsReseau
+{
+	margin: 5% 0;
 }
 
 .elementReseau > img {
@@ -139,11 +56,74 @@
 	width: 20%;
 }
 
+
+/********************/
+/* Panneau centrale */
+/********************/
+
+.titrecentral
+{
+    color: rgb(0, 113, 187);
+	width: 100%;
+	text-align: center;
+    top:10px;
+	font-size: 24px;
+}
+
+#zoneEnregistrement 
+{
+	display: flex;
+	justify-content: flex-start;
+	text-align: left;
+	top : 5px;
+	left: 5px;
+	width : 25%;
+}
+
+#zoneEnregistrement img
+{
+	padding: 3px 10px;
+	margin: 5px 0px;
+	width: 35px;
+	height: 35px;
+	border-radius: 10px;
+}
+
+#zoneEnregistrement img:hover
+{
+	background-color: rgba(141,160,171, 0.25);
+}
+
+#simulate
+{
+	border: 0;
+	padding: 3px 10px;
+	bottom: 30px;
+	right: 10px;
+	width: 25%; 
+    font-size: 1rem;
+    text-align: center;
+    color: #fff;
+    border-radius: 5px;
+	background-color: rgba(0,113,187, 0.9);
+}
+
+#simulate:hover
+{
+	background-color: rgba(0,113,187, 0.6);
+	background-image: linear-gradient(to top left,
+                                      rgba(0, 0, 0, .2),
+                                      rgba(0, 0, 0, .2) 30%,
+                                      rgba(0, 0, 0, 0));
+}
+
 #simulate:active ,.bouton_enregistrement:active,.elementreseau:active 
 {
     box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
                 inset 2px 2px 3px rgba(0, 0, 0, .6);
 }
+
+/* Paramètres */
 
 .variable {
 	margin: 0 4px;
@@ -151,4 +131,28 @@
 
 .option {
 	margin: 10px 0;
+}
+
+
+/*********************/
+/* Panneau de droite */
+/*********************/
+
+#choixsaison
+{
+	display: flex;
+	justify-content: space-around;
+}
+.saison
+{
+	display: flex;
+	justify-content: flex-start;
+}
+
+
+/* ??? *//
+
+#controlbox
+{
+	margin : 5px 0px;
 }

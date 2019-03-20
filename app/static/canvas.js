@@ -18,13 +18,14 @@ function Canvas(id) {
 		this.ctx.fill();
 	}
 
-	this.drawStroke = function(position1, position2, color = 'black') {
+	this.drawStroke = function(position1, position2/*, width = '1'*/, color = 'black') {
 		//Dessine un trait entre la position1 (en %) et la position2 (en %)
 
 		this.ctx.beginPath();
+		//this.ctx.lineWidth = width.toString();
 		this.ctx.moveTo(this.absoluteX(position1.x), this.absoluteY(position1.y));
 		this.ctx.lineTo(this.absoluteX(position2.x), this.absoluteY(position2.y));
-		this.ctx.fillStyle = color;
+		this.ctx.strokeStyle = color;
 		this.ctx.stroke();
 	}
 
@@ -57,7 +58,6 @@ function Canvas(id) {
 		La fonction utilise la variable 'images' pour stocker les images chargées.
 		Lorsqu'une image a déjà été utilisée, elle est récupérée à partir de la variable 'images'
 		Cela évite de recharger plusieurs fois la même image*/
-
 		let instance = this; //Permet de stocker l'instance de Canvas. La variable this change de valeur avec 'im.onload'
 
 		let doDraw = function(pre, position, size) {
