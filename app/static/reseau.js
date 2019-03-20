@@ -205,7 +205,6 @@ function Grid(data) {
 
 // Classe définissant un bus
 function Bus(data) {
-	console.log(data)
 	let bus = new Element(data);
 	bus.arrowPos = 0;
 
@@ -429,6 +428,10 @@ function Picture(data) {
 					window.remove();
 					picture.parametersOpened = false;
 				});
+				window.find('.parametres input').on('change', function() {
+					parameter = $(this).parent().attr('id');
+					picture.data[parameter] = parseInt($(this).attr('value'));
+				})
 			}
 		});
 	}

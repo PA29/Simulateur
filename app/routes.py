@@ -115,20 +115,21 @@ def resultats():
 
 @app.route('/parametres', methods = ['POST'])
 def getParametres():
-
     json = request.get_json()
+    print(json)
     
-    return render_template('_parametres', json = json, variables = getVariables(json['data']['type']))
+    return render_template('_parametres', json = json, parameters = getParameters(json['data']['type']))
 
 @app.route('/addJauge', methods = ['POST'])
 def getAddJauge():
     json = request.get_json()
     return render_template('_addJauge', json = json)
 
-def getVariables(type):
+def getParameters(type):
     if type == 'transfo':
-        return {'Tension (V)': [380, 400, 420]}
+        return [{'id': 'V', 'name': 'Tension (V)', 'values': [380, 400, 420]}]
     elif type == 'consommateur':
-        return {'Puissance (kW)': [3, 6, 9, 12], 'Facteur de puissance': [0.8, 0.9, 1]}
+        return [{'id': 'P', 'name': 'Puissance (kW)', 'values': [3, 6, 9, 12]}]
     elif type == 'producteur':
-        return {'Puissance (kW)': [3, 6, 9, 12], 'Tension (V)': [380, 400, 420]}
+        return [{'id': 'P', 'name': 'Puissance (kW)', 'values': [3, 6, 9, 12]},
+        		{'id': 'V', 'name': 'Tension (V)', 'values': [380, 400, 420]}]
