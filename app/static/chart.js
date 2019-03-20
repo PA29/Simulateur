@@ -1,18 +1,16 @@
+
 var ctx;
 var background;
 var canvas = document.querySelector('#chart')
-
-var pointSizeBis = 2;
-var selectionSizeBis = 1;
-var images = {};
 var imgName = "back_chart";
 var pointSizeChart = 4;
 var x_axis = [2,5,8,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59,62,65,68,71];
 var y_axis = [];
 var rawdata = [5.2,3,7,5,9,2.6,7,8,5,4,2,8,6,5]
 
-
-
+var pointSizeBis = 2;
+var selectionSizeBis = 1;
+var images = {};
 
 
 function createChart () {
@@ -77,12 +75,6 @@ function Point(data) {
 		canvasChart.drawPoint(data, pointSizeChart);
 	}
 	point.draw = point.default
-
-function drawPointChart(position, size) {
-	ctx.beginPath();
-	ctx.arc(absoluteX(position.x), absoluteY(position.y), size, 0, 2 * Math.PI);
-	ctx.fill();
-
 }
 
 //Classe définissant une ligne
@@ -93,31 +85,6 @@ function LineChart(data) {
 		canvasChart.drawStroke(data[i-1], data[i])
 	}
 }
-
-
-
-			ctx.drawImage(pre, 0, 0, 1000, 2000);
-
-//Classe définissant un point
-function Point(data) {
-	let point = new Element(data);
-
-	point.default = function(){
-		canvasChart.drawPoint(data, pointSizeChart);
-	}
-	point.draw = point.default
-}
-
-//Classe définissant une ligne
-function LineChart(data) {
-	let lineChart = new Element(data);
-
-	lineChart.default = function(){
-		canvasChart.drawStroke(data[i-1], data[i])
-	}
-}
-
-
 
 // Classe générique pour Point, Line
 function Elementbis(data) {
@@ -132,40 +99,12 @@ function Elementbis(data) {
 				x: e.offsetX - canvasGrid.absoluteX(instance.data.x),
 				y: e.offsetY - canvasGrid.absoluteY(instance.data.y)
 			};
-
 		}
 	}
 	instance.onMouseMove = function(e) {
 		if (instance.inside(e.offsetX, e.offsetY) && !instance.hasOwnProperty('mousedown') && !instance.isHovered) {
 			instance.isHovered = true;
-
-
-
-		}
-	}
-
-	else {
-		console.log("Helloelse");
-		let pre = images[imageName];
-		ctx.drawImage(pre, absoluteX(position.x) - IMAGE_WIDTH / 2, absoluteY(position.y) - IMAGE_HEIGHT / 2, IMAGE_WIDTH, IMAGE_HEIGHT);
-	}
-}
-
-function background_chart() {
-	let picture = new Element();
-	console.log("hello");
-	console.log(imgName)
-  picture.draw = function() {
-		canvas.drawImageChart(imgName);
-		console.log("draw");
-    }
-}
-
-	instance.onMouseMove = function(e) {
-		if (instance.inside(e.offsetX, e.offsetY) && !instance.hasOwnProperty('mousedown') && !instance.isHovered) {
-			instance.isHovered = true;
-
-
+			
 			if (instance.hasOwnProperty('hover')) {
 				instance.draw = instance.hover;
 				grid.draw();
@@ -193,3 +132,12 @@ function background_chart() {
 	}
 }
 
+function background_chart() {
+	let picture = new Element();
+	console.log("hello");
+	console.log(imgName)
+  picture.draw = function() {
+		canvas.drawImageChart(imgName);
+		console.log("draw");
+    }
+}
