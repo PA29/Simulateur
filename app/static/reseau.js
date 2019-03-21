@@ -260,6 +260,11 @@ function Bus(data) {
 			grid.images.push(picture);
 			grid.draganddrop = false;
 			grid.draw()
+
+			console.log("Modification de la position")
+			mouse_position.x = picture.data.x;
+			mouse_position.y = picture.data.y;
+			picture.onClick()
 		}
 		if ($('body').attr('id') == 'resultats') {
 			bus.showAddJauge();	
@@ -353,7 +358,13 @@ function Line(data) {
 			let bus1 = grid.bus[line.data.bus1], bus2 = grid.bus[line.data.bus2];
 			let alpha = (mouse_position.x - bus1.data.x) / (bus2.data.x - bus1.data.x);
 
-			grid.bus.push(new Bus(mouse_position))
+			let bus = new Bus({
+				x: mouse_position.x,
+				y: mouse_position.y
+			});
+			bus.draw = bus.hover;
+			grid.bus.push(bus);
+			
 			grid.lines.push(new Line({
 				bus1: grid.bus.length - 1,
 				bus2: line.data.bus2,
@@ -363,6 +374,7 @@ function Line(data) {
 			}));
 			line.data.bus2 = grid.bus.length - 1;
 			line.data.length = alpha * line.data.length;
+			console.log(grid);
 
 			grid.bus[grid.bus.length - 1].onClick();
 			console.log(grid);
