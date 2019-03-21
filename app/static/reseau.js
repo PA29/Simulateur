@@ -256,12 +256,17 @@ function Bus(data) {
 	bus.onClick = function() {
 		if (($('body').attr('id') == 'edition') && grid.draganddrop) {
 			let busIndex = grid.bus.indexOf(bus);
-			picture = new Picture({bus: busIndex, type: grid.newPicture.type, x: grid.newPicture.x , y: grid.newPicture.y})
+			picture = new Picture({
+				bus: busIndex,
+				type: grid.newPicture.type,
+				x: grid.newPicture.x,
+				y: grid.newPicture.y,
+				noParameter: true
+			})
 			grid.images.push(picture);
 			grid.draganddrop = false;
 			grid.draw()
 
-			console.log("Modification de la position")
 			mouse_position.x = picture.data.x;
 			mouse_position.y = picture.data.y;
 			picture.onClick()
@@ -342,7 +347,6 @@ function Line(data) {
 			let proj = projection(mouse_position, line);
 			mouse_position.x = bus1.data.x * (1 - proj.x) + bus2.data.x * proj.x;
 			mouse_position.y = bus1.data.y * (1 - proj.x) + bus2.data.y * proj.x;
-			console.log(mouse_position);
 			canvasGrid.drawPoint(mouse_position, pointSize + selectionSize, 'grey');
 		}
 	}
@@ -364,7 +368,7 @@ function Line(data) {
 			});
 			bus.draw = bus.hover;
 			grid.bus.push(bus);
-			
+
 			grid.lines.push(new Line({
 				bus1: grid.bus.length - 1,
 				bus2: line.data.bus2,
@@ -374,10 +378,8 @@ function Line(data) {
 			}));
 			line.data.bus2 = grid.bus.length - 1;
 			line.data.length = alpha * line.data.length;
-			console.log(grid);
 
 			grid.bus[grid.bus.length - 1].onClick();
-			console.log(grid);
 		}
 	}
 	line.drawFlow = function(intensity) {
@@ -412,12 +414,24 @@ function Picture(data) {
 
 	picture.default = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data, 'black');
-		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
+
+		if (picture.data.hasOwnProperty('noParameter') && picture.data.noParameter) {
+			canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'pink');
+		}
+		else {
+			canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'white');
+		}
 		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
 	}
 	picture.hover = function() {
 		canvasGrid.drawStroke(data, grid.bus[data.bus].data, 'black');
-		canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'lightgrey');
+
+		if (picture.data.hasOwnProperty('noParameter') && picture.data.noParameter) {
+			canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'red');
+		}
+		else {
+			canvasGrid.drawRoundedSquare(data, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'lightgrey');
+		}
 		canvasGrid.drawImage(data.type + '_withoutBG', data, IMAGE_WIDTH);
 		canvasGrid.drawImage('croix', {'x':data.x+IMAGE_WIDTH/2,'y':data.y-IMAGE_WIDTH/2}, IMAGE_WIDTH/2);
 	}
@@ -525,6 +539,8 @@ function Picture(data) {
 				$('#centerArea .panel.edition').append(data);
 
 				let window = $('.parametres[imageID="' + imageID + '"]').parents('.window');
+				let numberParameters = window.find('.valeurs div').length
+
 				window.find('.close').on('click', function() {
 					window.remove();
 					picture.parametersOpened = false;
@@ -532,6 +548,11 @@ function Picture(data) {
 				window.find('.parametres input').on('change', function() {
 					parameter = $(this).parent().attr('id');
 					picture.data[parameter] = parseInt($(this).attr('value'));
+
+					if (picture.data.noParameter && window.find('input:checked').length == numberParameters) {
+						picture.data.noParameter = false;
+						grid.draw();
+					}
 				})
 			}
 		});
