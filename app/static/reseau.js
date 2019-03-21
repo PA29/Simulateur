@@ -16,6 +16,8 @@ var SHADOW_COLOR = 'lightgrey';
 var ANIMATION_DISTANCE = 4;
 var ANIMATION_DURATION = 2000;
 
+var mouse_position;
+
 var tempPower = [true, false, true]; //TEMP// Variable pour tester l'affichage des flux de puissance
 
 // Créer le réseau (interactions + affichage)
@@ -53,6 +55,12 @@ function Grid(data) {
 
 	this.statusPowerFlow = false;
 
+	this.draganddrop = false;
+	this.newPicture = {type: '', x: '' , y: ''};
+
+
+	//this.selectedBus = 1;
+
 	//Création de l'instance avec création des attributs bus, lines et images
 	this.bus = [];
 	for (let bus of data.bus) {
@@ -66,16 +74,6 @@ function Grid(data) {
 	for (let image of data.images) {
 		instance.images.push(new Picture(image));
 	}
-	
-///////////////////////////////////////////////////////////modification 
-	this.dropped = {
-		drop : '' ,
-		type : '',
-		position : {'x': '',
-					'y':''
-		} 		
-	};
-////////////////////////////////////////////////////////////////////////
 	
 	//Renvoie les données nécéssaires à la simulation
 	this.simulationParam = function() {
@@ -132,17 +130,38 @@ function Grid(data) {
 
 	//Dessine le réseau
 	this.draw = function() {
+
+		
 		canvasGrid.ctx.clearRect(0, 0, canvasGrid.canvas.width, canvasGrid.canvas.height); //Efface tout le contenu du canvas
 		instance.forEach(function(elmt) { //Dessine chaque élément du réseau
 			elmt.draw();
 		});
 
-		if (instance.statusPowerFlow) {
-			instance.lines.forEach(function(elmt) {
-				let intensity = (tempPower[grid.lines.indexOf(elmt)]) ? 1 : -1;
-				elmt.drawFlow(intensity);
-			})
-		}
+			if (instance.statusPowerFlow) {
+				instance.lines.forEach(function(elmt) {
+					let intensity = (tempPower[grid.lines.indexOf(elmt)]) ? 1 : -1;
+					elmt.drawFlow(intensity);
+				})
+			}
+
+			if(grid.draganddrop){
+
+				var position = {x : grid.newPicture.x, y: grid.newPicture.y};
+
+				canvasGrid.drawStroke(position, mouse_position);
+
+				canvasGrid.drawImage(grid.newPicture.type, position, 8);
+				
+				//build_zone.addEventListener('mousemove',function(event){
+
+					//mouse_position  = {x: event.layerX*100/canvasGrid.canvas.width, y : event.layerY*100/canvasGrid.canvas.height};
+
+					//canvasGrid.drawStroke(position, mouse_position);
+
+				//})
+
+			}
+		
 	}
 
 	//Créer les interactions entre le canvas et l'utilisateur
@@ -156,6 +175,13 @@ function Grid(data) {
 			instance.forEach(function(elmt) {
 				elmt.onMouseMove(e);
 			});
+
+			if (grid.draganddrop){
+				mouse_position = {x : e.offsetX*100/canvasGrid.canvas.width , y : e.offsetY*100/canvasGrid.canvas.height}
+				grid.draw();
+			};
+
+
 		});
 		$('#centerArea').on('mouseup', function(e) {
 			instance.forEach(function(elmt) {
@@ -205,6 +231,7 @@ function Grid(data) {
 
 // Classe définissant un bus
 function Bus(data) {
+
 	let bus = new Element(data);
 	bus.arrowPos = 0;
 
@@ -224,9 +251,31 @@ function Bus(data) {
 	}
 	bus.onClick = function(x, y) {
 		if ($('body').attr('id') == 'resultats') {
-			bus.showAddJauge();
+			bus.showAddJauge();	
 		}
-	} 
+		
+		else if (($('body').attr('id') == 'edition') && (grid.draganddrop)) {
+			var pictureBus = grid.bus.indexOf(bus);
+			picture = new Picture({bus: pictureBus, type: grid.newPicture.type, x: grid.newPicture.x , y: grid.newPicture.y})
+			grid.images.push(picture);
+			grid.draganddrop = false;
+			grid.draw()
+
+		}
+	};
+
+		
+	//bus.onClick = function(event){
+
+		//if (grid.draganddrop){
+			
+			//grid.selectedBus = grid.bus.indexOf(bus);
+			//console.log(grid.selectedBus)
+
+		//};
+
+	//}
+
 	// Affiche la fenêtre d'ajout d'un jauge (est appelée lors du click dans le mode résultats)
 	bus.showAddJauge = function() {
 		$.ajax({
