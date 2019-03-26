@@ -129,14 +129,14 @@ def getParameters(type):
     if type == 'transfo':
         return [{'id': 'V', 'name': 'Tension (V)', 'values': [380, 400, 420]}]
     elif type == 'consommateur':
-        return [{'id': 'P', 'name': 'Puissance (kW)', 'values': [3, 6, 9, 12]}]
+        return [{'id': 'P', 'name': 'Puissance (kW)', 'values': [-3, -6, -9, -12]}]
     elif type == 'producteur':
         return [{'id': 'P', 'name': 'Puissance (kW)', 'values': [3, 6, 9, 12]},
         		{'id': 'V', 'name': 'Tension (V)', 'values': [380, 400, 420]}]
     elif type == 'prodConso':
     	return [{'id': 'P', 'name': 'Puissance producteur (kW)', 'values': [3, 6, 9, 12]},
         		{'id': 'V', 'name': 'Tension (V)', 'values': [380, 400, 420]},
-        		{'id': 'P_conso', 'name': 'Puissance consommateur (kW)', 'values': [3, 6, 9, 12]}]
+        		{'id': 'P_conso', 'name': 'Puissance consommateur (kW)', 'values': [-3, -6, -9, -12]}]
     elif type == 'stockage':
     	return [{'id': 'P', 'name': 'Puissance batterie (kW)', 'values': [7, 13]},
         		{'id': 'capacity', 'name': 'Capacité (kWh)', 'values': [3000, 10000]},
