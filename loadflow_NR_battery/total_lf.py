@@ -4,10 +4,6 @@ Created on Tue Feb 12 14:37:48 2019
 
 @author: Loïc
 """
-
-##ajout du dossier au path pour pouvoir importer les modules sans les déplacer dans le site-package d'anaconda
-import sys
-sys.path.append('C:\\Users\\Loïc\\Documents\\Cours\\PA IntiGrid\\LoadFlow\\GitHub\\Simulateur')
 import loadflow_NR_battery as lf
 from copy import deepcopy
 
@@ -60,7 +56,6 @@ def calcul_total(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 500):
     if len(L) < m_iter:
         Pf, Qf = lf.calc.calc_power(theta, V, Y)
     else:
-        print('ici')
         return(buses, lines, [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
     P_r = Pf*Pb
     ###########################################################################
@@ -122,7 +117,33 @@ def calcul_total(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 500):
     buses2 = deepcopy(buses)
     buses2 = maj_batteries(buses2, liste_buses1, P_r1)
     ##############################################################################
-    return(buses2, lines, P_r1, Q_r1, V_r1, theta_r1, I_r1, Sl_r1, S_r1)
+    ##### réordonnement des bus #####
+    P_f, Q_f, V_f, theta_f, I_m, Sl_m, S_m = [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))]
+    for i in range(len(liste_buses1)):
+        P_f[int(liste_buses1[i])] = P_r1[i]
+        Q_f[int(liste_buses1[i])] = Q_r1[i]
+        V_f[int(liste_buses1[i])] = V_r1[i]
+        theta_f[int(liste_buses1[i])] = theta_r1[i]
+        I_m[int(liste_buses1[i])] = I_r1[i]
+        Sl_m[int(liste_buses1[i])] = Sl_r1[i]
+        S_m[int(liste_buses1[i])] = S_r1[i]
+        for j in range(len(liste_buses1)):
+            I_m[i][int(liste_buses1[j])] = I_r1[i][j]
+            Sl_m[i][int(liste_buses1[j])] = Sl_r1[i][j]
+            S_m[i][int(liste_buses1[j])] = S_r1[i][j]
+    #################################
+    ##### mise en forme des intensités et pertes #####
+    I_f, Sl_f, S_f = [], [], []
+    for line in lines:
+        I_f.append([line[0], line[1]])
+        Sl_f.append([line[0], line[1]])
+        S_f.append([line[0], line[1]])
+    for id_line in range(len(I_f)):
+        I_f[id_line].append(I_m[I_f[id_line][1]][I_f[id_line][0]])
+        Sl_f[id_line].append(Sl_m[Sl_f[id_line][1]][Sl_f[id_line][0]])
+        S_f[id_line].append(S_m[S_f[id_line][1]][S_f[id_line][0]])
+    ###################################################
+    return(buses2, lines, P_f, Q_f, V_f, theta_f, I_f, Sl_f, S_f)
 
 def maj_batteries(buses, liste_buses, P):
     # met à jour les charges de batterie d'après la puissance débitée calculée
@@ -166,7 +187,7 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
                 bus[1] = 'consommateur'
                 bus[2] = 0
                 bus[3] = 0
-        ##### on regarde si toutes les batteries sont pleines, auquel cas on déconnecte le plus petit producteur #####
+        ##### on regarde si toutes les batteries sont pleines, auquel cas on baisse la puissance de tous les producteurs #####
         n_batt, n_full = 0, 0
         for bus in buses_init :
             if bus[1] == 'stockage':
@@ -174,20 +195,9 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
                 if bus[4] > 0.95:
                     n_full+=1
         if n_batt == n_full:
-            P_min = float('inf')
             for bus in buses_init :
                 if bus[1] == 'producteur':
-                    if bus[2] < P_min:
-                        P_max = bus[2]
-                        id_deco = bus[0]
-            #si il n'y a pas de producteurs, réseau peut pas être résolu
-            if P_min == float('inf'):
-                return(buses, lines, [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
-            for bus in buses_init:
-                if bus[0] == id_deco:
-                    if bus[1] == 'producteur':
-                        bus[2] = 0.0
-                        bus[3] = 400
+                    bus[2] = bus[2]*0.8
         ##########################################################################################################
         # a chaque nouvelle itération, les batteries qui n'ont pas marché sont soit full soit empty, c'est donc (j'explique pas tout) des consommateurs nuls
         P_max = 0
@@ -198,10 +208,9 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
                     id_slack = bus[0]
         for bus in buses_init:
             if bus[0] == id_slack:
-                if bus[1] == 'stockage':
-                    bus[1] = 'transfo'
-                    bus[2] = 0.0
-                    bus[3] = 400
+                bus[1] = 'transfo'
+                bus[2] = 0.0
+                bus[3] = 400
         # on fait un calcul de loadflow en déclenchant les petites batteries dès que la batterie-slack débite (Ps = 0)
         buses2, lines2, P_r, Q_r, V_r, theta_r, I_r, Sl_r, S_r = calcul_total(buses_init, lines, Ps = 0)
         # on regarde quelle puissance (indice de P_r) correspond à la batterie slack
@@ -225,19 +234,34 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
                     SOC = bus[4]
             if SOC < 1:
                 battery_chosen = True
+    ##### mise à jour des charges (SOC) des batteries #####
     buses3 = deepcopy(buses)
     buses3 = maj_batteries(buses3, liste_buses, P_r)
-    P_f, Q_f, V_f, theta_f, I_f, Sl_f, S_f = [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))]
+    #######################################################
+    ##### réordonnement des bus #####
+    P_f, Q_f, V_f, theta_f, I_m, Sl_m, S_m = [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))]
     for i in range(len(liste_buses)):
         P_f[int(liste_buses[i])] = P_r[i]
         Q_f[int(liste_buses[i])] = Q_r[i]
         V_f[int(liste_buses[i])] = V_r[i]
         theta_f[int(liste_buses[i])] = theta_r[i]
-        I_f[int(liste_buses[i])] = I_r[i]
-        Sl_f[int(liste_buses[i])] = Sl_r[i]
-        S_f[int(liste_buses[i])] = S_r[i]
+        I_m[int(liste_buses[i])] = I_r[i]
+        Sl_m[int(liste_buses[i])] = Sl_r[i]
+        S_m[int(liste_buses[i])] = S_r[i]
         for j in range(len(liste_buses)):
-            I_f[i][int(liste_buses[j])] = I_r[i][j]
-            Sl_f[i][int(liste_buses[j])] = Sl_r[i][j]
-            S_f[i][int(liste_buses[j])] = S_r[i][j]
+            I_m[i][int(liste_buses[j])] = I_r[i][j]
+            Sl_m[i][int(liste_buses[j])] = Sl_r[i][j]
+            S_m[i][int(liste_buses[j])] = S_r[i][j]
+    #################################
+    ##### mise en forme des intensités et pertes #####
+    I_f, Sl_f, S_f = [], [], []
+    for line in lines:
+        I_f.append([line[0], line[1]])
+        Sl_f.append([line[0], line[1]])
+        S_f.append([line[0], line[1]])
+    for id_line in range(len(I_f)):
+        I_f[id_line].append(I_m[I_f[id_line][1]][I_f[id_line][0]])
+        Sl_f[id_line].append(Sl_m[Sl_f[id_line][1]][Sl_f[id_line][0]])
+        S_f[id_line].append(S_m[S_f[id_line][1]][S_f[id_line][0]])
+    ###################################################
     return(buses3, lines2, P_f, Q_f, V_f, theta_f, I_f, Sl_f, S_f)
