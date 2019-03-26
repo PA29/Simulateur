@@ -24,7 +24,6 @@ function editionJS() {
 		$.ajax({
 
 			url: '/simulation',
-
 			type: 'POST',
 			data: JSON.stringify(simulationParam),
 			contentType: 'application/json',
