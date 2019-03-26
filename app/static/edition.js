@@ -119,9 +119,10 @@ function setupBuildZone(build_zone){
 		var canvas_height = canvasGrid.canvas.height;
 	
 		position = {
-			"x": (drop_position.x - drag_position.x )*100/canvas_width, 
-			"y": (drop_position.y - drag_position.y )*100/canvas_height
+			"x": grid.globalX(canvasGrid.relativeX(drop_position.x - drag_position.x)), 
+			"y": grid.globalY(canvasGrid.relativeY(drop_position.y - drag_position.y))
 		}; 
+		console.log(position);
 
 	    if(position.x < 0) position.x = 0; // évite le drop hors zone
 	    if(position.y < 0) position.y = 0; // évite le drop hors zone
