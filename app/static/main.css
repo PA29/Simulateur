@@ -7,6 +7,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     margin: 0;
+    font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
 }
 
 .area {
@@ -24,7 +25,6 @@ body {
 }
 
 .window {
-    font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
     font-size: 0.8vw;
     background-color: rgba(0,113,187,0.2);
     border-radius: 7px;

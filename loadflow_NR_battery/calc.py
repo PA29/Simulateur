@@ -114,7 +114,7 @@ def lf_nr(Y, powers, eps, m_iter):
 
         print(deltaP0, deltaQ0)
                 
-        err =  max(max(np.abs(deltaP0)), max(np.abs(deltaQ0)))    
+        err =  max(np.abs(np.concatenate((deltaP0,deltaQ0))))    
         if err < eps :
             converged = True
         L = np.append(L, err)

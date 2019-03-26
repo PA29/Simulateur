@@ -113,8 +113,14 @@ function Canvas(id) {
 	this.absoluteX = function(x) {
 		return x / 100 * this.canvas.width;
 	}
+	this.relativeX = function(x) {
+		return x * 100 / this.canvas.width;
+	}
 
 	this.absoluteY = function(y) {
 		return y / 100 * this.canvas.height;
+	}
+	this.relativeY = function(y) {
+		return y * 100 / this.canvas.height;
 	}
 }
