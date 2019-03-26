@@ -84,7 +84,7 @@ def getGridFile(filename):
 
 @app.route('/reseau/nouveau')
 def getGridNew():
-	return jsonify({'grid' : loadFile(PATH_MODEL + 'new' + EXTENSION)})
+	return jsonify({'grid' : loadFile(PATH_MODEL + 'reseauEcole' + EXTENSION)})
 	
 
 

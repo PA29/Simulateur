@@ -223,7 +223,7 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
         # on regarde quelle puissance (indice de P_r) correspond à la batterie slack
         id_P = id_slack
         for i in range(len(liste_buses)):
-            if buses2[liste_buses[i]] == id_slack:
+            if buses2[int(liste_buses[i])] == id_slack:
                 id_P = i
         #si la puissance demandée à la batterie slack est supérieure à la puissance qu'elle peut délivrer, impossible
         if P_r[id_P] > 0: 
