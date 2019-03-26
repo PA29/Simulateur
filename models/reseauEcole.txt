@@ -143,23 +143,11 @@
 
 
 ],
-    "images": [{"type": "transfo", "x": 54, "y": 5, "bus": 0, "Theta": 0.0, "V": 400},
+    "images": [{"type": "transfo", "x": 54, "y": 5, "bus": 0, "Theta": 0.0, "V": 400}
 
 
-     {"type": "consommateur", "x": 43, "y": 9, "bus": 0, "P": -8.0},
-
-
-     {"type": "consommateur", "x": 8, "y": 10, "bus": 1, "P": -6.0},
-     {"type": "consommateur", "x": 8, "y": 20, "bus": 2, "P": -6.0},
-     {"type": "consommateur", "x": 8, "y": 30, "bus": 3, "P": -6.0},
-     {"type": "consommateur", "x": 8, "y": 40, "bus": 4, "P": -6.0},
-     {"type": "consommateur", "x": 8, "y": 50, "bus": 5, "P": -12.0},
-
-
-
-
-
-     {"type": "consommateur", "x": 2, "y": 60, "bus": 13, "P": -3.0}
+     
 
      ]
 }
+
