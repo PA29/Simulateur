@@ -89,9 +89,8 @@ def run_simul(grid, json):
     
     ###########################################
     # obtention des paramètres de calcul
-    print(type(jsonParam))
-    ilotage = jsonParam.get('ilotage')
-    season = jsonParam.get('season')
+    ilotage = json.get('ilotage')
+    season = json.get('season')
     # debut et fin d'ilotage
     t1, t2 = convert_ilotage(season, ilotage)
     ###########################################

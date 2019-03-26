@@ -16,13 +16,14 @@ function createChart (data) {
 	}*/
 
 	data = JSON.parse(data);
+	console.log(data["results"]["P"])
 
 	//Création des ordonnées
 	var n = 4;
 	for (var j=0; j<47; j++){
-		y_axis.push(data["P"][j][0]);
+		y_axis.push(data["results"]["P"][j][n]);
 	}
-
+	
 	//Création du graphe
 	for (var i=0; i<4; i++){
 		// 1) Création d'un objet jsGraphDisplay
@@ -57,7 +58,6 @@ function createChart (data) {
 		donnees = new Array();
 		for(var l=0; l<47; l++){
 			donnees.push([abscisses[l], y_axis[l]]);
-			console.log(donnees)
 		};
 
 		graph.DataAdd({

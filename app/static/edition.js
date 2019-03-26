@@ -27,10 +27,13 @@ function editionJS() {
 			data: JSON.stringify(simulationParam),
 			contentType: 'application/json',
 			success: function(data) {
+				console.log("a");
 				grid.simulation = data; // Ajout des résultats à la variable stockant le réseau
 				direct('resultats'); // Redirection vers le mode resultats
 				grid.startPowerFlow();
+				console.log('b');
 				createChart(data);
+				console.log('c');
 			}
 		});
 	});
