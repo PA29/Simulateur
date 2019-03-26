@@ -22,7 +22,9 @@ function editionJS() {
 
 		// Requête pour récupérer les résultats de la simulation
 		$.ajax({
+
 			url: '/simulation',
+
 			type: 'POST',
 			data: JSON.stringify(simulationParam),
 			contentType: 'application/json',
@@ -102,6 +104,7 @@ function setupBuildZone(build_zone){
 	build_zone.addEventListener('dragleave', function(event){
 		build_zone.setAttribute("dragover", "false"); // change attribut pour activer du style css si besoin 
 	});
+
 	
 	//méthode liée à l'événement drop appelée lorsque l'objet est libéré
 	build_zone.addEventListener('drop', function(event) {
@@ -116,32 +119,52 @@ function setupBuildZone(build_zone){
 		var canvas_height = canvasGrid.canvas.height;
 	
 		position = {
-			"x": (drop_position.x - drag_position.x )*100/canvas_width, 
-			"y": (drop_position.y - drag_position.y )*100/canvas_height
+			"x": grid.globalX(canvasGrid.relativeX(drop_position.x - drag_position.x)), 
+			"y": grid.globalY(canvasGrid.relativeY(drop_position.y - drag_position.y))
 		}; 
+		console.log(position);
 
 	    if(position.x < 0) position.x = 0; // évite le drop hors zone
 	    if(position.y < 0) position.y = 0; // évite le drop hors zone
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////modification	
-		//canvasGrid.dropped = {'drop' : true, 'type' : drag_position.element.name, 'position' : position};
-	
-		//canvasGrid.draw();
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-		grid.images.push(new Picture({bus: 2, type: drag_position.element.name, x: position.x , y: position.y}))	
+		grid.draganddrop = true ;
+
+		grid.newPicture = {type: drag_position.element.name, x: position.x , y: position.y};
+
+		//canvasGrid.drawImage(drag_position.element.name, position, 5);
+
+		//build_zone.addEventListener('mousemove',function(event){
+
+			//mouse_position  = {x: event.layerX*100/canvas_width, y : event.layerY*100/canvas_height};
+
+			//canvasGrid.drawStroke(position, mouse_position);
+
+		//})
+
+		//dessiner la 
+		//for (var bus in grid.bus){
+			//bus.selection();
+		//};
+
+		//for(var i= 0; i < grid.bus.length; i++){
+     		//grid.bus[i].selection;
+		//};
+		
+		//pictureBus = grid.selectedBus;
+
+		//picture = new Picture({bus: pictureBus, type: drag_position.element.name, x: position.x , y: position.y})
+		//canvasGrid.drawImage(drag_position.element.name, position, size = 5);
+		
+		//grid.images.push(picture);
+		
+		//grid.draganddrop = false;
+
 	}); 
-	
-	/*build_zone.addEventListener({'mousemove', function(event){
-		
-		mouse_position = {
-			'x': event.clientX,
-			'y': event.clientY
-		};
-		
-		grid.bus.push(new Bus( x: mouse_position.x, y: mouse_position.y));
-	};
-	});*/
+
+
 }
+
+
 
 function setupBuildElement(build_element){
 	

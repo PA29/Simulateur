@@ -81,13 +81,8 @@ def run_simul(grid, json):
     json.update(update_json)
 
 
-    #####################################""
+    ###########################################
     B, L = total_lf.listsfromdict(grid)
-
-
-
-
-    
     ###########################################
     # obtention des paramètres de calcul
     ilotage = json.get('ilotage')
@@ -96,14 +91,14 @@ def run_simul(grid, json):
     t1, t2 = convert_ilotage(season, ilotage)
     ###########################################
     if season == False :
-        coeffs_conso = get_coeff('2018-08-09T08:30:00+02:00', '2018-08-10T08:30:00+02:00', 'RES1_BASE')
+        coeffs_conso = get_coeff('2018-08-09T00:00:00+02:00', '2018-08-10T00:00:00+02:00', 'RES1_BASE')
         coeffs_conso = sorted(coeffs_conso)
-        coeffs_prod = get_coeff('2018-08-09T08:30:00+02:00', '2018-08-10T08:30:00+02:00', 'PRD3_BASE')
+        coeffs_prod = get_coeff('2018-08-09T00:00:00+02:00', '2018-08-10T00:00:00+02:00', 'PRD3_BASE')
         coeffs_prod = sorted(coeffs_prod)
     else :
-        coeffs_conso = get_coeff('2018-01-20T08:30:00+02:00', '2018-01-21T08:30:00+02:00', 'RES1_BASE')
+        coeffs_conso = get_coeff('2018-01-20T00:00:00+02:00', '2018-01-21T00:00:00+02:00', 'RES1_BASE')
         coeffs_conso = sorted(coeffs_conso)
-        coeffs_prod = get_coeff('2018-01-20T08:30:00+02:00', '2018-01-20T08:30:00+02:00', 'PRD3_BASE')
+        coeffs_prod = get_coeff('2018-01-20T00:00:00+02:00', '2018-01-20T00:00:00+02:00', 'PRD3_BASE')
         coeffs_prod = sorted(coeffs_prod)
     coeffs = [[coeffs_conso[i][0], coeffs_conso[i][1], coeffs_prod[i][1]]for i in range(len(coeffs_conso))] #coeffs_conso[~][0] : heure , coeffs_conso[~][1] :coeff de consommateur type , coeffs_conso[~][2] :coeff de producteur type
     ###########################################################################
@@ -115,6 +110,10 @@ def run_simul(grid, json):
     
     busesp=deepcopy(B)
     for bus in busesp:
+        if bus[1]=='prodConso':
+            #prodConso [num_bus, type, P_prod, V_prod, P_conso]
+            bus[1]='producteur'
+            bus[2]=bus[4]*coeffs[0][1]+bus[2]*coeffs[0][2]
         if bus[1]=='consommateur':
             bus[2]=bus[2]*coeffs[0][1]
             bus[3]=bus[3]*coeffs[0][1]
@@ -135,6 +134,10 @@ def run_simul(grid, json):
         times.append(coeff[0])
         buses0 = deepcopy(B)
         for bus in buses0:
+            if bus[1]=='prodConso':
+                #prodConso [num_bus, type, P_prod, V_prod, P_conso]
+                bus[1]='producteur'
+                bus[2]=bus[4]*coeffs[0][1]+bus[2]*coeffs[0][2]
             if bus[1] == 'consommateur':
                 bus[2] = bus[2]*coeff[1]
                 bus[3] = bus[3]*coeff[1]
@@ -154,4 +157,4 @@ def run_simul(grid, json):
         else:
             busest, linest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.calcul_total(buses0, L, Ps = P_seuil_batteries)
         buses, lines, P, Q, V, theta, I, Sl, S = buses+[busest], lines+[linest], P+[Pt], Q+[Qt], V+[Vt], theta+[thetat], I+[It], Sl+[Slt], S+[St]
-    return({"heures":times, "buses":buses, "lines":lines, "P":P, "Q":Q, "V":V, "theta":theta, "abs(I)":[[[abs(xi) for xi in x] for x in i] for i in I], "abs(Sl)":[[[abs(xi) for xi in x] for x in sl] for sl in Sl], "abs(S)":[[[abs(xi) for xi in x] for x in s] for s in S]})
+    return({"heures":times, "buses":buses, "lines":lines, "P":P, "Q":Q, "V":V, "theta":theta, "real(I)":[[[np.real(xi) for xi in x] for x in i] for i in I], "real(Sl)":[[[np.real(xi) for xi in x] for x in sl] for sl in Sl], "real(S)":[[[np.real(xi) for xi in x] for x in s] for s in S]})
