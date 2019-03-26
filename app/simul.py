@@ -131,6 +131,7 @@ def run_simul(grid, json):
     #######Calcul de P, Q, V, theta pour tous les t 
     
     for coeff in coeffs :
+        print('HEURE', coeff[0])
         times.append(coeff[0])
         buses0 = deepcopy(B)
         for bus in buses0:
