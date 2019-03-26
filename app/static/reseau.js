@@ -398,7 +398,9 @@ function Line(data) {
 	line.onClick = function() {
 		if (grid.draganddrop) {
 			let bus1 = grid.bus[line.data.bus1], bus2 = grid.bus[line.data.bus2];
-			let alpha = (grid.globalX(mouse_position.x) - bus1.data.x) / (bus2.data.x - bus1.data.x);
+			let dMouse = Math.pow(grid.globalX(mouse_position.x) - bus1.data.x, 2) + Math.pow(grid.globalY(mouse_position.y) - bus1.data.y, 2);
+			let dLigne = Math.pow(bus2.data.x - bus1.data.x, 2) + Math.pow(bus2.data.y - bus1.data.y, 2);
+			let alpha =  Math.sqrt(dMouse / dLigne);
 
 			let bus = new Bus({
 				x: grid.globalX(mouse_position.x),
@@ -406,6 +408,7 @@ function Line(data) {
 			});
 			grid.bus.push(bus);
 
+			console.log(alpha);
 			grid.lines.push(new Line({
 				bus1: grid.bus.length - 1,
 				bus2: line.data.bus2,
