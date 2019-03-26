@@ -436,8 +436,8 @@ function Line(data) {
 			
 			let a = d / line.data.length;
 			canvasGrid.drawPoint({
-				x: startBus.data.x * (1 - a) + endBus.data.x * a,
-				y: startBus.data.y * (1 - a) + endBus.data.y * a
+				x: grid.localX(startBus.data.x * (1 - a) + endBus.data.x * a),
+				y: grid.localY(startBus.data.y * (1 - a) + endBus.data.y * a)
 			}, pointSize);
 		}
 	}
@@ -451,11 +451,9 @@ function Picture(data) {
 	let picture = new Element(data);
 	picture.parametersOpened = false;
 
-
 	let imSize = function() {
 		return Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
 	}
-
 
 	picture.default = function() {
 		let bus = grid.bus[data.bus];
