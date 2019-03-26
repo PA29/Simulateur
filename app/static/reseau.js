@@ -264,11 +264,13 @@ function Bus(data) {
 
 	// Affichage par défaut
 	bus.default = function() {
-		canvasGrid.drawPoint({
-			x: grid.localX(data.x),
-			y: grid.localY(data.y)
-		}, pointSize);
+		let pos = {x: grid.localX(data.x), y: grid.localY(data.y)}
+		if (grid.draganddrop && (!bus.hasOwnProperty("attached") || !bus.attached)) {
+			canvasGrid.drawPoint(pos, pointSize + selectionSize, "blue");
+		}
+		canvasGrid.drawPoint(pos, pointSize);
 	}
+
 	// Affichage lors du survol
 	bus.hover = function() {
 		canvasGrid.drawPoint({
@@ -288,8 +290,9 @@ function Bus(data) {
 		return d < Math.pow(pointSize + selectionSize, 2);
 	}
 	bus.onClick = function() {
-		if (($('body').attr('id') == 'edition') && grid.draganddrop) {
+		if (($('body').attr('id') == 'edition') && grid.draganddrop && (!bus.hasOwnProperty("attached") || !bus.attached)) {
 			let busIndex = grid.bus.indexOf(bus);
+			bus.attached = true;
 			picture = new Picture({
 				bus: busIndex,
 				type: grid.newPicture.type,
