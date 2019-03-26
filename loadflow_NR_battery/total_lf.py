@@ -13,8 +13,15 @@ def listsfromdict(grid):
     dict_bus = grid.get('images')
     buses = []
     for bus in dict_bus:
-        buses.append([bus.get('bus'), bus.get('type'), bus.get('Theta'), bus.get('P'), bus.get('Q'), bus.get('V'), bus.get('SOC'), bus.get('capacity')])
+        buses.append([bus.get('bus'), bus.get('type'), bus.get('Theta'), bus.get('P'), bus.get('Q'), bus.get('V'), bus.get('SOC'), bus.get('capacity'), bus.get('P_conso')])
     buses = [[i for i in buses[j] if i!=None] for j in range(len(buses))]
+    #ajout des caracteristiques implicites
+    for bus in buses:
+        if bus[1] == 'transfo':
+            bus.append(bus[2])
+            bus[2] = 0.0
+        if bus[1] == 'consommateur':
+            bus.append(bus[2]*0.484)
     dict_line = grid.get('lines')
     lines = []
     for line in dict_line:
