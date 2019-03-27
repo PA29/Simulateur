@@ -57,8 +57,6 @@ def convert_ilotage(season, ilotage):
 def run_simul(grid, json):   
     #####################################
     #Ajout de consommateurs nuls lorsque les noeuds ne sont pas reliés à un quelconque élément
-    
-
     list_bus=grid.get('bus')
     nb_bus=len(list_bus)
     list_images=grid.get('images')
