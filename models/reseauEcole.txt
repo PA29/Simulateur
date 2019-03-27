@@ -143,7 +143,18 @@
 
 
 ],
-    "images": [{"type": "transfo", "x": 54, "y": 5, "bus": 0, "Theta": 0.0, "V": 400}
+    "images": [{"type": "transfo", "x": 54, "y": 5, "bus": 0, "Theta": 0.0, "V": 400},
+
+
+
+    {"type": "prodConso", "x": 0, "y": 10, "bus": 1, "P": -3.0, "P_conso": -1.8, "V": 400},
+
+    {"type": "prodConso", "x": 0, "y": 10, "bus": 2, "P": -3.0, "P_conso": -1.8, "V": 400},
+
+    {"type": "prodConso", "x": 0, "y": 10, "bus": 3, "P": -3.0, "P_conso": -1.8, "V": 400}
+
+
+
 
 
      
