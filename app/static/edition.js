@@ -45,8 +45,17 @@ function editionJS() {
 	});
 
 	$('#save').on('click', function() {
-		console.log("Sauvegarde sous à implémenter : Edition.js ligne 49")
-	})
+		console.log(grid.simulationParam());
+		$.ajax({
+			url: '/save',
+			type: 'POST',
+			data: JSON.stringify(grid.simulationParam()),
+			contentType: 'application/json',
+			success: function() {
+				console.log("Le réseau a bien été sauvegardé");
+			}
+		});
+	});
 
 	$('#saveAs').on('click', function() {
 		console.log("Sauvegarde sous à implémenter : Edition.js ligne 53");
