@@ -187,8 +187,9 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
             therearebatteries = True
     if therearebatteries == False:
         return(buses, lines, [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [0 for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
-    buses_iter = deepcopy(buses_init)
+    
     while battery_chosen == False:
+        buses_iter = deepcopy(buses_init)
         for bus in buses_iter :
             if bus[1] == 'transfo':
                 bus[1] = 'consommateur'
@@ -196,41 +197,41 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
                 bus[3] = 0
         ##### on regarde si toutes les batteries sont pleines, auquel cas on baisse la puissance de tous les producteurs #####
         n_batt, n_full = 0, 0
-        for bus in buses_init :
+        for bus in buses_iter :
             if bus[1] == 'stockage':
                 n_batt+=1
                 if bus[4] > 0.95:
                     n_full+=1
         if n_batt == n_full:
-            for bus in buses_init :
+            for bus in buses_iter :
                 if bus[1] == 'producteur':
                     bus[2] = bus[2]*0.8
         ##########################################################################################################
         # a chaque nouvelle itération, les batteries qui n'ont pas marché sont soit full soit empty, c'est donc (j'explique pas tout) des consommateurs nuls
         P_max = 0
-        for bus in buses_init:
+        for bus in buses_iter:
             if bus[1] == 'stockage':
                 if bus[2] > P_max:
                     P_max = bus[2]
                     id_slack = bus[0]
-        for bus in buses_init:
+        for bus in buses_iter:
             if bus[0] == id_slack:
                 bus[1] = 'transfo'
                 bus[2] = 0.0
                 bus[3] = 400
         # on fait un calcul de loadflow en déclenchant les petites batteries dès que la batterie-slack débite (Ps = 0)
-        buses2, lines2, P_r, Q_r, V_r, theta_r, I_r, Sl_r, S_r = calcul_total(buses_init, lines, Ps = 0)
+        buses2, lines2, P_r, Q_r, V_r, theta_r, I_r, Sl_r, S_r = calcul_total(buses_iter, lines, Ps = 0)
         # on regarde quelle puissance (indice de P_r) correspond à la batterie slack
         id_P = id_slack
         for i in range(len(liste_buses)):
-            if buses2[liste_buses[i]] == id_slack:
+            if buses2[int(liste_buses[i])] == id_slack:
                 id_P = i
         #si la puissance demandée à la batterie slack est supérieure à la puissance qu'elle peut délivrer, impossible
         if P_r[id_P] > 0: 
             if P_r[id_P] < P_max:
                 for bus in buses_init:
                     if bus[0] == id_slack:
-                        SOC = bus[4]
+                        SOC = bus[3]
                 if SOC > 0:
                     battery_chosen = True
             else:
@@ -238,9 +239,9 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
         else:
             for bus in buses_init:
                 if bus[0] == id_slack:
-                    SOC = bus[4]
-            if SOC < 1:
-                battery_chosen = True
+                    SOC = bus[3]
+                    if SOC < 1:
+                        battery_chosen = True
     ##### mise à jour des charges (SOC) des batteries #####
     buses3 = deepcopy(buses)
     buses3 = maj_batteries(buses3, liste_buses, P_r)

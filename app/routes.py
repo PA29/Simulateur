@@ -60,6 +60,35 @@ def sendSave():
 	file.save(PATH_SAVE + filename + EXTENSION)
 	return jsonify({'filename' : filename})
 
+@app.route('/save', methods = ['POST'])
+def save():
+	json = request.get_json()
+	PATH_SAVE = "saves/"
+	now = str(datetime.now());
+	now = now.replace(' ', 'E').replace(':', '-').split('.')[0]
+	if (not os.path.exists(PATH_SAVE)):
+		os.mkdir(PATH_SAVE)
+	filename = 'save_' + now
+	file = open(PATH_SAVE + filename + EXTENSION, 'w')
+	file.write(str(json).replace("'", '"').replace(' "noParameter": False,', ' '))
+	file.close()
+	PATH_SAVE = "autosaves/"
+	return jsonify({'filename' : filename})
+
+@app.route('/saveAs', methods = ['POST'])
+def saveAs():
+	json = request.get_json()
+	grid = json.get("grid")
+	filename = json.get("filename")
+	PATH_SAVE = "saves/"
+	if (not os.path.exists(PATH_SAVE)):
+		os.mkdir(PATH_SAVE)
+	file = open(PATH_SAVE + filename + EXTENSION, 'w')
+	file.write(str(grid).replace("'", '"').replace(' "noParameter": False,', ' '))
+	file.close()
+	PATH_SAVE = "autosaves/"
+	return jsonify({'filename' : filename})
+
 @app.route('/load/<filename>')
 def load(filename):
 	return render_template('main', filename = filename)

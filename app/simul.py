@@ -57,8 +57,6 @@ def convert_ilotage(season, ilotage):
 def run_simul(grid, json):   
     #####################################
     #Ajout de consommateurs nuls lorsque les noeuds ne sont pas reliés à un quelconque élément
-    
-
     list_bus=grid.get('bus')
     nb_bus=len(list_bus)
     list_images=grid.get('images')
@@ -131,6 +129,8 @@ def run_simul(grid, json):
     #######Calcul de P, Q, V, theta pour tous les t 
     
     for coeff in coeffs :
+        print("HEURE CALCUL")
+        print(coeff[0])
         times.append(coeff[0])
         buses0 = deepcopy(B)
         for bus in buses0:
