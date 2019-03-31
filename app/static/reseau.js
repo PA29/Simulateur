@@ -82,27 +82,6 @@ function Grid(data) {
 	for (let image of data.images) {
 		instance.images.push(new Picture(image));
 	}
-	
-	//Renvoie les données nécéssaires à la simulation
-	this.simulationParam = function() {
-		let param = {
-			bus: [],
-			lines: [],
-			components: []
-		}
-
-		for (let bus of grid.bus) {
-			param.bus.push(bus.data);
-		}
-		for (let line of grid.lines) {
-			param.lines.push(line.data);
-		}
-		for (let component of grid.images) {
-			param.components.push(component.data);
-		}
-
-		return param;
-	}
 
 	//Renvoie les données nécéssaires à la simulation
 	this.simulationParam = function() {
@@ -267,7 +246,7 @@ function Bus(data) {
 	// Affichage par défaut
 	bus.default = function() {
 		let pos = {x: grid.localX(data.x), y: grid.localY(data.y)}
-		if (grid.draganddrop && (!bus.hasOwnProperty("attached") || !bus.attached)) {
+		if (grid.draganddrop && (!bus.data.hasOwnProperty("attached") || !bus.data.attached)) {
 			canvasGrid.drawPoint(pos, pointSize + selectionSize, "blue");
 		}
 		canvasGrid.drawPoint(pos, pointSize);
@@ -292,9 +271,9 @@ function Bus(data) {
 		return d < Math.pow(pointSize + selectionSize, 2);
 	}
 	bus.onClick = function() {
-		if (($('body').attr('id') == 'edition') && grid.draganddrop && (!bus.hasOwnProperty("attached") || !bus.attached)) {
+		if (($('body').attr('id') == 'edition') && grid.draganddrop && (!bus.data.hasOwnProperty("attached") || !bus.data.attached)) {
 			let busIndex = grid.bus.indexOf(bus);
-			bus.attached = true;
+			bus.data.attached = true;
 			picture = new Picture({
 				bus: busIndex,
 				type: grid.newPicture.type,
@@ -410,8 +389,8 @@ function Line(data) {
 			let bus = new Bus({
 				x: grid.globalX(mouse_position.x),
 				y: grid.globalY(mouse_position.y),
+				added: true
 			});
-			bus.added = true;
 			grid.bus.push(bus);
 
 			grid.lines.push(new Line({
@@ -436,8 +415,8 @@ function Line(data) {
 			
 			let a = d / line.data.length;
 			canvasGrid.drawPoint({
-				x: startBus.data.x * (1 - a) + endBus.data.x * a,
-				y: startBus.data.y * (1 - a) + endBus.data.y * a
+				x: grid.localX(startBus.data.x * (1 - a) + endBus.data.x * a),
+				y: grid.localY(startBus.data.y * (1 - a) + endBus.data.y * a)
 			}, pointSize);
 		}
 	}
@@ -451,11 +430,9 @@ function Picture(data) {
 	let picture = new Element(data);
 	picture.parametersOpened = false;
 
-
 	let imSize = function() {
 		return Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
 	}
-
 
 	picture.default = function() {
 		let bus = grid.bus[data.bus];
@@ -498,7 +475,7 @@ function Picture(data) {
 		console.log(grid.images);
 
 		let idBus = picture.data.bus
-		if (grid.bus[idBus].added) {
+		if (grid.bus[idBus].data.added) {
 			for (let line of grid.lines) {
 
 				if (idBus == line.data.bus1) {
@@ -520,6 +497,9 @@ function Picture(data) {
 			grid.lines.splice(grid.lines.indexOf(line_after), 1);
 
 			grid.bus.splice(idBus, 1);
+		}
+		else {
+			grid.bus[idBus].data.attached = false;
 		}
 
 		console.log(grid.images);

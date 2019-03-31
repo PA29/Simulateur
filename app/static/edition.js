@@ -51,12 +51,11 @@ function editionJS() {
 			data: JSON.stringify(grid.simulationParam()),
 			contentType: 'application/json',
 			success: function() {
-				console.log("Le réseau a bien été sauvegardé");
 				alert("Le réseau a bien été sauvegardé");
 			}
 		});
 	})
-	//Sauvegarde sous
+	
 	$('#saveAs').on('click', function() {
 		var nom = prompt("Nom du fichier", "Untitled");
 		$.ajax({
