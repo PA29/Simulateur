@@ -2,6 +2,8 @@
 Ce fichier gère le réseau affiché dans les deux modes : edition / résultats
 */
 
+var testDebug;
+
 var grid; //Variable stockant les données du réseau
 var canvasGrid; //Variable stockant le canvas du réseau
 
@@ -61,6 +63,7 @@ function Grid(data) {
 	this.zoom = 1;
 
 	this.draganddrop = false;
+	this.addchart = false;
 	this.newPicture = {type: '', x: '' , y: ''};
 
 	this.statusPowerFlow = false;
@@ -288,6 +291,7 @@ function Bus(data) {
 		return d < Math.pow(pointSize + selectionSize, 2);
 	}
 	bus.onClick = function() {
+		console.log(grid.addchart)
 		if (($('body').attr('id') == 'edition') && grid.draganddrop) {
 			let busIndex = grid.bus.indexOf(bus);
 			picture = new Picture({
@@ -308,6 +312,26 @@ function Bus(data) {
 		if ($('body').attr('id') == 'resultats') {
 			bus.showAddJauge();	
 		}
+
+		if (grid.addchart) {
+			console.log("b")
+			$.get("/selectVariable", function(data) {
+				// Ajout du html à la zone centrale
+				$('#centerArea .panel.resultats').append(data);
+				$('.window .close').on('click', function() {
+					$(this).parents('.window').remove();
+				});
+			
+				// Ajout de l'interaction avec les boutons
+				$('.selectVariable .button').on('click', function() {
+					
+				})
+				
+
+			})
+			
+
+		}
 	}
 
 		
@@ -325,7 +349,7 @@ function Bus(data) {
 	// Affiche la fenêtre d'ajout d'un jauge (est appelée lors du click dans le mode résultats)
 	bus.showAddJauge = function() {
 		$.ajax({
-			url: 'addJauge',
+			url: '/selectVariable',
 			type: 'POST',
 			data: JSON.stringify({
 				x: data.x + 1, //TEMPORAIRE// Position de la fenêtre en x
@@ -341,15 +365,27 @@ function Bus(data) {
 					$(this).parents('.window').remove();
 				});
 
-				// Ajout de l'interaction avec les boutons
-				$('.addJauge .button').on('click', function() {
-	    			let busID = $(this).parents('.addJauge').attr('busid');
-	    			let variable = $(this).attr('id');
+				if (grid.addchart) {
+					$('.selectVariable .button').on('click', function() {
+						testDebug = $(this);
+						console.log($(this).parents(".selectVariable"));
+						var busID = $(this).parents('.selectVariable').attr('busid');
+						var variableID = $(this).attr('id');
+						console.log(grid.number_chart);
+						createChart(busID,variableID,grid.number_chart);
+					});
+				}
+				else {
+					// Ajout de l'interaction avec les boutons
+					$('.selectVariable .button').on('click', function() {
+						let busID = $(this).parents('.selectVariable').attr('busid');
+						let variable = $(this).attr('id');
 
-	    			//Affichage de la Jauge et suppression de la fenêtre d'ajout d'une jauge
-	    			grid.bus[busID].showJauge(variable);
-	    			$(this).parents('.window').remove();
-	    		});
+						//Affichage de la Jauge et suppression de la fenêtre d'ajout d'une jauge
+						grid.bus[busID].showJauge(variable);
+						$(this).parents('.window').remove();
+					});
+				}
 			}
 		});
 	}

@@ -121,7 +121,12 @@ def getParametres():
 @app.route('/addJauge', methods = ['POST'])
 def getAddJauge():
     json = request.get_json()
-    return render_template('_addJauge', json = json)
+    return render_template('_variable', json = json)
+
+@app.route('/selectVariable', methods = ['POST'])
+def selectVariable():
+	json = request.get_json()
+	return render_template('_variable', json = json)
 
 def getParameters(type):
     if type == 'transfo':
