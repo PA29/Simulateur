@@ -111,8 +111,6 @@ def lf_nr(Y, powers, eps, m_iter):
                 Pcalc[k+r] += v0[i]*v0[1+k+r]*magnY[1+k+r][i]*np.cos(angleY[1+k+r][i] - t0[1+k+r] + t0[i])
         deltaP0 = P - Pcalc
         deltaQ0 = Q - Qcalc
-
-        print(deltaP0, deltaQ0)
                 
         err =  max(np.abs(np.concatenate((deltaP0,deltaQ0))))    
         if err < eps :
