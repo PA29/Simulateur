@@ -149,8 +149,8 @@ def getParametres():
     
     return render_template('_parametres', json = json, parameters = getParameters(json['data']['type']))
 
-@app.route('/addJauge', methods = ['POST'])
-def getAddJauge():
+@app.route('/selectVariable', methods = ['POST'])
+def getSelectVariable():
     json = request.get_json()
     return render_template('_addJauge', json = json)
 

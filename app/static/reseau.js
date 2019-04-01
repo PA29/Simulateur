@@ -17,6 +17,8 @@ var IMAGE_WIDTH = 8; //% de la taille par rapport à la largeur
 var CROSS_WIDTH = IMAGE_WIDTH / 2;
 var POSITION_CROSS_X = 50, POSITION_CROSS_Y = -50;
 
+var LIMIT_SIDE_WINDOW_X = 75, LIMIT_SIDE_WINDOW_Y = 75;
+
 var SHADOW_COLOR = 'lightgrey';
 
 var ANIMATION_DISTANCE = 4;
@@ -289,8 +291,10 @@ function Bus(data) {
 			mouse_position.y = picture.data.y;
 			picture.onClick()
 		}
-		if ($('body').attr('id') == 'resultats') {
-			bus.showAddJauge();	
+		if ($('body').attr('id') == 'resultats' && (!bus.data.hasOwnProperty("hasSelectVariable") || !bus.data.hasSelectVariable)) {
+			bus.selectVariable(function(variable) {
+				console.log("Show Jauge : " + variable);
+			})
 		}
 	}
 
@@ -307,9 +311,9 @@ function Bus(data) {
 	//}
 
 	// Affiche la fenêtre d'ajout d'un jauge (est appelée lors du click dans le mode résultats)
-	bus.showAddJauge = function() {
+	bus.selectVariable = function(f) {
 		$.ajax({
-			url: 'addJauge',
+			url: '/selectVariable',
 			type: 'POST',
 			data: JSON.stringify({
 				x: data.x + 1, //TEMPORAIRE// Position de la fenêtre en x
@@ -323,6 +327,7 @@ function Bus(data) {
 
 				$('.window .close').on('click', function() {
 					$(this).parents('.window').remove();
+					bus.hasAddJauge = false;
 				});
 
 				// Ajout de l'interaction avec les boutons
@@ -330,16 +335,13 @@ function Bus(data) {
 	    			let busID = $(this).parents('.addJauge').attr('busid');
 	    			let variable = $(this).attr('id');
 
-	    			//Affichage de la Jauge et suppression de la fenêtre d'ajout d'une jauge
-	    			grid.bus[busID].showJauge(variable);
+	    			f(variable);
 	    			$(this).parents('.window').remove();
 	    		});
 			}
 		});
-	}
-	// Affiche la jauge associé au bus (est appelée lors du click sur un bouton de la fenêtre d'ajout d'une jauge)
-	bus.showJauge = function(variable) {
-		console.log("Show Jauge : " + variable);
+
+		bus.hasSelectVariable = true;
 	}
 
 	return bus;
@@ -538,12 +540,10 @@ function Picture(data) {
 		}
 	}
 	picture.onClick = function() {
-		if (picture.insideCross()){
-			console.log("Test")
+		if (picture.insideCross()) {
 			picture.del();
 		}
-
-		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
+		else if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
 			picture.showParameters();
 		}
 
@@ -559,14 +559,17 @@ function Picture(data) {
 	// Affiche la fenêtre des paramètres de l'élément
 	picture.showParameters = function() {
 		let imageID = grid.images.indexOf(picture);
-		picture.parametersOpened = true;
+		let pos = {
+			x: (data.x < LIMIT_SIDE_WINDOW_X) ? grid.localX(data.x) : grid.localX(data.x - 10),
+			y: (data.y < LIMIT_SIDE_WINDOW_Y) ? grid.localY(data.y) : grid.localY(data.y - 10)
+		}
 
 		$.ajax({
 			url: '/parametres',
 			type: 'POST',
 			data: JSON.stringify({
-				x: grid.localX(data.x) + 5,
-				y: grid.localY(data.y) - 3,
+				x: pos.x,
+				y: pos.y,
 				imageID: imageID,
 				data: picture.data
 			}),
@@ -592,6 +595,8 @@ function Picture(data) {
 				})
 			}
 		});
+
+		picture.parametersOpened = true;
 	}
 
 	return picture;
