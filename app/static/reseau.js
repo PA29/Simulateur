@@ -24,6 +24,10 @@ var SHADOW_COLOR = 'lightgrey';
 var ANIMATION_DISTANCE = 4;
 var ANIMATION_DURATION = 2000;
 
+var WIDTH_PARAMETRES = 20;
+var WIDTH_JAUGE = 10;
+var WIDTH_VARIABLES = 20;
+
 var mouse_position;
 
 var tempPower = [true, false, true]; //TEMP// Variable pour tester l'affichage des flux de puissance
@@ -291,57 +295,80 @@ function Bus(data) {
 			mouse_position.y = picture.data.y;
 			picture.onClick()
 		}
-		if ($('body').attr('id') == 'resultats' && (!bus.data.hasOwnProperty("hasSelectVariable") || !bus.data.hasSelectVariable)) {
+		if ($('body').attr('id') == 'resultats') {
 			bus.selectVariable(function(variable) {
-				console.log("Show Jauge : " + variable);
+				bus.displayJauge(variable)
 			})
 		}
 	}
 
-		
-	//bus.onClick = function(event){
-
-		//if (grid.draganddrop){
-			
-			//grid.selectedBus = grid.bus.indexOf(bus);
-			//console.log(grid.selectedBus)
-
-		//};
-
-	//}
-
 	// Affiche la fenêtre d'ajout d'un jauge (est appelée lors du click dans le mode résultats)
 	bus.selectVariable = function(f) {
+		if (!bus.data.hasOwnProperty("hasSelectVariable") || !bus.data.hasSelectVariable) {
+			$.ajax({
+				url: '/selectVariable',
+				type: 'POST',
+				data: JSON.stringify({
+					x: data.x + 1, //TEMPORAIRE// Position de la fenêtre en x
+					y: data.y - 1, //TEMPORAIRE// Position de la fenêtre en y
+					busID: grid.bus.indexOf(this),
+					width: WIDTH_VARIABLES
+				}),
+				contentType: 'application/json',
+				success: function(data) {
+					// Ajout du html à la zone centrale
+					$('#centerArea .panel.resultats').append(data);
+
+					$('.window .close').on('click', function() {
+						$(this).parents('.window').remove();
+						bus.hasAddJauge = false;
+					});
+
+					// Ajout de l'interaction avec les boutons
+					$('.addJauge .button').on('click', function() {
+		    			let busID = $(this).parents('.addJauge').attr('busid');
+		    			let variable = $(this).attr('id');
+
+		    			f(variable);
+		    			$(this).parents('.window').remove();
+		    		});
+				}
+			});
+
+			bus.hasSelectVariable = true;
+		}
+	}
+	bus.displayJauge = function(variable) {
 		$.ajax({
-			url: '/selectVariable',
+			url: '/jauge',
 			type: 'POST',
 			data: JSON.stringify({
 				x: data.x + 1, //TEMPORAIRE// Position de la fenêtre en x
 				y: data.y - 1, //TEMPORAIRE// Position de la fenêtre en y
-				busID: grid.bus.indexOf(this)
+				busID: grid.bus.indexOf(bus),
+				variable: variable,
+				width: WIDTH_JAUGE
 			}),
 			contentType: 'application/json',
 			success: function(data) {
 				// Ajout du html à la zone centrale
 				$('#centerArea .panel.resultats').append(data);
 
-				$('.window .close').on('click', function() {
+				/*$('.window .close').on('click', function() {
 					$(this).parents('.window').remove();
 					bus.hasAddJauge = false;
 				});
 
 				// Ajout de l'interaction avec les boutons
 				$('.addJauge .button').on('click', function() {
-	    			let busID = $(this).parents('.addJauge').attr('busid');
-	    			let variable = $(this).attr('id');
+		    		let busID = $(this).parents('.addJauge').attr('busid');
+		    		let variable = $(this).attr('id');
 
-	    			f(variable);
-	    			$(this).parents('.window').remove();
-	    		});
+		    		f(variable);
+		    		$(this).parents('.window').remove();
+		    	});*/
 			}
 		});
-
-		bus.hasSelectVariable = true;
 	}
 
 	return bus;
@@ -571,7 +598,8 @@ function Picture(data) {
 				x: pos.x,
 				y: pos.y,
 				imageID: imageID,
-				data: picture.data
+				data: picture.data,
+				width: WIDTH_PARAMETRES
 			}),
 			contentType: 'application/json',
 			success: function(data) {

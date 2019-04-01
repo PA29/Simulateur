@@ -138,21 +138,12 @@ def getResultatsSimulation():
 	results = run_simul(grid, json) #run la simulation, fichier simul.py
 	return js.dumps({"results":results}, cls=NumpyEncoder)
 
-@app.route('/resultats')
-def resultats():
-	return jsonify({'leftPanel': '', 'centerPanel': render_template('resultats/centerPanel', jauges = [{'x':60, 'y':50}]), 'rightPanel': render_template('resultats/rightPanel')})
-
 @app.route('/parametres', methods = ['POST'])
 def getParametres():
     json = request.get_json()
     print(json)
     
     return render_template('_parametres', json = json, parameters = getParameters(json['data']['type']))
-
-@app.route('/selectVariable', methods = ['POST'])
-def getSelectVariable():
-    json = request.get_json()
-    return render_template('_addJauge', json = json)
 
 def getParameters(type):
     if type == 'transfo':
@@ -170,3 +161,22 @@ def getParameters(type):
     	return [{'id': 'P', 'name': 'Puissance batterie (kW)', 'values': [7, 13]},
         		{'id': 'capacity', 'name': 'Capacité (kWh)', 'values': [3000, 10000]},
         		{'id': 'SOC', 'name': 'Etat de charge', 'values': [0.2, 0.5, 0.8, 1]}]
+
+
+###################
+#### RESULTATS ####
+###################
+
+@app.route('/resultats')
+def resultats():
+	return jsonify({'leftPanel': '', 'centerPanel': render_template('resultats/centerPanel'), 'rightPanel': render_template('resultats/rightPanel')})
+
+@app.route('/selectVariable', methods = ['POST'])
+def getSelectVariable():
+    json = request.get_json()
+    return render_template('_addJauge', json = json)
+
+@app.route('/jauge', methods = ['POST'])
+def displayJauge():
+	json = request.get_json()
+	return render_template('_jauge', json = json)
