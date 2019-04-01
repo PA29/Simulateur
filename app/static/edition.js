@@ -37,12 +37,31 @@ function editionJS() {
 	$('#accueil').on('click', function() {
 		document.location.href = "/accueil";
 	});
-
+	// Sauvegarde
 	$('#save').on('click', function() {
-		console.log("Sauvegarde sous à implémenter : Edition.js ligne 49")
+		$.ajax({
+			url: '/save',
+			type: 'POST',
+			data: JSON.stringify(grid.simulationParam()),
+			contentType: 'application/json',
+			success: function() {
+				alert("Le réseau a bien été sauvegardé");
+			}
+		});
 	})
-
+	
 	$('#saveAs').on('click', function() {
+		var nom = prompt("Nom du fichier", "Untitled");
+		$.ajax({
+			url: '/saveAs',
+			type: 'POST',
+			data: JSON.stringify({"grid": grid.simulationParam(), "filename": nom}),
+			contentType: 'application/json',
+			success: function() {
+				console.log("Le réseau a bien été sauvegardé");
+				alert("Le réseau a bien été sauvegardé");
+			}
+		});
 		console.log("Sauvegarde sous à implémenter : Edition.js ligne 53");
 	});
 

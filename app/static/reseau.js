@@ -16,6 +16,8 @@ var WIDTH_LINE = 1;
 var selectionSize = 3; //Distance supplémentaire fictive pour faciliter la sélection
 
 var IMAGE_WIDTH = 8; //% de la taille par rapport à la largeur
+var CROSS_WIDTH = IMAGE_WIDTH / 2;
+var POSITION_CROSS_X = 50, POSITION_CROSS_Y = -50;
 
 var SHADOW_COLOR = 'lightgrey';
 
@@ -82,27 +84,6 @@ function Grid(data) {
 	this.images = [];
 	for (let image of data.images) {
 		instance.images.push(new Picture(image));
-	}
-	
-	//Renvoie les données nécéssaires à la simulation
-	this.simulationParam = function() {
-		let param = {
-			bus: [],
-			lines: [],
-			components: []
-		}
-
-		for (let bus of grid.bus) {
-			param.bus.push(bus.data);
-		}
-		for (let line of grid.lines) {
-			param.lines.push(line.data);
-		}
-		for (let component of grid.images) {
-			param.components.push(component.data);
-		}
-
-		return param;
 	}
 
 	//Renvoie les données nécéssaires à la simulation
@@ -267,11 +248,13 @@ function Bus(data) {
 
 	// Affichage par défaut
 	bus.default = function() {
-		canvasGrid.drawPoint({
-			x: grid.localX(data.x),
-			y: grid.localY(data.y)
-		}, pointSize);
+		let pos = {x: grid.localX(data.x), y: grid.localY(data.y)}
+		if (grid.draganddrop && (!bus.data.hasOwnProperty("attached") || !bus.data.attached)) {
+			canvasGrid.drawPoint(pos, pointSize + selectionSize, "blue");
+		}
+		canvasGrid.drawPoint(pos, pointSize);
 	}
+
 	// Affichage lors du survol
 	bus.hover = function() {
 		canvasGrid.drawPoint({
@@ -291,9 +274,9 @@ function Bus(data) {
 		return d < Math.pow(pointSize + selectionSize, 2);
 	}
 	bus.onClick = function() {
-		console.log(grid.addchart)
-		if (($('body').attr('id') == 'edition') && grid.draganddrop) {
+		if (($('body').attr('id') == 'edition') && grid.draganddrop && (!bus.data.hasOwnProperty("attached") || !bus.data.attached)) {
 			let busIndex = grid.bus.indexOf(bus);
+			bus.data.attached = true;
 			picture = new Picture({
 				bus: busIndex,
 				type: grid.newPicture.type,
@@ -434,11 +417,14 @@ function Line(data) {
 	line.onClick = function() {
 		if (grid.draganddrop) {
 			let bus1 = grid.bus[line.data.bus1], bus2 = grid.bus[line.data.bus2];
-			let alpha = (grid.globalX(mouse_position.x) - bus1.data.x) / (bus2.data.x - bus1.data.x);
+			let dMouse = Math.pow(grid.globalX(mouse_position.x) - bus1.data.x, 2) + Math.pow(grid.globalY(mouse_position.y) - bus1.data.y, 2);
+			let dLigne = Math.pow(bus2.data.x - bus1.data.x, 2) + Math.pow(bus2.data.y - bus1.data.y, 2);
+			let alpha =  Math.sqrt(dMouse / dLigne);
 
 			let bus = new Bus({
 				x: grid.globalX(mouse_position.x),
-				y: grid.globalY(mouse_position.y)
+				y: grid.globalY(mouse_position.y),
+				added: true
 			});
 			grid.bus.push(bus);
 
@@ -464,8 +450,8 @@ function Line(data) {
 			
 			let a = d / line.data.length;
 			canvasGrid.drawPoint({
-				x: startBus.data.x * (1 - a) + endBus.data.x * a,
-				y: startBus.data.y * (1 - a) + endBus.data.y * a
+				x: grid.localX(startBus.data.x * (1 - a) + endBus.data.x * a),
+				y: grid.localY(startBus.data.y * (1 - a) + endBus.data.y * a)
 			}, pointSize);
 		}
 	}
@@ -479,11 +465,9 @@ function Picture(data) {
 	let picture = new Element(data);
 	picture.parametersOpened = false;
 
-
 	let imSize = function() {
 		return Math.min(canvasGrid.absoluteX(IMAGE_WIDTH), canvasGrid.absoluteY(IMAGE_HEIGHT)); //TEMP?// On considère la plus forte des contraintes
 	}
-
 
 	picture.default = function() {
 		let bus = grid.bus[data.bus];
@@ -512,67 +496,74 @@ function Picture(data) {
 			canvasGrid.drawRoundedSquare(ptPicture, IMAGE_WIDTH, IMAGE_WIDTH / 10, 'lightgrey');
 		}
 		canvasGrid.drawImage(data.type + '_withoutBG', ptPicture, IMAGE_WIDTH);
-		canvasGrid.drawImage('croix', {'x':ptPicture.x+IMAGE_WIDTH/2,'y':ptPicture.y-IMAGE_WIDTH/2}, IMAGE_WIDTH/2);
+
+		let posCross = {
+			x: picture.data.x + POSITION_CROSS_X/100 * IMAGE_WIDTH,
+			y: picture.data.y + POSITION_CROSS_Y/100 * canvasGrid.relativeY(canvasGrid.absoluteX(IMAGE_WIDTH))
+		}
+		canvasGrid.drawImage('croix', posCross, CROSS_WIDTH);
 	}
 	
-/*	picture.del = function() {
-		let id_line_before=None;
-		let deja_trouve=False;
-		let uncite=True
-		for (let i=0;i<grid.lines.lenght;i++) {
-			if (id_line_before===line.bus1 && !deja_trouve) {
-				deja_trouve=True;
-				id_line_before=i;
+	picture.del = function() {
+		let line_before, line_after;
+
+		console.log(grid.images);
+
+		let idBus = picture.data.bus
+		if (grid.bus[idBus].data.added) {
+			for (let line of grid.lines) {
+
+				if (idBus == line.data.bus1) {
+					line_after = line;
+				}
+				else if (idBus == line.data.bus2) {
+					line_before = line;
+				}
 			}
-			if (id_line_before===line.bus1 && deja_trouve) {
-				unicite=False;
-			}
-		}
-		let id_line_after=None;
-		deja_trouve=False;
-		uncite=True
-		for (let i=0;i<grid.lines.lenght;i++) {
-			if (id_line_after===line.bus2 && !deja_trouve) {
-				deja_trouve=True;
-				id_line_after=i;
-			}
-			if (id_line_after===line.bus2 && deja_trouve) {
-				unicite=False;
-			}
-		if (!unicite) {
-			grid.bus[grid.lines[id_line_after].bus1.id].P=0;
-			grid.bus[grid.lines[id_line_after].bus1.id].Q=0;
-		}		
-		if (unicite) {
-			let new_line=new(Line);
-			new_line.bus1=grid.lines[id_line_before].bus1;
-			new_line.bus2=grid.lines[id_line_after].bus2;
-			new_line.length=grid.lines[id_line_before].length+grid.lines[id_line_after].length;
-			delete[grid.lines[id_line_before]];
-			delete[grid.lines[id_line_after]];
+
+			let new_line=new Line({
+				bus1: line_before.data.bus1,
+				bus2: line_after.data.bus2,
+				length: line_before.data.length + line_after.data.length
+			});
 			grid.lines.push(new_line);
-			for (let bus in grid.bus) {
-				if (bus.id===picture.bus){delete(grid.bus[bus]);}
+
+			grid.lines.splice(grid.lines.indexOf(line_before), 1);
+			grid.lines.splice(grid.lines.indexOf(line_after), 1);
+
+			grid.bus.splice(idBus, 1);
 		}
-		for (let image in grid.images) {
-			if (picture===image){delete(images[image]);}
+		else {
+			grid.bus[idBus].data.attached = false;
 		}
+
+		console.log(grid.images);
+		grid.images.splice(grid.images.indexOf(picture), 1);
+		console.log(grid.images);
+
 		grid.draw();
-		}
 	}
-*/
 	
 	picture.draw = picture.default;
 
 	picture.inside = function() {
 		let relX = grid.globalX(mouse_position.x) - picture.data.x, relY = grid.globalY(mouse_position.y) - picture.data.y;
 		let absSize = IMAGE_WIDTH;
-		return ((Math.abs(relX) <= absSize / 2) && (canvasGrid.absoluteY(Math.abs(relY)) <= canvasGrid.absoluteX(absSize / 2)));
+		let insideElmt = ((Math.abs(relX) <= absSize / 2) && (canvasGrid.absoluteY(Math.abs(relY)) <= canvasGrid.absoluteX(absSize / 2)));
+		return insideElmt || (picture.isHovered && picture.insideCross());
 	}
-	picture.on_cross = function(x,y) {
-		let absX = x - canvasGrid.absoluteX(picture.data.x), absY = y - canvasGrid.absoluteY(picture.data.y);
-		let absSize = canvasGrid.absoluteX(IMAGE_WIDTH);
-		(absX >= absSize/2 && absX <= 3*absSize/2) && (absY >= -3*absSize/2 && absY <= -absSize/2);
+	picture.insideCross = function() {
+		let absSizeIm = canvasGrid.absoluteX(IMAGE_WIDTH);
+		let posCross = {
+			x: canvasGrid.absoluteX(picture.data.x) + POSITION_CROSS_X/100 * absSizeIm,
+			y: canvasGrid.absoluteY(picture.data.y) + POSITION_CROSS_Y/100 * absSizeIm
+		}
+		let absPos = {
+			x: canvasGrid.absoluteX(mouse_position.x) - posCross.x,
+			y: canvasGrid.absoluteY(mouse_position.y) - posCross.y
+		}
+		let absSizeCross = canvasGrid.absoluteX(CROSS_WIDTH);
+		return (Math.abs(absPos.x) <= absSizeCross / 2 && Math.abs(absPos.y) <= absSizeCross / 2)
 	}
 
 	picture.onDrag = function() {
@@ -582,9 +573,10 @@ function Picture(data) {
 		}
 	}
 	picture.onClick = function() {
-		/*if (picture.on_cross(x,y)){
-			//picture.del();
-		}*/
+		if (picture.insideCross()){
+			console.log("Test")
+			picture.del();
+		}
 
 		if ($('body').attr('id') == 'edition' && !picture.parametersOpened) {
 			picture.showParameters();

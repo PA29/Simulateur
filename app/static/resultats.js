@@ -1,5 +1,4 @@
 function resultatsJS() {
-	console.log("résultats ok")
 	createEmptyChart()
 
 	$('#edit').on('click', function() {
@@ -14,7 +13,11 @@ function resultatsJS() {
 	$(".addGraph").on('click', function() {
 		grid.addchart = true;
 		grid.number_chart = $(this).parents(".graph_container").attr("nb");
-		console.log(grid.number_chart)
 		/*createChart(busID,variableID,number_chart);*/
 	});
 }
+
+
+/*var canevas = document.getElementById("chart_");
+	var ctx = canevas.getContext("2d");
+	ctx.clearRect(0, 0, 300, 600);*/
