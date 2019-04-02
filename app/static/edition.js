@@ -22,7 +22,6 @@ function editionJS() {
 
 		// Requête pour récupérer les résultats de la simulation
 		$.ajax({
-
 			url: '/simulation',
 			type: 'POST',
 			data: JSON.stringify(simulationParam),
@@ -31,13 +30,8 @@ function editionJS() {
 				grid.simulation = data; // Ajout des résultats à la variable stockant le réseau
 				direct('resultats'); // Redirection vers le mode resultats
 				grid.startPowerFlow();
-
-				background_chart()
-
-				createChart();
 			}
 		});
-	});
 
 	// Retour vers l'accueil
 	$('#accueil').on('click', function() {
@@ -89,7 +83,7 @@ function editionJS() {
 			$('#periodeIlotage').show();
 		}
 	})
-}
+});
 	
 function initDragDrop(){
 	 
@@ -205,4 +199,4 @@ function setupBuildElement(build_element){
 		// event.datatransfer est un stockage lié à l'event
 		event.dataTransfer.setData('text/plain', drag_position); // event.datatransfer est un stockage lié à l'event
 	}, false);	
-}
+}}

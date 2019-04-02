@@ -2,6 +2,8 @@
 Ce fichier gère le réseau affiché dans les deux modes : edition / résultats
 */
 
+var testDebug;
+
 var grid; //Variable stockant les données du réseau
 var canvasGrid; //Variable stockant le canvas du réseau
 
@@ -69,6 +71,7 @@ function Grid(data) {
 	this.zoom = 1;
 
 	this.draganddrop = false;
+	this.addchart = false;
 	this.newPicture = {type: '', x: '' , y: ''};
 
 	this.statusPowerFlow = false;
@@ -127,7 +130,7 @@ function Grid(data) {
 		canvasGrid.ctx.clearRect(0, 0, canvasGrid.canvas.width, canvasGrid.canvas.height); //Efface tout le contenu du canvas
 		instance.forEach(function(elmt) { //Dessine chaque élément du réseau
 			elmt.draw();
-		});
+		}, grid.lines, grid.bus, grid.images);
 
 		if (instance.statusPowerFlow) {
 			instance.lines.forEach(function(elmt) {
@@ -146,18 +149,25 @@ function Grid(data) {
 	//Créer les interactions entre le canvas et l'utilisateur
 	this.setInteractions = function() {
 		$('#centerArea').on('mousedown', function(e) {
-			grid.translating = !instance.forEach(function(elmt) {
-				return elmt.onMouseDown(e);
-			});
+			if (e.button == 0) {
+				grid.translating = true;
+				e.handled = false;
 
-			if (grid.translating) {
-				grid.positionTranslation = {
-					x: grid.globalX(mouse_position.x),
-					y: grid.globalY(mouse_position.y)
+				instance.forEach(function(elmt) {
+					elmt.onMouseDown(e);
+					grid.translating = grid.translating && !elmt.mouseDown;
+				}, grid.bus, grid.lines, grid.images);
+
+				if (grid.translating) {
+					grid.positionTranslation = {
+						x: grid.globalX(mouse_position.x),
+						y: grid.globalY(mouse_position.y)
+					}
 				}
 			}
 		});
 		$('#centerArea').on('mousemove', function(e) {
+			e.handled = false;
 			mouse_position = {x: canvasGrid.relativeX(e.offsetX), y: canvasGrid.relativeY(e.offsetY)}
 
 			if (grid.translating) {
@@ -173,17 +183,20 @@ function Grid(data) {
 			else {
 				instance.forEach(function(elmt) {
 					elmt.onMouseMove(e);
-				});
+				}, grid.images, grid.bus, grid.lines);
+
 				if (grid.draganddrop){
 					grid.draw();
 				};
 			}
 		});
 		$('#centerArea').on('mouseup', function(e) {
-			instance.forEach(function(elmt) {
-				elmt.onMouseUp(e);
-			});
-			grid.translating = false;
+			if (e.button == 0) {
+				instance.forEach(function(elmt) {
+					elmt.onMouseUp(e);
+				}, grid.bus, grid.lines, grid.images);
+				grid.translating = false;
+			}
 		});
 	}
 
@@ -213,19 +226,21 @@ function Grid(data) {
 	}
 
 	//Appelle la fonction f pour chaque élément du réseau
-	this.forEach = function(f) {
+	this.forEach = function(f, arr1, arr2 = undefined, arr3 = undefined) {
 		let status = false;
-		for (let bus of grid.bus) {
-			status = status || f(bus);
+		for (let elmt of arr1) {
+			status = status || f(elmt);
 		}
-		for (let line of grid.lines) {
-			status = status || f(line);
+		if (arr2 != undefined) {
+			for (let elmt of arr2) {
+				status = status || f(elmt);
+			}
 		}
-		for (let image of grid.images) {
-			status = status || f(image);
+		if (arr3 != undefined) {
+			for (let elmt of arr3) {
+				status = status || f(elmt);
+			}
 		}
-
-		return status
 	}
 
 	this.localX = function(gX) {
@@ -264,9 +279,6 @@ function Bus(data) {
 			x: grid.localX(data.x),
 			y: grid.localY(data.y)
 		}, pointSize + selectionSize);
-
-		mouse_position.x = grid.localX(bus.data.x);
-		mouse_position.y = grid.localY(bus.data.y);
 	}
 	bus.draw = bus.default; // Variable stockant le type d'affichage
 
@@ -275,6 +287,10 @@ function Bus(data) {
 		let d = Math.pow(canvasGrid.absoluteX(grid.globalX(mouse_position.x) - data.x), 2);
 		d += Math.pow(canvasGrid.absoluteY(grid.globalY(mouse_position.y) - data.y), 2);
 		return d < Math.pow(pointSize + selectionSize, 2);
+	}
+	bus.onHover = function() {
+		mouse_position.x = grid.localX(bus.data.x);
+		mouse_position.y = grid.localY(bus.data.y);
 	}
 	bus.onClick = function() {
 		if (($('body').attr('id') == 'edition') && grid.draganddrop && (!bus.data.hasOwnProperty("attached") || !bus.data.attached)) {
@@ -296,9 +312,17 @@ function Bus(data) {
 			picture.onClick()
 		}
 		if ($('body').attr('id') == 'resultats') {
-			bus.selectVariable(function(variable) {
-				bus.displayJauge(variable)
-			})
+			if (grid.addchart) {
+				bus.selectVariable(function(variable) {
+					console.log(grid.bus.indexOf(bus) + "; " + variable);
+					createChart(grid.bus.indexOf(bus), variable, grid.number_chart);
+				});
+			}
+			else {
+				bus.selectVariable(function(variable) {
+					bus.displayJauge(variable);
+				});
+			}
 		}
 	}
 
@@ -359,14 +383,27 @@ function Bus(data) {
 					bus.hasAddJauge = false;
 				});
 
-				// Ajout de l'interaction avec les boutons
-				$('.addJauge .button').on('click', function() {
-		    		let busID = $(this).parents('.addJauge').attr('busid');
-		    		let variable = $(this).attr('id');
+				if (grid.addchart) {
+					$('.selectVariable .button').on('click', function() {
+						testDebug = $(this);
+						console.log($(this).parents(".selectVariable"));
+						var busID = $(this).parents('.selectVariable').attr('busid');
+						var variableID = $(this).attr('id');
+						console.log(grid.number_chart);
+						createChart(busID,variableID,grid.number_chart);
+					});
+				}
+				else {
+					// Ajout de l'interaction avec les boutons
+					$('.selectVariable .button').on('click', function() {
+						let busID = $(this).parents('.selectVariable').attr('busid');
+						let variable = $(this).attr('id');
 
-		    		f(variable);
-		    		$(this).parents('.window').remove();
-		    	});*/
+						//Affichage de la Jauge et suppression de la fenêtre d'ajout d'une jauge
+						grid.bus[busID].showJauge(variable);
+						$(this).parents('.window').remove();
+					});
+				}*/
 			}
 		});
 	}
@@ -391,13 +428,14 @@ function Line(data) {
 		}
 	}
 	line.hover = function() {
+		let bus1 = grid.bus[data.bus1], bus2 = grid.bus[data.bus2];
+		let pos1 = {x: grid.localX(bus1.data.x), y: grid.localY(bus1.data.y)}
+		let pos2 = {x: grid.localX(bus2.data.x), y: grid.localY(bus2.data.y)}
+
+		canvasGrid.drawStroke(pos1, pos2, 'lightgrey', WIDTH_LINE + 2 * selectionSize);
 		line.default();
 
 		if (grid.draganddrop) {
-			let bus1 = grid.bus[line.data.bus1], bus2 = grid.bus[line.data.bus2];
-			let proj = projection(line);
-			mouse_position.x = grid.localX(bus1.data.x * (1 - proj.x) + bus2.data.x * proj.x);
-			mouse_position.y = grid.localY(bus1.data.y * (1 - proj.x) + bus2.data.y * proj.x);
 			canvasGrid.drawPoint(mouse_position, pointSize + selectionSize, 'grey');
 		}
 	}
@@ -407,6 +445,14 @@ function Line(data) {
 		let bus1 = grid.bus[line.data.bus1], bus2 = grid.bus[line.data.bus2];
 		let proj = projection(line);
 		return (proj.x > 0 && proj.x < 1 && proj.y < pointSize + selectionSize && !bus1.inside() && !bus2.inside())
+	}
+	line.onHover = function() {
+		if (grid.draganddrop) {
+			let bus1 = grid.bus[line.data.bus1], bus2 = grid.bus[line.data.bus2];
+			let proj = projection(line);
+			mouse_position.x = grid.localX(bus1.data.x * (1 - proj.x) + bus2.data.x * proj.x);
+			mouse_position.y = grid.localY(bus1.data.y * (1 - proj.x) + bus2.data.y * proj.x);
+		}
 	}
 	line.onClick = function() {
 		if (grid.draganddrop) {
@@ -492,8 +538,11 @@ function Picture(data) {
 		canvasGrid.drawImage(data.type + '_withoutBG', ptPicture, IMAGE_WIDTH);
 
 		let posCross = {
-			x: picture.data.x + POSITION_CROSS_X/100 * IMAGE_WIDTH,
-			y: picture.data.y + POSITION_CROSS_Y/100 * canvasGrid.relativeY(canvasGrid.absoluteX(IMAGE_WIDTH))
+			x: grid.localX(picture.data.x) + POSITION_CROSS_X/100 * IMAGE_WIDTH,
+			y: grid.localY(picture.data.y) + POSITION_CROSS_Y/100 * canvasGrid.relativeY(canvasGrid.absoluteX(IMAGE_WIDTH))
+		}
+		if (picture.insideCross()) {
+			canvasGrid.drawRoundedSquare(posCross, CROSS_WIDTH, CROSS_WIDTH / 10, 'grey');
 		}
 		canvasGrid.drawImage('croix', posCross, CROSS_WIDTH);
 	}
@@ -640,37 +689,41 @@ function Element(data) {
 
 	instance.onMouseDown = function(e) {
 		let gX = grid.globalX(canvasGrid.relativeX(e.offsetX)), gY = grid.globalY(canvasGrid.relativeY(e.offsetY));
-		if (instance.inside()) {
+		if (!e.handled && instance.inside()) {
 			instance.mouseDown = true;
 
 			if (instance.hasOwnProperty('onDrag')) {
 				instance.onDrag();
-				return true;
+				e.handled = true;;
 			}
 		}
-		return false;
 	}
 	instance.onMouseMove = function(e) {
 		let gX = grid.globalX(canvasGrid.relativeX(e.offsetX)), gY = grid.localY(canvasGrid.relativeY(e.offsetY));
-		if (instance.inside() && !instance.mouseDown) {
-			instance.isHovered = true;
-
-			if (instance.hasOwnProperty('hover')) {
-				instance.draw = instance.hover;
-				grid.draw();
-			}
-		}
-		else if (instance.mouseDown && instance.hasOwnProperty('dragEdit')) {
-			instance.dragEdit();
-			instance.isDragged = true;
-		}
-		else if (!instance.inside() && instance.isHovered) {
+		if ((e.handled || !instance.inside()) && instance.isHovered) {
 			instance.isHovered = false;
 
 			if (instance.draw != instance.default) {
 				instance.draw = instance.default;
 				grid.draw();
 			}
+		}
+		if (!e.handled && instance.inside() && !instance.mouseDown) {
+			instance.isHovered = true;
+
+			if (instance.hasOwnProperty('onHover')) {
+				instance.onHover();
+				e.handled = true;
+			}
+			if (instance.hasOwnProperty('hover')) {
+				instance.draw = instance.hover;
+				grid.draw();
+				e.handled = true;
+			}
+		}
+		else if (instance.mouseDown && instance.hasOwnProperty('dragEdit')) {
+			instance.dragEdit();
+			instance.isDragged = true;
 		}
 	}
 	instance.onMouseUp = function(e) {
