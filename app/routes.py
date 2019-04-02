@@ -70,7 +70,7 @@ def save():
 		os.mkdir(PATH_SAVE)
 	filename = 'save_' + now
 	file = open(PATH_SAVE + filename + EXTENSION, 'w')
-	file.write(str(json).replace("'", '"').replace(' "noParameter": False,', ' '))
+	file.write(str(json).replace("'", '"').replace(', "noParameter": False', ' ').replace(', "added": True', ' ').replace(', "attached": True', ' ').replace("},", "},\n").replace('"lines":', '\n \n "lines":').replace('"images":', '\n \n "images":'))
 	file.close()
 	PATH_SAVE = "autosaves/"
 	return jsonify({'filename' : filename})
@@ -84,7 +84,7 @@ def saveAs():
 	if (not os.path.exists(PATH_SAVE)):
 		os.mkdir(PATH_SAVE)
 	file = open(PATH_SAVE + filename + EXTENSION, 'w')
-	file.write(str(grid).replace("'", '"').replace(' "noParameter": False,', ' '))
+	file.write(str(grid).replace("'", '"').replace(', "noParameter": False', ' ').replace(', "added": True', ' ').replace(', "attached": True', ' ').replace("},", "},\n").replace('"lines":', '\n \n "lines":').replace('"images":', '\n \n "images":'))
 	file.close()
 	PATH_SAVE = "autosaves/"
 	return jsonify({'filename' : filename})

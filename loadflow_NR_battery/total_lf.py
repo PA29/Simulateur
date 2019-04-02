@@ -131,13 +131,10 @@ def calcul_total(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 500):
         Q_f[int(liste_buses1[i])] = Q_r1[i]
         V_f[int(liste_buses1[i])] = V_r1[i]
         theta_f[int(liste_buses1[i])] = theta_r1[i]
-        I_m[int(liste_buses1[i])] = I_r1[i]
-        Sl_m[int(liste_buses1[i])] = Sl_r1[i]
-        S_m[int(liste_buses1[i])] = S_r1[i]
         for j in range(len(liste_buses1)):
-            I_m[i][int(liste_buses1[j])] = I_r1[i][j]
-            Sl_m[i][int(liste_buses1[j])] = Sl_r1[i][j]
-            S_m[i][int(liste_buses1[j])] = S_r1[i][j]
+            I_m[int(liste_buses1[i])][int(liste_buses1[j])] = I_r1[i][j]
+            Sl_m[int(liste_buses1[i])][int(liste_buses1[j])] = Sl_r1[i][j]
+            S_m[int(liste_buses1[i])][int(liste_buses1[j])] = S_r1[i][j]
     #################################
     ##### mise en forme des intensités et pertes #####
     I_f, Sl_f, S_f = [], [], []
@@ -146,12 +143,12 @@ def calcul_total(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 500):
         Sl_f.append([line[0], line[1]])
         S_f.append([line[0], line[1]])
     for id_line in range(len(I_f)):
-        I_f[id_line].append(I_m[I_f[id_line][1]][I_f[id_line][0]])
-        Sl_f[id_line].append(Sl_m[Sl_f[id_line][1]][Sl_f[id_line][0]])
-        S_f[id_line].append(S_m[S_f[id_line][1]][S_f[id_line][0]])
+        I_f[id_line].append(abs(I_m[I_f[id_line][0]][I_f[id_line][1]]))
+        Sl_f[id_line].append(abs(Sl_m[Sl_f[id_line][0]][Sl_f[id_line][1]]))
+        S_f[id_line].append(abs(S_m[S_f[id_line][0]][S_f[id_line][1]]))
     ###################################################
     return(buses2, lines, P_f, Q_f, V_f, theta_f, I_f, Sl_f, S_f)
-
+    
 def maj_batteries(buses, liste_buses, P):
     # met à jour les charges de batterie d'après la puissance débitée calculée
     # pas demi heure
@@ -253,13 +250,10 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
         Q_f[int(liste_buses[i])] = Q_r[i]
         V_f[int(liste_buses[i])] = V_r[i]
         theta_f[int(liste_buses[i])] = theta_r[i]
-        I_m[int(liste_buses[i])] = I_r[i]
-        Sl_m[int(liste_buses[i])] = Sl_r[i]
-        S_m[int(liste_buses[i])] = S_r[i]
         for j in range(len(liste_buses)):
-            I_m[i][int(liste_buses[j])] = I_r[i][j]
-            Sl_m[i][int(liste_buses[j])] = Sl_r[i][j]
-            S_m[i][int(liste_buses[j])] = S_r[i][j]
+            I_m[int(liste_buses1[i])][int(liste_buses[j])] = I_r[i][j]
+            Sl_m[int(liste_buses1[i])][int(liste_buses[j])] = Sl_r[i][j]
+            S_m[int(liste_buses1[i])][int(liste_buses[j])] = S_r[i][j]
     #################################
     ##### mise en forme des intensités et pertes #####
     I_f, Sl_f, S_f = [], [], []
@@ -268,8 +262,8 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
         Sl_f.append([line[0], line[1]])
         S_f.append([line[0], line[1]])
     for id_line in range(len(I_f)):
-        I_f[id_line].append(I_m[I_f[id_line][1]][I_f[id_line][0]])
-        Sl_f[id_line].append(Sl_m[Sl_f[id_line][1]][Sl_f[id_line][0]])
-        S_f[id_line].append(S_m[S_f[id_line][1]][S_f[id_line][0]])
+        I_f[id_line].append(abs(I_m[I_f[id_line][0]][I_f[id_line][1]]))
+        Sl_f[id_line].append(abs(Sl_m[Sl_f[id_line][0]][Sl_f[id_line][1]]))
+        S_f[id_line].append(abs(S_m[S_f[id_line][0]][S_f[id_line][1]]))
     ###################################################
     return(buses3, lines2, P_f, Q_f, V_f, theta_f, I_f, Sl_f, S_f)
