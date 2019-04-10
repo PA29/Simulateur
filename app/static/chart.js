@@ -63,13 +63,13 @@ function createEmptyChart (){
 }
 
 
-function createChart (busID,variableID,number_chart) {
+function createChart (busID,variable,number_chart) {
 	var canevas = document.getElementById("chart_"+number_chart);
 	var ctx = canevas.getContext("2d");
 	ctx.clearRect(0, 0, 600, 300);
 	
 	//Création des abscisses
-	for (var k=1; k<49; k++){
+	for (var k=1; k<49; k++) {
 		abscisses.push(k/2)
 	}
 
@@ -84,10 +84,11 @@ function createChart (busID,variableID,number_chart) {
 
 	//Création des ordonnées
 	var n = busID;
-	var y_axis =  [];
+	let y_axis = [];
 	for (var j=0; j<47; j++){
-		y_axis.push(data["results"][variableID][j][n]);
+		y_axis.push(data["results"][variable][j][n]);
 	}
+	console.log(y_axis);
 
 	//Création du graphe
 	/*for (var i=0; i<4; i++){*/
@@ -133,4 +134,4 @@ function createChart (busID,variableID,number_chart) {
 		// 3) Affichage du résultat
 
 		graph.Draw('chart_'+number_chart);
-	}
+}

@@ -70,7 +70,7 @@ def save():
 		os.mkdir(PATH_SAVE)
 	filename = 'save_' + now
 	file = open(PATH_SAVE + filename + EXTENSION, 'w')
-	file.write(str(json).replace("'", '"').replace(' "noParameter": False,', ' '))
+	file.write(str(json).replace("'", '"').replace(', "noParameter": False', ' ').replace(', "added": True', ' ').replace(', "attached": True', ' ').replace("},", "},\n").replace('"lines":', '\n \n "lines":').replace('"images":', '\n \n "images":'))
 	file.close()
 	PATH_SAVE = "autosaves/"
 	return jsonify({'filename' : filename})
@@ -84,7 +84,7 @@ def saveAs():
 	if (not os.path.exists(PATH_SAVE)):
 		os.mkdir(PATH_SAVE)
 	file = open(PATH_SAVE + filename + EXTENSION, 'w')
-	file.write(str(grid).replace("'", '"').replace(' "noParameter": False,', ' '))
+	file.write(str(grid).replace("'", '"').replace(', "noParameter": False', ' ').replace(', "added": True', ' ').replace(', "attached": True', ' ').replace("},", "},\n").replace('"lines":', '\n \n "lines":').replace('"images":', '\n \n "images":'))
 	file.close()
 	PATH_SAVE = "autosaves/"
 	return jsonify({'filename' : filename})
@@ -136,26 +136,12 @@ def getResultatsSimulation():
 	results = run_simul(grid, json) #run la simulation, fichier simul.py
 	return js.dumps({"results":results}, cls=NumpyEncoder)
 
-@app.route('/resultats')
-def resultats():
-	return jsonify({'leftPanel': '', 'centerPanel': render_template('resultats/centerPanel', jauges = [{'x':60, 'y':50}]), 'rightPanel': render_template('resultats/rightPanel')})
-
 @app.route('/parametres', methods = ['POST'])
 def getParametres():
     json = request.get_json()
     print(json)
     
     return render_template('_parametres', json = json, parameters = getParameters(json['data']['type']))
-
-@app.route('/addJauge', methods = ['POST'])
-def getAddJauge():
-    json = request.get_json()
-    return render_template('_variable', json = json)
-
-@app.route('/selectVariable', methods = ['POST'])
-def selectVariable():
-	json = request.get_json()
-	return render_template('_variable', json = json)
 
 def getParameters(type):
     if type == 'transfo':
@@ -173,3 +159,22 @@ def getParameters(type):
     	return [{'id': 'P', 'name': 'Puissance batterie (kW)', 'values': [7, 13]},
         		{'id': 'capacity', 'name': 'Capacité (kWh)', 'values': [3000, 10000]},
         		{'id': 'SOC', 'name': 'Etat de charge', 'values': [0.2, 0.5, 0.8, 1]}]
+
+
+###################
+#### RESULTATS ####
+###################
+
+@app.route('/resultats')
+def resultats():
+	return jsonify({'leftPanel': '', 'centerPanel': render_template('resultats/centerPanel'), 'rightPanel': render_template('resultats/rightPanel')})
+
+@app.route('/selectVariable', methods = ['POST'])
+def getSelectVariable():
+    json = request.get_json()
+    return render_template('_addJauge', json = json)
+
+@app.route('/jauge', methods = ['POST'])
+def displayJauge():
+	json = request.get_json()
+	return render_template('_jauge', json = json)

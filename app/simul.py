@@ -156,4 +156,4 @@ def run_simul(grid, json):
         else:
             busest, linest, Pt, Qt, Vt, thetat, It, Slt, St = total_lf.calcul_total(buses0, L, Ps = P_seuil_batteries)
         buses, lines, P, Q, V, theta, I, Sl, S = buses+[busest], lines+[linest], P+[Pt], Q+[Qt], V+[Vt], theta+[thetat], I+[It], Sl+[Slt], S+[St]
-    return({"heures":times, "buses":buses, "lines":lines, "P":P, "Q":Q, "V":V, "theta":theta, "real(I)":[[[np.real(xi) for xi in x] for x in i] for i in I], "real(Sl)":[[[np.real(xi) for xi in x] for x in sl] for sl in Sl], "real(S)":[[[np.real(xi) for xi in x] for x in s] for s in S]})
+    return({"heures":times, "buses":buses, "lines":lines, "P":P, "Q":Q, "U":V, "theta":theta, "I":I})

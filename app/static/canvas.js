@@ -18,11 +18,11 @@ function Canvas(id) {
 		this.ctx.fill();
 	}
 
-	this.drawStroke = function(position1, position2/*, width = '1'*/, color = 'black') {
+	this.drawStroke = function(position1, position2, color = 'black', width = 1) {
 		//Dessine un trait entre la position1 (en %) et la position2 (en %)
 
 		this.ctx.beginPath();
-		//this.ctx.lineWidth = width.toString();
+		this.ctx.lineWidth = width.toString();
 		this.ctx.moveTo(this.absoluteX(position1.x), this.absoluteY(position1.y));
 		this.ctx.lineTo(this.absoluteX(position2.x), this.absoluteY(position2.y));
 		this.ctx.strokeStyle = color;
