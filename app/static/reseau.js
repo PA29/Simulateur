@@ -19,6 +19,8 @@ var IMAGE_WIDTH = 8; //% de la taille par rapport à la largeur
 var CROSS_WIDTH = IMAGE_WIDTH / 2;
 var POSITION_CROSS_X = 50, POSITION_CROSS_Y = -50;
 
+var ANGLE_LIMIT_JAUGE = 120;
+
 var LIMIT_SIDE_WINDOW_X = 75, LIMIT_SIDE_WINDOW_Y = 75;
 
 var SHADOW_COLOR = 'lightgrey';
@@ -318,6 +320,7 @@ function Bus(data) {
 					console.log(grid.bus.indexOf(bus) + "; " + variable);
 					createChart(grid.bus.indexOf(bus), variable, grid.number_chart);
 				});
+				grid.addchart = false;
 			}
 			else {
 				bus.selectVariable(function(variable) {
@@ -378,6 +381,7 @@ function Bus(data) {
 			success: function(data) {
 				// Ajout du html à la zone centrale
 				$('#centerArea .panel.resultats').append(data);
+				$('.time').trigger('input');
 
 				/*$('.window .close').on('click', function() {
 					$(this).parents('.window').remove();
