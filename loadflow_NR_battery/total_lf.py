@@ -143,9 +143,9 @@ def calcul_total(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 500):
         Sl_f.append([line[0], line[1]])
         S_f.append([line[0], line[1]])
     for id_line in range(len(I_f)):
-        I_f[id_line].append(abs(I_m[I_f[id_line][0]][I_f[id_line][1]]))
-        Sl_f[id_line].append(abs(Sl_m[Sl_f[id_line][0]][Sl_f[id_line][1]]))
-        S_f[id_line].append(abs(S_m[S_f[id_line][0]][S_f[id_line][1]]))
+        I_f[id_line].append((I_m[I_f[id_line][1]][I_f[id_line][0]]).real)
+        Sl_f[id_line].append((Sl_m[Sl_f[id_line][1]][Sl_f[id_line][0]]).real)
+        S_f[id_line].append((S_m[S_f[id_line][1]][S_f[id_line][0]]).real)
     ###################################################
     return(buses2, lines, P_f, Q_f, V_f, theta_f, I_f, Sl_f, S_f)
     
@@ -262,8 +262,8 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
         Sl_f.append([line[0], line[1]])
         S_f.append([line[0], line[1]])
     for id_line in range(len(I_f)):
-        I_f[id_line].append(abs(I_m[I_f[id_line][0]][I_f[id_line][1]]))
-        Sl_f[id_line].append(abs(Sl_m[Sl_f[id_line][0]][Sl_f[id_line][1]]))
-        S_f[id_line].append(abs(S_m[S_f[id_line][0]][S_f[id_line][1]]))
+        I_f[id_line].append((I_m[I_f[id_line][1]][I_f[id_line][0]]).real)
+        Sl_f[id_line].append((Sl_m[Sl_f[id_line][1]][Sl_f[id_line][0]]).real)
+        S_f[id_line].append((S_m[S_f[id_line][1]][S_f[id_line][0]]).real)
     ###################################################
     return(buses3, lines2, P_f, Q_f, V_f, theta_f, I_f, Sl_f, S_f)

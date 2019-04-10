@@ -134,7 +134,8 @@ function Grid(data) {
 
 		if (instance.statusPowerFlow) {
 			instance.lines.forEach(function(elmt) {
-				let intensity = (tempPower[grid.lines.indexOf(elmt)]) ? 1 : -1;
+				resultats = JSON.parse(grid.simulation)['results'];
+				let intensity = resultats['I'][2][instance.lines.indexOf(elmt)][2]; //[indice_heure][ligne][intensité de la ligne]
 				elmt.drawFlow(intensity);
 			})
 		}
@@ -485,14 +486,13 @@ function Line(data) {
 		grid.bus[line.data.bus2].arrowPos = (grid.bus[line.data.bus1].arrowPos + ((intensity >= 0) ? line.data.length : -line.data.length)) % ANIMATION_DISTANCE;
 		let startBus = (intensity >= 0) ? grid.bus[line.data.bus1] : grid.bus[line.data.bus2];
 		let endBus = (intensity >= 0) ? grid.bus[line.data.bus2] : grid.bus[line.data.bus1];
-
 		for (let d = (ANIMATION_DISTANCE - startBus.arrowPos) % ANIMATION_DISTANCE; d < line.data.length; d += ANIMATION_DISTANCE) {
 			
 			let a = d / line.data.length;
 			canvasGrid.drawPoint({
 				x: grid.localX(startBus.data.x * (1 - a) + endBus.data.x * a),
 				y: grid.localY(startBus.data.y * (1 - a) + endBus.data.y * a)
-			}, pointSize);
+			}, Math.sqrt(Math.abs(intensity))+1);
 		}
 	}
 
