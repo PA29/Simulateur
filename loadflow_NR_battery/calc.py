@@ -7,22 +7,41 @@ Created on Tue Jan 15 11:23:33 2019
 import numpy as np
 
 def gauss_seidel(Y,P,Q,t,v,n_iter):
+    nb_cons=len(Q)
+    nb_prod=len(P)-len(Q)
     for iteration in range(n_iter):
         for i in range(len(P)):
-            if Y[i][i]!=0 and v[i]!=0:
-                Ui=v[i]*complex(np.cos(t[i]),np.sin(t[i]))
-                Yii=Y[i][i]
+            if Y[i+1][i+1]!=0 and v[i+1]!=0:
+                Ui=v[i+1]*complex(np.cos(t[i+1]),np.sin(t[i+1]))
+                Yii=Y[i+1][i+1]
                 Pi=P[i]
-                if i in range(len(Q)):
+                if i<nb_cons:
                     Qi=Q[i]
                     Ui=1/Yii*complex(Pi,-Qi)/Ui.conjugate()
                     for k in range(len(P)):
                         if k!=i:
-                            Yik=Y[i][k]
-                            Uk=v[k]
+                            Yik=Y[i+1][k+1]
+                            Uk=v[k+1]
                             Ui-=1/Yii*Yik*Uk
-                    v[i]=np.absolute(Ui)
-                    t[i]=np.angle(Ui)
+                    v[i+1]=np.absolute(Ui)
+                    t[i+1]=np.angle(Ui)
+                else:
+                    Si=0
+                    for k in range(len(P)):
+                        Yik=Y[i+1][k+1]
+                        Uk=v[k+1]
+                        Si+=Yik.conjugate()*Uk.conjugate()
+                    Si*=Ui
+                    Qi=Si.imag
+                    Ui=1/Yii*complex(Pi,-Qi)/Ui.conjugate()
+                    for k in range(len(P)):
+                        if k!=i:
+                            Yik=Y[i+1][k+1]
+                            Uk=v[k+1]
+                            Ui-=1/Yii*Yik*Uk
+                    t[i+1]=np.angle(Ui)
+                
+                    
 
 def lf_nr(Y, powers, eps, m_iter):
     import numpy as np
