@@ -1,4 +1,4 @@
-<div class="jauge" style="top: {{json.y}}%; left: {{json.x}}%">
+<div class="jauge" style="top: {{json.y}}%; left: {{json.x}}%" busID="{{json.busID}}" variable="{{json.variable}}" min="{{json.min}}" max="{{json.max}}">
 	<img class="jauge" src={{ url_for('static', filename = 'jauge.png') }}>
-	<img class="arrow" src={{ url_for('static', filename = 'flecheJauge.png') }} style="transform: rotate(5deg);">
+	<img class="arrow" src={{ url_for('static', filename = 'flecheJauge.png') }} style="transform: rotate(0deg);">
 </div>

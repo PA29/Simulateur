@@ -7,7 +7,21 @@ function resultatsJS() {
 	});
 
 	$('.time').on("input", function() {
-        $('.time').val($(this).val());
+		let time = $(this).val();
+        $('.time').val(time);
+
+        let results = JSON.parse(grid.simulation).results;
+        $('#centerArea .panel.resultats div.jauge').each(function() {
+        	let value = results[$(this).attr('variable')][time][parseInt($(this).attr('busID'))];
+
+        	let max = parseInt($(this).attr('max'));
+        	let min = parseInt($(this).attr('min'));
+        	let mean = (max + min) / 2;
+        	let angle = (value - mean) / (max - mean) * ANGLE_LIMIT_JAUGE;
+        	angle = Math.min(ANGLE_LIMIT_JAUGE, Math.max(-ANGLE_LIMIT_JAUGE, angle));
+
+        	$(this).find('.arrow').attr("style", "transform: rotate(" + angle + "deg);")
+        });
 	});
 
 	$(".addGraph").on('click', function() {
