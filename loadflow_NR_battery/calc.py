@@ -4,23 +4,25 @@ Created on Tue Jan 15 11:23:33 2019
 
 @author: Loïc
 """
+import numpy as np
 
-def gauss_seidel(Y,P,Q,n_iter):
+def gauss_seidel(Y,P,Q,t,v,n_iter):
     for iteration in range(n_iter):
         for i in range(len(P)):
             if Y[i][i]!=0 and v[i]!=0:
                 Ui=v[i]*complex(np.cos(t[i]),np.sin(t[i]))
                 Yii=Y[i][i]
                 Pi=P[i]
-                Qi=Q[i]
-                Ui=1/Yii*complex(Pi,-Qi)/Ui.conjugate
-                for k in range(len(P)):
-                    if k!=i:
-                        Yik=Y[i][k]
-                        Uk=v[k]
-                        Ui-=1/Yii*Yik*Uk
-            v0[i]=np.absolute(Ui)
-            t0[i]=np.angle(Ui)
+                if i in range(len(Q)):
+                    Qi=Q[i]
+                    Ui=1/Yii*complex(Pi,-Qi)/Ui.conjugate()
+                    for k in range(len(P)):
+                        if k!=i:
+                            Yik=Y[i][k]
+                            Uk=v[k]
+                            Ui-=1/Yii*Yik*Uk
+                    v[i]=np.absolute(Ui)
+                    t[i]=np.angle(Ui)
 
 def lf_nr(Y, powers, eps, m_iter):
     import numpy as np
@@ -29,7 +31,7 @@ def lf_nr(Y, powers, eps, m_iter):
     Q = powers[1]
     t0 = powers[2]
     v0 = powers[3]
-    gauss_seidel(Y,P,Q,3)
+    gauss_seidel(Y,P,Q,t0,v0,3)
     n = len(P)+1
     r = len(Q)
     #décomposition de Yij en A*exp(j*phi)
