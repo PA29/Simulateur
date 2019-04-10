@@ -1,4 +1,3 @@
-var y_axis = [];
 var abscisses = [];
 
 function createEmptyChart (){
@@ -72,6 +71,7 @@ function createChart (busID,variableID,number_chart) {
 	//Création des abscisses
 	for (var k=1; k<49; k++){
 		abscisses.push(k/2)
+	}
 
 	/*// Récupération des données
 	var raw_data = [];
@@ -84,6 +84,7 @@ function createChart (busID,variableID,number_chart) {
 
 	//Création des ordonnées
 	var n = busID;
+	var y_axis =  [];
 	for (var j=0; j<47; j++){
 		y_axis.push(data["results"][variableID][j][n]);
 	}
@@ -133,4 +134,3 @@ function createChart (busID,variableID,number_chart) {
 
 		graph.Draw('chart_'+number_chart);
 	}
-}
