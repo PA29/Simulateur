@@ -12,33 +12,41 @@ def gauss_seidel(Y,P,Q,t,v,n_iter):
     for iteration in range(n_iter):
         for i in range(len(P)):
             if Y[i+1][i+1]!=0 and v[i+1]!=0:
+                
                 Ui=v[i+1]*complex(np.cos(t[i+1]),np.sin(t[i+1]))
                 Yii=Y[i+1][i+1]
                 Pi=P[i]
+                
                 if i<nb_cons:
                     Qi=Q[i]
+                
                     Ui=1/Yii*complex(Pi,-Qi)/Ui.conjugate()
-                    for k in range(len(P)):
+                    for k in range(len(P)+1):
                         if k!=i:
-                            Yik=Y[i+1][k+1]
-                            Uk=v[k+1]
+                            Yik=Y[i+1][k]
+                            Uk=v[k]
                             Ui-=1/Yii*Yik*Uk
+                
                     v[i+1]=np.absolute(Ui)
                     t[i+1]=np.angle(Ui)
+                
                 else:
+                    
                     Si=0
-                    for k in range(len(P)):
-                        Yik=Y[i+1][k+1]
-                        Uk=v[k+1]
+                    for k in range(len(P)+1):
+                        Yik=Y[i+1][k]
+                        Uk=v[k]
                         Si+=Yik.conjugate()*Uk.conjugate()
                     Si*=Ui
                     Qi=Si.imag
+                    
                     Ui=1/Yii*complex(Pi,-Qi)/Ui.conjugate()
-                    for k in range(len(P)):
+                    for k in range(len(P)+1):
                         if k!=i:
-                            Yik=Y[i+1][k+1]
-                            Uk=v[k+1]
+                            Yik=Y[i+1][k]
+                            Uk=v[k]
                             Ui-=1/Yii*Yik*Uk
+                    
                     t[i+1]=np.angle(Ui)
                 
                     
@@ -50,7 +58,7 @@ def lf_nr(Y, powers, eps, m_iter):
     Q = powers[1]
     t0 = powers[2]
     v0 = powers[3]
-    #gauss_seidel(Y,P,Q,t0,v0,3)
+    gauss_seidel(Y,P,Q,t0,v0,3)
     n = len(P)+1
     r = len(Q)
     #décomposition de Yij en A*exp(j*phi)
