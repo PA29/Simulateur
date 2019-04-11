@@ -569,7 +569,9 @@ function Picture(data) {
 			let new_line=new Line({
 				bus1: line_before.data.bus1,
 				bus2: line_after.data.bus2,
-				length: line_before.data.length + line_after.data.length
+				length: line_before.data.length + line_after.data.length,
+				r: line_before.data.r,
+				x: line_before.data.x
 			});
 			grid.lines.push(new_line);
 

@@ -175,10 +175,10 @@ def getSelectVariable():
     return render_template('_addJauge', json = json)
 
 
-V0 = 230
+V0 = 400
 Vrange = 0.1
-Prange = 3000
-Qrange = 3000
+Prange = 10000
+Qrange = 10000
 
 @app.route('/jauge', methods = ['POST'])
 def displayJauge():
@@ -187,11 +187,11 @@ def displayJauge():
 	if (json['variable'] == "P"):
 		json['min'] = -Prange
 		json['max'] = Prange
-	elif (json.variable == "Q"):
-		json.min = -Qrange
-		json.max = Qrange
-	elif (json.variable == "V"):
-		json.min = V0 * (1 - Vrange)
-		json.max = V0 * (1 + Vrange)
+	elif (json['variable'] == "Q"):
+		json['min'] = -Qrange
+		json['max'] = Qrange
+	elif (json['variable'] == "V"):
+		json['min'] = V0 * (1 - Vrange)
+		json['max'] = V0 * (1 + Vrange)
 		
 	return render_template('_jauge', json = json)
