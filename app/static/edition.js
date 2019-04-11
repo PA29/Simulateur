@@ -6,7 +6,13 @@ function editionJS() {
 	$('#simulate').on('click', function() {
 
 		let simulationParam = {grid : grid.simulationParam()};
-		simulationParam.season = false;
+		let saison = $('input[name="saison"]:checked').val();
+		if (saison == "ete") {
+			simulationParam.season = true;
+		}
+		else {
+			simulationParam.season = false;
+		}
 
 		if ($('#ilotage input')[0].checked) {
 			if ($('#ilotagePermanent input')[0].checked) {

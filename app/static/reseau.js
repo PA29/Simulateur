@@ -23,7 +23,7 @@ var U0 = 400;
 var rangeU = 0.2;
 var ANGLE_LIMIT_JAUGE = 120;
 
-var LIMIT_SIDE_WINDOW_X = 75, LIMIT_SIDE_WINDOW_Y = 75;
+var LIMIT_SIDE_WINDOW_X = 70;
 
 var SHADOW_COLOR = 'lightgrey';
 
