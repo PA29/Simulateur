@@ -33,11 +33,13 @@ function editionJS() {
 				grid.startPowerFlow();
 			}
 		});
+	});
 
 	// Retour vers l'accueil
 	$('#accueil').on('click', function() {
 		document.location.href = "/accueil";
 	});
+
 	// Sauvegarde
 	$('#save').on('click', function() {
 		$.ajax({
@@ -49,7 +51,7 @@ function editionJS() {
 				alert("Le réseau a bien été sauvegardé");
 			}
 		});
-	})
+	});
 	
 	$('#saveAs').on('click', function() {
 		var nom = prompt("Nom du fichier", "Untitled");
@@ -63,11 +65,10 @@ function editionJS() {
 				alert("Le réseau a bien été sauvegardé");
 			}
 		});
-		console.log("Sauvegarde sous à implémenter : Edition.js ligne 53");
 	});
 
-
 	$('#ilotage input').on('change', function() {
+		console.log("Ok");
 		if (this.checked) {
 			$('#dureeIlotage').show();
 		}
@@ -83,8 +84,8 @@ function editionJS() {
 		else {
 			$('#periodeIlotage').show();
 		}
-	})
-});
+	});
+}
 	
 function initDragDrop(){
 	 
@@ -187,7 +188,7 @@ function setupBuildElement(build_element){
 	build_element.addEventListener('dragstart', function(event) {
 	
 		var build_element_position = build_element.getBoundingClientRect(); // on recupere la position de l'element 
-		
+			
 		drag_position = JSON.stringify({
 			"x": event.clientX - build_element_position.x - build_element_position.width/2, //on calcule la position de la souris par rapport au milieu l'élément attrapé
 			"y": event.clientY - build_element_position.y - build_element_position.height/2, 
@@ -199,5 +200,5 @@ function setupBuildElement(build_element){
 
 		// event.datatransfer est un stockage lié à l'event
 		event.dataTransfer.setData('text/plain', drag_position); // event.datatransfer est un stockage lié à l'event
-	}, false);	
-}}
+	}, false);
+}
