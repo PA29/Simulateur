@@ -22,7 +22,7 @@ def gauss_seidel(Y,P,Q,t,v,n_iter):
                 
                     Ui=1/Yii*complex(Pi,-Qi)/Ui.conjugate()
                     for k in range(len(P)+1):
-                        if k!=i:
+                        if k!=i+1:
                             Yik=Y[i+1][k]
                             Uk=v[k]
                             Ui-=1/Yii*Yik*Uk
@@ -42,7 +42,7 @@ def gauss_seidel(Y,P,Q,t,v,n_iter):
                     
                     Ui=1/Yii*complex(Pi,-Qi)/Ui.conjugate()
                     for k in range(len(P)+1):
-                        if k!=i:
+                        if k!=i+1:
                             Yik=Y[i+1][k]
                             Uk=v[k]
                             Ui-=1/Yii*Yik*Uk
