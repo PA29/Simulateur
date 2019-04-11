@@ -95,7 +95,7 @@ def run_simul(grid, json):
     else :
         coeffs_conso = get_coeff('2018-01-20T00:00:00+02:00', '2018-01-21T00:00:00+02:00', 'RES1_BASE')
         coeffs_conso = sorted(coeffs_conso)
-        coeffs_prod = get_coeff('2018-01-20T00:00:00+02:00', '2018-01-20T00:00:00+02:00', 'PRD3_BASE')
+        coeffs_prod = get_coeff('2018-01-20T00:00:00+02:00', '2018-01-21T00:00:00+02:00', 'PRD3_BASE')
         coeffs_prod = sorted(coeffs_prod)
     coeffs = [[coeffs_conso[i][0], coeffs_conso[i][1], coeffs_prod[i][1]]for i in range(len(coeffs_conso))] #coeffs_conso[~][0] : heure , coeffs_conso[~][1] :coeff de consommateur type , coeffs_conso[~][2] :coeff de producteur type
     ###########################################################################

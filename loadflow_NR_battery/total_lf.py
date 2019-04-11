@@ -63,7 +63,7 @@ def calcul_total(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 500):
     if len(L) < m_iter:
         Pf, Qf = lf.calc.calc_power(theta, V, Y)
     else:
-        return(buses, lines, [0 for i in range(len(buses))], [0 for i in range(len(buses))], [400 for i in range(len(buses))], [0 for i in range(len(buses))], [[lines[i][0], lines[i][1], 0] for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
+        return(buses, lines, [0 for i in range(len(buses))], [0 for i in range(len(buses))], [400 for i in range(len(buses))], [0 for i in range(len(buses))], [[lines[i][0], lines[i][1], 0] for i in range(len(lines))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
     P_r = Pf*Pb
     ###########################################################################
     ## calcul avec batteries vraiment utilisées ###############################
@@ -109,7 +109,7 @@ def calcul_total(buses, lines, Sb = 1000, Ub = 400, Cs = 0.1, Ps = 500):
         I1 = lf.lines_values.currents(theta1, V1, Y1)
         S1, Sl1 = lf.lines_values.losses(theta1, V1, Y1)
     else:
-        return(buses, lines, [0 for i in range(len(buses))], [0 for i in range(len(buses))], [400 for i in range(len(buses))], [0 for i in range(len(buses))], [[lines[i][0], lines[i][1], 0] for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
+        return(buses, lines, [0 for i in range(len(buses))], [0 for i in range(len(buses))], [400 for i in range(len(buses))], [0 for i in range(len(buses))], [[lines[i][0], lines[i][1], 0] for i in range(len(lines))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
     ######### retour valeurs réelles #############################################
     P_r1 = Pf1*Pb
     Q_r1 = Qf1*Qb
@@ -183,7 +183,7 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
         if bus[1] == 'stockage':
             therearebatteries = True
     if therearebatteries == False:
-        return(buses, lines, [0 for i in range(len(buses))], [0 for i in range(len(buses))], [400 for i in range(len(buses))], [0 for i in range(len(buses))], [[lines[i][0], lines[i][1], 0] for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
+        return(buses, lines, [0 for i in range(len(buses))], [0 for i in range(len(buses))], [400 for i in range(len(buses))], [0 for i in range(len(buses))], [[lines[i][0], lines[i][1], 0] for i in range(len(lines))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
     
     while battery_chosen == False:
         buses_iter = deepcopy(buses_init)
@@ -232,7 +232,7 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
                 if SOC > 0:
                     battery_chosen = True
             else:
-                return(buses, lines, [0 for i in range(len(buses))], [0 for i in range(len(buses))], [400 for i in range(len(buses))], [0 for i in range(len(buses))], [[lines[i][0], lines[i][1], 0] for i in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
+                return(buses, lines, [0 for i in range(len(buses))], [0 for i in range(len(buses))], [400 for i in range(len(buses))], [0 for i in range(len(buses))], [[lines[i][0], lines[i][1], 0] for i in range(len(lines))], [[0 for i in range(len(buses))] for j in range(len(buses))], [[0 for i in range(len(buses))] for j in range(len(buses))])
         else:
             for bus in buses_init:
                 if bus[0] == id_slack:
@@ -251,9 +251,9 @@ def lf_ilote(buses, lines, Sb = 1000, Ub = 400, Cs = 0.05):
         V_f[int(liste_buses[i])] = V_r[i]
         theta_f[int(liste_buses[i])] = theta_r[i]
         for j in range(len(liste_buses)):
-            I_m[int(liste_buses1[i])][int(liste_buses[j])] = I_r[i][j]
-            Sl_m[int(liste_buses1[i])][int(liste_buses[j])] = Sl_r[i][j]
-            S_m[int(liste_buses1[i])][int(liste_buses[j])] = S_r[i][j]
+            I_m[int(liste_buses[i])][int(liste_buses[j])] = I_r[i][j]
+            Sl_m[int(liste_buses[i])][int(liste_buses[j])] = Sl_r[i][j]
+            S_m[int(liste_buses[i])][int(liste_buses[j])] = S_r[i][j]
     #################################
     ##### mise en forme des intensités et pertes #####
     I_f, Sl_f, S_f = [], [], []
