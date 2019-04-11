@@ -55,10 +55,6 @@ p{
 
 /* Jauge */
 
-div.jauge {
-    width: 10%;
-}
-
 div.jauge img.jauge {
     width: 100%;
 }
@@ -67,7 +63,7 @@ div.jauge img.arrow {
     position: absolute;
     width: 13.3%;
     left: 43%;
-    top: 10%;
+    top: 14%;
     transform-origin: 50% 85%;
 }
 

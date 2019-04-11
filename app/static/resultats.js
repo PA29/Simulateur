@@ -12,12 +12,24 @@ function resultatsJS() {
 
         let results = JSON.parse(grid.simulation).results;
         $('#centerArea .panel.resultats div.jauge').each(function() {
-        	let value = results[$(this).attr('variable')][time][parseInt($(this).attr('busID'))];
+        	let variable = $(this).attr('variable');
+        	let value = results[variable][time][parseInt($(this).attr('busID'))];
 
-        	let max = parseInt($(this).attr('max'));
-        	let min = parseInt($(this).attr('min'));
-        	let mean = (max + min) / 2;
-        	let angle = (value - mean) / (max - mean) * ANGLE_LIMIT_JAUGE;
+        	let min, max, angle;
+        	if (variable == "P") {
+
+        	}
+        	if (variable == "U") {
+        		max = (1 + rangeU) * U0;
+        		angle = (value - U0) / (max - U0) * ANGLE_LIMIT_JAUGE;
+        	}
+        	else {
+        		max = parseInt($(this).attr('max'));
+        		min = parseInt($(this).attr('min'));
+        		let mean = (max + min) / 2;
+        		angle = (value - mean) / (max - mean) * ANGLE_LIMIT_JAUGE;
+        	}
+
         	angle = Math.min(ANGLE_LIMIT_JAUGE, Math.max(-ANGLE_LIMIT_JAUGE, angle));
 
         	$(this).find('.arrow').attr("style", "transform: rotate(" + angle + "deg);")

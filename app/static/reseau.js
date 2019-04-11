@@ -19,6 +19,8 @@ var IMAGE_WIDTH = 8; //% de la taille par rapport à la largeur
 var CROSS_WIDTH = IMAGE_WIDTH / 2;
 var POSITION_CROSS_X = 50, POSITION_CROSS_Y = -50;
 
+var U0 = 400;
+var rangeU = 0.2;
 var ANGLE_LIMIT_JAUGE = 120;
 
 var LIMIT_SIDE_WINDOW_X = 75, LIMIT_SIDE_WINDOW_Y = 75;
@@ -264,6 +266,7 @@ function Bus(data) {
 
 	let bus = new Element(data);
 	bus.arrowPos = 0;
+	bus.hasJauge = false;
 
 	// Affichage par défaut
 	bus.default = function() {
@@ -321,9 +324,10 @@ function Bus(data) {
 				grid.addchart = false;
 			}
 			else {
-				bus.selectVariable(function(variable) {
+				/*bus.selectVariable(function(variable) {
 					bus.displayJauge(variable);
-				});
+				});*/
+				bus.displayJauge('U');
 			}
 		}
 	}
@@ -365,50 +369,35 @@ function Bus(data) {
 		}
 	}
 	bus.displayJauge = function(variable) {
-		$.ajax({
-			url: '/jauge',
-			type: 'POST',
-			data: JSON.stringify({
-				x: data.x + 1, //TEMPORAIRE// Position de la fenêtre en x
-				y: data.y - 1, //TEMPORAIRE// Position de la fenêtre en y
-				busID: grid.bus.indexOf(bus),
-				variable: variable,
-				width: WIDTH_JAUGE
-			}),
-			contentType: 'application/json',
-			success: function(data) {
-				// Ajout du html à la zone centrale
-				$('#centerArea .panel.resultats').append(data);
-				$('.time').trigger('input');
+		let busID = grid.bus.indexOf(bus);
+		if (!bus.hasJauge) {
+			$.ajax({
+				url: '/jauge',
+				type: 'POST',
+				data: JSON.stringify({
+					x: data.x + 1, //TEMPORAIRE// Position de la fenêtre en x
+					y: data.y - 1, //TEMPORAIRE// Position de la fenêtre en y
+					busID: busID,
+					variable: variable,
+					width: WIDTH_JAUGE
+				}),
+				contentType: 'application/json',
+				success: function(data) {
+					// Ajout du html à la zone centrale
+					$('#centerArea .panel.resultats').append(data);
+					$('.time').trigger('input');
 
-				/*$('.window .close').on('click', function() {
-					$(this).parents('.window').remove();
-					bus.hasAddJauge = false;
-				});
+					let window = $('.jauge[busID="' + busID + '"]').parents('.window');
 
-				if (grid.addchart) {
-					$('.selectVariable .button').on('click', function() {
-						testDebug = $(this);
-						console.log($(this).parents(".selectVariable"));
-						var busID = $(this).parents('.selectVariable').attr('busid');
-						var variableID = $(this).attr('id');
-						console.log(grid.number_chart);
-						createChart(busID,variableID,grid.number_chart);
+					window.find('.close').on('click', function() {
+						window.remove();
+						bus.hasJauge = false;
 					});
 				}
-				else {
-					// Ajout de l'interaction avec les boutons
-					$('.selectVariable .button').on('click', function() {
-						let busID = $(this).parents('.selectVariable').attr('busid');
-						let variable = $(this).attr('id');
+			});
 
-						//Affichage de la Jauge et suppression de la fenêtre d'ajout d'une jauge
-						grid.bus[busID].showJauge(variable);
-						$(this).parents('.window').remove();
-					});
-				}*/
-			}
-		});
+			bus.hasJauge = true;
+		}
 	}
 
 	return bus;
@@ -483,6 +472,15 @@ function Line(data) {
 
 			grid.bus[grid.bus.length - 1].onClick();
 		}
+		if ($('body').attr('id') == 'resultats') {
+			if (grid.addchart) {
+				createChart(grid.lines.indexOf(line), 'I', grid.number_chart);
+				grid.addchart = false;
+			}
+			else {
+				line.displayJauge();
+			}
+		}
 	}
 	line.drawFlow = function() {
 		grid.bus[line.data.bus2].arrowPos = (grid.bus[line.data.bus1].arrowPos + ((line.intensity >= 0) ? line.data.length : -line.data.length)) % ANIMATION_DISTANCE;
@@ -496,6 +494,9 @@ function Line(data) {
 				y: grid.localY(startBus.data.y * (1 - a) + endBus.data.y * a)
 			}, Math.sqrt(Math.abs(line.intensity)));
 		}
+	}
+	line.displayJauge = function() {
+		console.log("Affichage d'une jauge");
 	}
 
 	return line;
@@ -539,20 +540,20 @@ function Picture(data) {
 		}
 		canvasGrid.drawImage(data.type + '_withoutBG', ptPicture, IMAGE_WIDTH);
 
-		let posCross = {
-			x: grid.localX(picture.data.x) + POSITION_CROSS_X/100 * IMAGE_WIDTH,
-			y: grid.localY(picture.data.y) + POSITION_CROSS_Y/100 * canvasGrid.relativeY(canvasGrid.absoluteX(IMAGE_WIDTH))
+		if (grid.images.indexOf(picture) != 0) {
+			let posCross = {
+				x: grid.localX(picture.data.x) + POSITION_CROSS_X/100 * IMAGE_WIDTH,
+				y: grid.localY(picture.data.y) + POSITION_CROSS_Y/100 * canvasGrid.relativeY(canvasGrid.absoluteX(IMAGE_WIDTH))
+			}
+			if (picture.insideCross()) {
+				canvasGrid.drawRoundedSquare(posCross, CROSS_WIDTH, CROSS_WIDTH / 10, 'grey');
+			}
+			canvasGrid.drawImage('croix', posCross, CROSS_WIDTH);
 		}
-		if (picture.insideCross()) {
-			canvasGrid.drawRoundedSquare(posCross, CROSS_WIDTH, CROSS_WIDTH / 10, 'grey');
-		}
-		canvasGrid.drawImage('croix', posCross, CROSS_WIDTH);
 	}
 	
 	picture.del = function() {
 		let line_before, line_after;
-
-		console.log(grid.images);
 
 		let idBus = picture.data.bus
 		if (grid.bus[idBus].data.added) {
@@ -584,9 +585,13 @@ function Picture(data) {
 			grid.bus[idBus].data.attached = false;
 		}
 
-		console.log(grid.images);
+		if (picture.parametersOpened) {
+			let window = $('.parametres[imageID="' + grid.images.indexOf(picture) + '"]').parents('.window');
+			window.remove();
+			picture.parametersOpened = false;
+		}
+
 		grid.images.splice(grid.images.indexOf(picture), 1);
-		console.log(grid.images);
 
 		grid.draw();
 	}
@@ -600,17 +605,21 @@ function Picture(data) {
 		return insideElmt || (picture.isHovered && picture.insideCross());
 	}
 	picture.insideCross = function() {
-		let absSizeIm = canvasGrid.absoluteX(IMAGE_WIDTH);
-		let posCross = {
-			x: canvasGrid.absoluteX(picture.data.x) + POSITION_CROSS_X/100 * absSizeIm,
-			y: canvasGrid.absoluteY(picture.data.y) + POSITION_CROSS_Y/100 * absSizeIm
+		if (grid.images.indexOf(picture) != 0) {
+			let absSizeIm = canvasGrid.absoluteX(IMAGE_WIDTH);
+			let posCross = {
+				x: canvasGrid.absoluteX(picture.data.x) + POSITION_CROSS_X/100 * absSizeIm,
+				y: canvasGrid.absoluteY(picture.data.y) + POSITION_CROSS_Y/100 * absSizeIm
+			}
+			let absPos = {
+				x: canvasGrid.absoluteX(mouse_position.x) - posCross.x,
+				y: canvasGrid.absoluteY(mouse_position.y) - posCross.y
+			}
+			let absSizeCross = canvasGrid.absoluteX(CROSS_WIDTH);
+			return (Math.abs(absPos.x) <= absSizeCross / 2 && Math.abs(absPos.y) <= absSizeCross / 2)
 		}
-		let absPos = {
-			x: canvasGrid.absoluteX(mouse_position.x) - posCross.x,
-			y: canvasGrid.absoluteY(mouse_position.y) - posCross.y
-		}
-		let absSizeCross = canvasGrid.absoluteX(CROSS_WIDTH);
-		return (Math.abs(absPos.x) <= absSizeCross / 2 && Math.abs(absPos.y) <= absSizeCross / 2)
+		
+		return false;
 	}
 
 	picture.onDrag = function() {
@@ -633,6 +642,17 @@ function Picture(data) {
 			this.data.x = grid.globalX(mouse_position.x) + this.dragPosition.x;
 			this.data.y = grid.globalY(mouse_position.y) + this.dragPosition.y;
 			grid.redraw();
+
+			if (picture.parametersOpened) {
+				let window = $('.parametres[imageID="' + grid.images.indexOf(picture) + '"]').parents('.window');
+				let pos = {
+					x: (grid.localX(picture.data.x) < LIMIT_SIDE_WINDOW_X) ? grid.localX(picture.data.x + 5) : grid.localX(picture.data.x - 26),
+					y: grid.localY(picture.data.y - 5)
+				}
+
+				window.css('left', canvasGrid.absoluteX(pos.x));
+				window.css('top', canvasGrid.absoluteY(pos.y));
+			}
 		}
 	}
 
@@ -640,8 +660,8 @@ function Picture(data) {
 	picture.showParameters = function() {
 		let imageID = grid.images.indexOf(picture);
 		let pos = {
-			x: (data.x < LIMIT_SIDE_WINDOW_X) ? grid.localX(data.x) : grid.localX(data.x - 10),
-			y: (data.y < LIMIT_SIDE_WINDOW_Y) ? grid.localY(data.y) : grid.localY(data.y - 10)
+			x: (grid.localX(data.x) < LIMIT_SIDE_WINDOW_X) ? grid.localX(data.x + 5) : grid.localX(data.x - 26),
+			y: grid.localY(data.y - 5)
 		}
 
 		$.ajax({

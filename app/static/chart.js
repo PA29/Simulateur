@@ -63,7 +63,7 @@ function createEmptyChart (){
 }
 
 
-function createChart (busID,variable,number_chart) {
+function createChart (elmtID,variable,number_chart) {
 	var canevas = document.getElementById("chart_"+number_chart);
 	var ctx = canevas.getContext("2d");
 	ctx.clearRect(0, 0, 600, 300);
@@ -83,10 +83,15 @@ function createChart (busID,variable,number_chart) {
 	data = JSON.parse(grid.simulation);
 
 	//Création des ordonnées
-	var n = busID;
+	var n = elmtID;
 	let y_axis = [];
 	for (var j=0; j<47; j++){
-		y_axis.push(data["results"][variable][j][n]);
+		if (variable == "I") {
+			y_axis.push(Math.abs(data["results"][variable][j][n][2]));
+		}
+		else {
+			y_axis.push(data["results"][variable][j][n]);
+		}
 	}
 	console.log(y_axis);
 
