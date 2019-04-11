@@ -4,7 +4,9 @@
 	<title>Résultats</title>
 	<link class="adaptable" href="{{ url_for('static', filename = 'edition.css') }}" type="text/css" rel="stylesheet">
 	<link class="adaptable" href="{{ url_for('static', filename = 'resultats.css') }}" type="text/css" rel="stylesheet">
+	<script src="{{ url_for('static', filename = 'canvas.js') }}"></script>
 	<script src="{{ url_for('static', filename = 'reseau.js') }}"></script>
+	<script src="{{ url_for('static', filename = 'chart_base.js') }}"></script>
 	<script src="{{ url_for('static', filename = 'chart.js') }}"></script>
 	<script src="{{ url_for('static', filename = 'edition.js') }}"></script>
 	<script src="{{ url_for('static', filename = 'resultats.js') }}"></script>
@@ -15,7 +17,14 @@
 	<div class="area" id="leftArea">
 	</div>
 	<div class="area" id="centerArea">
-		<canvas id="grid"></canvas>
+		<canvas id="grid"
+			{% if model %}
+				model = "{{model}}"
+			{% endif %}
+			{% if filename %}
+				filename = "{{filename}}"
+			{% endif %}
+		></canvas>
 	</div>
 	<div class="area" id="rightArea">
 	</div>

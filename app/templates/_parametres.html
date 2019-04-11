@@ -5,17 +5,16 @@
 {% block content %}
     <div class="parametres" imageid="{{json.imageID}}">
         <div class="valeurs">
-            {% for key, values in variables.items() %}
-            <div id="{{key}}">
-                <span class="variable">{{key}}</span>
-                {% for value in values %}
-
-                <input id="{{key}}_{{value}}" type="radio" name="{{key}}" value="{{value}}"
-                    {% if key in json.data and json.data.get(key) == value %}
+            {% for p in parameters %}
+            <div id="{{p.id}}">
+                <span class="variable">{{p['name']}}</span>
+                {% for v in p['values'] %}
+                <input id="{{p['id']}}_{{v}}" type="radio" name="{{p['id']}}_{{json['imageID']}}" value="{{v}}"
+                    {% if p['id'] in json['data'] and json['data'].get(p['id']) == v %}
                     checked="checked" 
                     {% endif %}
                 >
-                <label for={{key}}_{{value}}>{{value}}</label>
+                <label for="{{p['id']}}_{{v}}">{{v}}</label>
                 {% endfor %}
             </div>
             {% endfor %}

@@ -1,57 +1,142 @@
-var ctx;
-var background;
-var chart;
+var abscisses = [];
 
-var pointSize = 2;
-var selectionSize = 1;
+function createEmptyChart (){
+	console.log("entrée fonction ok")
+	for (var k=1; k<49; k++){
+		abscisses.push(k/2)
+	}
 
-function absoluteXBis(x){
-    return x / 100 * ctx.canvas.width;
-}
-
-function absoluteYBis(y) {
-	return y / 100 * ctx.canvas.height;
-}
-
-function drawPointBis(position, size) {
-	ctx.beginPath();
-	ctx.arc(absoluteX(position.x), absoluteY(position.y), size, 0, 2 * Math.PI);
-	ctx.fill();
-}
-
-function drawStrokeBis(position1, position2) {
-	ctx.beginPath();
-	ctx.moveTo(absoluteX(position1.x), absoluteY(position1.y));
-	ctx.lineTo(absoluteX(position2.x), absoluteY(position2.y));
-	ctx.stroke();
-}
-
-function drawImageBis(imageName) {
-	if (!images.hasOwnProperty(imageName)) {
-		let im = new Image();
-		im.onload = function() {
-			pre = document.createElement('canvas');
-			pre.width = im.width;
-			pre.height = im.height;
-			preCtx = pre.getContext('2d');
-			preCtx.drawImage(im, 0, 0);
-
-			imageName = pre;
-
-			ctx.drawImage(pre, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+	for (var i=0; i<4; i++){
+		// 1) Création d'un objet jsGraphDisplay
+			var graph = new jsGraphDisplay({
+				axe: {
+					arrow: "true",
+					thickness: "1",
+					color: "",
+					},
+					x: {
+						title: "",
+						list: "",
+						min: "",
+						max: "",
+						step: "",
+						textDisplayEvery: "",
+						textSize: "",
+						textColor: ""
+					},
+					y: {
+						title: "",
+						list: "",
+						min: "",
+						max: "",
+						step: "",
+						textDisplayEvery: "",
+						textSize: "",
+						textColor: ""
+					}
+				});
+	
+			// 2) Ajout des données
+			donnees = new Array();
+			for(var l=0; l<49; l++){
+				donnees.push([abscisses[l], 0]);
+			};
+	
+			graph.DataAdd({
+				display: {
+					linkType: "",
+					linkWidth: "",
+					linkColor: "",
+					linkFromZero: "",
+					linkDash: [],
+					dataType: "",
+					dataWidth: "4",
+					dataColor: ""
+				},
+				data: donnees	
+			});
+	
+			// 3) Affichage du résultat
+			console.log('chart_'+i);
+			graph.Draw('chart_'+i);
 		}
-		im.src = '/static/' + imageName + '.png';
-	}
-	else {
-		let pre = images[imageName]
-		ctx.drawImage(pre, absoluteX(position.x) - IMAGE_WIDTH / 2, absoluteY(position.y) - IMAGE_HEIGHT / 2, IMAGE_WIDTH, IMAGE_HEIGHT);
-	}
 }
 
-function background_chart(back_chart) {
-	let picture = new Element(back_chart);
-	console.log("hello")
-    picture.draw = function() {
-        drawImage(back_chart)
-    }
+
+function createChart (elmtID,variable,number_chart) {
+	var canevas = document.getElementById("chart_"+number_chart);
+	var ctx = canevas.getContext("2d");
+	ctx.clearRect(0, 0, 600, 300);
+	
+	//Création des abscisses
+	for (var k=1; k<49; k++) {
+		abscisses.push(k/2)
+	}
+
+	/*// Récupération des données
+	var raw_data = [];
+	for (var property in data){
+		raw_data.push([property])
+	console.log(raw_data)
+	}*/
+
+	data = JSON.parse(grid.simulation);
+
+	//Création des ordonnées
+	var n = elmtID;
+	let y_axis = [];
+	for (var j=0; j<47; j++){
+		if (variable == "I") {
+			y_axis.push(Math.abs(data["results"][variable][j][n][2]));
+		}
+		else {
+			y_axis.push(data["results"][variable][j][n]);
+		}
+	}
+	console.log(y_axis);
+
+	//Création du graphe
+	/*for (var i=0; i<4; i++){*/
+		// 1) Création d'un objet jsGraphDisplay
+		var graph = new jsGraphDisplay({
+			axe: {
+				arrow: "true",
+				thickness: "1",
+				color: "",
+				},
+				x: {
+					title: "",
+					list: "",
+					min: "",
+					max: "",
+					step: "",
+					textDisplayEvery: "",
+					textSize: "",
+					textColor: ""
+				},
+				y: {
+					title: "",
+					list: "",
+					min: "",
+					max: "",
+					step: "",
+					textDisplayEvery: "",
+					textSize: "",
+					textColor: ""
+				}
+			});
+
+		// 2) Ajout des données
+		donnees = new Array();
+		for(var l=0; l<47; l++){
+			donnees.push([abscisses[l], y_axis[l]]);
+		};
+
+		graph.DataAdd({
+			data: donnees	
+		});
+
+		// 3) Affichage du résultat
+
+		graph.Draw('chart_'+number_chart);
 }

@@ -1,25 +1,29 @@
 <div class="panel edition">
     <div class="container">
-        <h1 class="titrespanneauxlateraux">
+        <h1 class="titrespanneauxlateraux" draggable="false">
             ELEMENTS DU RESEAU
         </h1>
-        <div id="elementsReseau">
+        <div class="elementsReseau">
             <div class="elementReseau">
-                <img src="static\producteur.png"/>
-                <span>producteur</span>
+                <img src="/static/producteur.png" draggable="true" class="build_element" id="producteur"/>
+                <span>Producteur</span>
             </div>
             <div class="elementReseau">
-                <img src="static\consommateur.png"/>
-                <span>consommateur</span>
+                <img src="/static/consommateur.png" draggable="true" class="build_element" id="consommateur"/>
+                <span>Consommateur</span>
             </div>
             <div class="elementReseau">
-                <img src="static\prodConso.png"/>
-                <span>producteur consommateur</span>
+
+                <img src="/static/prodConso.png" draggable="true" class="build_element" id="prodConso"/>
+
+                <span>Producteur-</span>
+                <span>Consommateur</span>
             </div>
             <div class="elementReseau">
-                <img src="\static\stockage.png"/>
-                <span>stockage</span>
+                <img src="/static/stockage.png" draggable="true" class="build_element" id="stockage"/>
+                <span>Stockage</span>
             </div>
         </div>
     </div>
 </div>
+

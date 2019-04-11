@@ -7,6 +7,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     margin: 0;
+    font-family: 'Ubuntu', 'Trebuchet MS', Helvetica, sans-serif;
 }
 
 .area {
@@ -24,11 +25,18 @@ body {
 }
 
 .window {
-    background-color: #bbcdea;
+    font-size: 0.8vw;
+    background-color: rgba(0,113,187,0.2);
     border-radius: 7px;
     border-width: 1px;
     border-style: solid;
-    border-color: #0071bb;
+    border-color: rgba(0,113,187);
+    padding : 5px;
+}
+
+#P, #V, #Q{
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .window .close {
