@@ -115,6 +115,10 @@ div.jauge img.arrow {
 }
 
 
+.graphTitle {
+    padding-left: 2%;
+}
+
 .graph_container > .button {
     width: 7%;
     height: 7%;

@@ -139,4 +139,20 @@ function createChart (elmtID,variable,number_chart) {
 		// 3) Affichage du résultat
 
 		graph.Draw('chart_'+number_chart);
+
+		let title;
+		if (variable == "P") {
+			title = "Puissance active au noeud " + n;
+		}
+		else if (variable == "Q") {
+			title = "Puissance réactive au noeud " + n;
+		}
+		else if (variable == "U") {
+			title = "Tension au noeud " + n;
+		}
+		else {
+			title = "Intensité dans la ligne " + n;
+		}
+		console.log($('#graph_' + number_chart + ' .graphTitle'));
+		$('#graph_' + number_chart + ' .graphTitle').html(title);
 }
