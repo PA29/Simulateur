@@ -137,7 +137,7 @@ function Grid(data) {
 		if (instance.statusPowerFlow) {
 			instance.lines.forEach(function(elmt) {
 				resultats = JSON.parse(grid.simulation)['results'];
-				let intensity = resultats['I'][2][instance.lines.indexOf(elmt)][2]; //[indice_heure][ligne][intensité de la ligne]
+				let intensity = resultats['I'][2][instance.lines.indexOf(elmt)][2]; //[indice_heure][ligne][intensité de la ligne]				console.log(intensity)
 				elmt.drawFlow(intensity);
 			})
 		}
@@ -496,7 +496,7 @@ function Line(data) {
 			canvasGrid.drawPoint({
 				x: grid.localX(startBus.data.x * (1 - a) + endBus.data.x * a),
 				y: grid.localY(startBus.data.y * (1 - a) + endBus.data.y * a)
-			}, Math.sqrt(Math.abs(intensity))+1);
+			}, Math.sqrt(Math.abs(intensity)));
 		}
 	}
 

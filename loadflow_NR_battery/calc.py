@@ -50,7 +50,7 @@ def lf_nr(Y, powers, eps, m_iter):
     Q = powers[1]
     t0 = powers[2]
     v0 = powers[3]
-    gauss_seidel(Y,P,Q,t0,v0,3)
+    #gauss_seidel(Y,P,Q,t0,v0,3)
     n = len(P)+1
     r = len(Q)
     #décomposition de Yij en A*exp(j*phi)
