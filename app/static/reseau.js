@@ -136,9 +136,7 @@ function Grid(data) {
 
 		if (instance.statusPowerFlow) {
 			instance.lines.forEach(function(elmt) {
-				resultats = JSON.parse(grid.simulation)['results'];
-				let intensity = resultats['I'][2][instance.lines.indexOf(elmt)][2]; //[indice_heure][ligne][intensité de la ligne]				console.log(intensity)
-				elmt.drawFlow(intensity);
+				elmt.drawFlow();
 			})
 		}
 
@@ -486,17 +484,17 @@ function Line(data) {
 			grid.bus[grid.bus.length - 1].onClick();
 		}
 	}
-	line.drawFlow = function(intensity) {
-		grid.bus[line.data.bus2].arrowPos = (grid.bus[line.data.bus1].arrowPos + ((intensity >= 0) ? line.data.length : -line.data.length)) % ANIMATION_DISTANCE;
-		let startBus = (intensity >= 0) ? grid.bus[line.data.bus1] : grid.bus[line.data.bus2];
-		let endBus = (intensity >= 0) ? grid.bus[line.data.bus2] : grid.bus[line.data.bus1];
+	line.drawFlow = function() {
+		grid.bus[line.data.bus2].arrowPos = (grid.bus[line.data.bus1].arrowPos + ((line.intensity >= 0) ? line.data.length : -line.data.length)) % ANIMATION_DISTANCE;
+		let startBus = (line.intensity >= 0) ? grid.bus[line.data.bus1] : grid.bus[line.data.bus2];
+		let endBus = (line.intensity >= 0) ? grid.bus[line.data.bus2] : grid.bus[line.data.bus1];
 		for (let d = (ANIMATION_DISTANCE - startBus.arrowPos) % ANIMATION_DISTANCE; d < line.data.length; d += ANIMATION_DISTANCE) {
-			
+
 			let a = d / line.data.length;
 			canvasGrid.drawPoint({
 				x: grid.localX(startBus.data.x * (1 - a) + endBus.data.x * a),
 				y: grid.localY(startBus.data.y * (1 - a) + endBus.data.y * a)
-			}, Math.sqrt(Math.abs(intensity)));
+			}, Math.sqrt(Math.abs(line.intensity)));
 		}
 	}
 
@@ -571,7 +569,9 @@ function Picture(data) {
 			let new_line=new Line({
 				bus1: line_before.data.bus1,
 				bus2: line_after.data.bus2,
-				length: line_before.data.length + line_after.data.length
+				length: line_before.data.length + line_after.data.length,
+				r: line_before.data.r,
+				x: line_before.data.x
 			});
 			grid.lines.push(new_line);
 
