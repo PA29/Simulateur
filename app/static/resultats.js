@@ -22,6 +22,10 @@ function resultatsJS() {
 
         	$(this).find('.arrow').attr("style", "transform: rotate(" + angle + "deg);")
         });
+
+        for (line of grid.lines) {
+			line.intensity = results['I'][time][grid.lines.indexOf(line)][2]; //[indice_heure][ligne][intensité de la ligne]
+        }
 	});
 
 	$(".addGraph").on('click', function() {

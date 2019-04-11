@@ -29,6 +29,7 @@ function editionJS() {
 			success: function(data) {
 				grid.simulation = data; // Ajout des résultats à la variable stockant le réseau
 				direct('resultats'); // Redirection vers le mode resultats
+				$('.time').trigger('input');
 				grid.startPowerFlow();
 			}
 		});
